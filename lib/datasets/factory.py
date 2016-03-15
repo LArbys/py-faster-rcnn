@@ -11,7 +11,20 @@ __sets = {}
 
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
+from datasets.ub_singles import ub_singles
+from datasets.image import image
+
 import numpy as np
+
+#setup image
+for split in ['train','val','trainval']:
+    name = 'ub_{}'.format(split)
+    __sets[name] = (lambda split=split :  ub_singles(split))
+
+# Set up ub
+for split in ['train','val','trainval']:
+    name = 'image_{}'.format(split)
+    __sets[name] = (lambda split=split :  image(split))
 
 # Set up voc_<year>_<split> using selective search "fast" mode
 for year in ['2007', '2012']:

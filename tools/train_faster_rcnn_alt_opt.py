@@ -205,10 +205,12 @@ if __name__ == '__main__':
 
     print('Called with args:')
     print(args)
-
+    
     if args.cfg_file is not None:
+        print('Getting CFG from file {}'.format(args.cfg_file))
         cfg_from_file(args.cfg_file)
     if args.set_cfgs is not None:
+        print('Getting CFG from list')
         cfg_from_list(args.set_cfgs)
     cfg.GPU_ID = args.gpu_id
 
@@ -218,7 +220,6 @@ if __name__ == '__main__':
     # training stage is executed in a separate process using
     # multiprocessing.Process.
     # --------------------------------------------------------------------------
-
     # queue for communicated results between processes
     mp_queue = mp.Queue()
     # solves, iters, etc. for each training stage

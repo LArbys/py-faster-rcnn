@@ -16,18 +16,19 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 import uuid
-#from ub_eval import ub_eval
+from voc_eval import voc_eval
 from fast_rcnn.config import cfg
 
-class ub_singles(imdb):
+class image(imdb):
     def __init__(self, image_set, devkit_path=None):
-        imdb.__init__(self, 'ub_alex_' + image_set)
+        imdb.__init__(self,image_set)
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None \
                             else devkit_path
-        self._data_path = self._devkit_path
+        self._data_path = os.path.join(self._devkit_path)
         self._classes = ('__background__', # always index 0
-                         'eminus','proton','pizero','muminus')
+                        'n02417914','n03954731','n04286575','n04596742')
+        
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.JPEG'
         self._image_index = self._load_image_set_index()
@@ -42,10 +43,10 @@ class ub_singles(imdb):
                        'use_diff'    : False,
                        'matlab_eval' : False,
                        'rpn_file'    : None,
-                       'min_size'    : 2} # minimum box size
+                       'min_size'    : 2}
 
         assert os.path.exists(self._devkit_path), \
-                'ub_singles path does not exist: {}'.format(self._devkit_path)
+                'ISLVRC2012 path does not exist: {}'.format(self._devkit_path)
         assert os.path.exists(self._data_path), \
                 'Path does not exist: {}'.format(self._data_path)
 
@@ -81,9 +82,9 @@ class ub_singles(imdb):
 
     def _get_default_path(self):
         """
-        Return the default path where Singlesdevikit is expected to be installed.
+        Return the default path where PASCAL VOC is expected to be installed.
         """
-        return os.path.join(cfg.DATA_DIR, 'Singlesdevkit')
+        return os.path.join(cfg.DATA_DIR, 'ILSVRC2012devkit')
 
     def gt_roidb(self):
         """
@@ -122,7 +123,6 @@ class ub_singles(imdb):
             print '{} ss roidb loaded from {}'.format(self.name, cache_file)
             return roidb
 
-        #if int(self._year) == 2007 or self._image_set != 'test':
         if self._image_set != 'test':
             gt_roidb = self.gt_roidb()
             ss_roidb = self._load_selective_search_roidb(gt_roidb)
@@ -136,7 +136,6 @@ class ub_singles(imdb):
         return roidb
 
     def rpn_roidb(self):
-        #if int(self._year) == 2007 or self._image_set != 'test':
         if self._image_set != 'test':
             gt_roidb = self.gt_roidb()
             rpn_roidb = self._load_rpn_roidb(gt_roidb)
@@ -174,7 +173,6 @@ class ub_singles(imdb):
 
         return self.create_roidb_from_box_list(box_list, gt_roidb)
 
-
     def _load_pascal_annotation(self, index):
         """
         Load image and bounding boxes info from XML file in the PASCAL VOC
@@ -183,16 +181,14 @@ class ub_singles(imdb):
         filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
         tree = ET.parse(filename)
         objs = tree.findall('object')
-        # no difficulty setting
-
-        # if not self.config['use_diff']:
-        #     # Exclude the samples labeled as difficult
-        #     non_diff_objs = [
-        #         obj for obj in objs if int(obj.find('difficult').text) == 0]
-        #     # if len(non_diff_objs) != len(objs):
-        #     #     print 'Removed {} difficult objects'.format(
-        #     #         len(objs) - len(non_diff_objs))
-        #     objs = non_diff_objs
+        if not self.config['use_diff']:
+            # Exclude the samples labeled as difficult
+            non_diff_objs = [
+                obj for obj in objs if int(obj.find('difficult').text) == 0]
+            # if len(non_diff_objs) != len(objs):
+            #     print 'Removed {} difficult objects'.format(
+            #         len(objs) - len(non_diff_objs))
+            objs = non_diff_objs
         num_objs = len(objs)
 
         boxes = np.zeros((num_objs, 4), dtype=np.uint16)
@@ -241,32 +237,33 @@ class ub_singles(imdb):
         # return path
 
     def _write_voc_results_file(self, all_boxes):
-        print 'Commented'
-        # for cls_ind, cls in enumerate(self.classes):
-        #     if cls == '__background__':
-        #         continue
-        #     print 'Writing {} VOC results file'.format(cls)
-        #     filename = self._get_voc_results_file_template().format(cls)
-        #     with open(filename, 'wt') as f:
-        #         for im_ind, index in enumerate(self.image_index):
-        #             dets = all_boxes[cls_ind][im_ind]
-        #             if dets == []:
-        #                 continue
-        #             # the VOCdevkit expects 1-based indices
-        #             for k in xrange(dets.shape[0]):
-        #                 f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f}\n'.
-        #                         format(index, dets[k, -1],
-        #                                dets[k, 0] + 1, dets[k, 1] + 1,
-        #                                dets[k, 2] + 1, dets[k, 3] + 1))
+        for cls_ind, cls in enumerate(self.classes):
+            if cls == '__background__':
+                continue
+            print 'Writing {} VOC results file'.format(cls)
+            filename = self._get_voc_results_file_template().format(cls)
+            with open(filename, 'wt') as f:
+                for im_ind, index in enumerate(self.image_index):
+                    dets = all_boxes[cls_ind][im_ind]
+                    if dets == []:
+                        continue
+                    # the VOCdevkit expects 1-based indices
+                    for k in xrange(dets.shape[0]):
+                        f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f}\n'.
+                                format(index, dets[k, -1],
+                                       dets[k, 0] + 1, dets[k, 1] + 1,
+                                       dets[k, 2] + 1, dets[k, 3] + 1))
 
     def _do_python_eval(self, output_dir = 'output'):
-        print 'Commented'
+        print 'Ccommented'
         # annopath = os.path.join(
         #     self._devkit_path,
+        #     'VOC' + self._year,
         #     'Annotations',
         #     '{:s}.xml')
         # imagesetfile = os.path.join(
         #     self._devkit_path,
+        #     'VOC' + self._year,
         #     'ImageSets',
         #     'Main',
         #     self._image_set + '.txt')
@@ -320,29 +317,27 @@ class ub_singles(imdb):
         # status = subprocess.call(cmd, shell=True)
 
     def evaluate_detections(self, all_boxes, output_dir):
-        print 'Commented'
-        # self._write_voc_results_file(all_boxes)
-        # self._do_python_eval(output_dir)
-        # if self.config['matlab_eval']:
-        #     self._do_matlab_eval(output_dir)
-        # if self.config['cleanup']:
-        #     for cls in self._classes:
-        #         if cls == '__background__':
-        #             continue
-        #         filename = self._get_voc_results_file_template().format(cls)
-        #         os.remove(filename)
+        self._write_voc_results_file(all_boxes)
+        self._do_python_eval(output_dir)
+        if self.config['matlab_eval']:
+            self._do_matlab_eval(output_dir)
+        if self.config['cleanup']:
+            for cls in self._classes:
+                if cls == '__background__':
+                    continue
+                filename = self._get_voc_results_file_template().format(cls)
+                os.remove(filename)
 
     def competition_mode(self, on):
-        print 'Commented'
-        # if on:
-        #     self.config['use_salt'] = False
-        #     self.config['cleanup'] = False
-        # else:
-        #     self.config['use_salt'] = True
-        #     self.config['cleanup'] = True
+        if on:
+            self.config['use_salt'] = False
+            self.config['cleanup'] = False
+        else:
+            self.config['use_salt'] = True
+            self.config['cleanup'] = True
 
 if __name__ == '__main__':
     from datasets.pascal_voc import pascal_voc
-    d = ub_singles('trainval')
+    d = pascal_voc('trainval', '2007')
     res = d.roidb
     from IPython import embed; embed()

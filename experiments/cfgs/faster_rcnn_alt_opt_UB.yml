@@ -1,0 +1,12 @@
+EXP_DIR: faster_rcnn_alt_opt
+MODELS_DIR : /share/py-faster-rcnn/models/ub_singles
+
+TRAIN:
+  BG_THRESH_LO: 0.0
+  SCALES    : [448]
+  MAX_SIZE : 448
+  IMS_PER_BATCH: 4
+TEST:
+  HAS_RPN: True
+  SCALES    : [448]
+  MAX_SIZE : 448
