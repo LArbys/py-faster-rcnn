@@ -16,7 +16,7 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 import uuid
-from voc_eval import voc_eval
+#from voc_eval import voc_eval
 from fast_rcnn.config import cfg
 
 class image(imdb):
@@ -27,7 +27,7 @@ class image(imdb):
                             else devkit_path
         self._data_path = os.path.join(self._devkit_path)
         self._classes = ('__background__', # always index 0
-                        'n02417914','n03954731','n04286575','n04596742')
+                         'n01664065','n01693334','n01443537','n01688243','n01622779','n01631663','n01630670','n01632777','n01537544','n01531178','n01530575','n01697457','n01644373','n01629819','n01496331','n01641577','n01582220','n01514668','n01498041','n01616318','n01667778','n01682714','n01685808','n01692333','n01677366','n01694178','n01518878','n01440764','n01558993','n01632458','n01484850','n01665541','n01534433','n01592084','n01494475','n01667114','n01532829','n01514859','n01675722','n01614925','n01687978','n01491361','n01601694','n01689811','n01560419','n01695060','n01644900','n01669191','n01580077','n01608432')
         
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext = '.JPEG'
@@ -54,6 +54,7 @@ class image(imdb):
         """
         Return the absolute path to image i in the image sequence.
         """
+        print "%s at image_path is" % i
         return self.image_path_from_index(self._image_index[i])
 
     def image_path_from_index(self, index):
@@ -64,6 +65,7 @@ class image(imdb):
                                   index + self._image_ext)
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
+        print image_path
         return image_path
 
     def _load_image_set_index(self):
@@ -164,7 +166,7 @@ class image(imdb):
 
         box_list = []
         for i in xrange(raw_data.shape[0]):
-            boxes = raw_data[i][:, (1, 0, 3, 2)] - 1
+            boxes = raw_data[i][:, (1, 0, 3, 2)]
             keep = ds_utils.unique_boxes(boxes)
             boxes = boxes[keep, :]
             keep = ds_utils.filter_small_boxes(boxes, self.config['min_size'])
@@ -201,10 +203,10 @@ class image(imdb):
         for ix, obj in enumerate(objs):
             bbox = obj.find('bndbox')
             # Make pixel indexes 0-based
-            x1 = float(bbox.find('xmin').text) - 1
-            y1 = float(bbox.find('ymin').text) - 1
-            x2 = float(bbox.find('xmax').text) - 1
-            y2 = float(bbox.find('ymax').text) - 1
+            x1  = float(bbox.find('xmin').text)
+            y1  = float(bbox.find('ymin').text)
+            x2  = float(bbox.find('xmax').text)
+            y2  = float(bbox.find('ymax').text)
             cls = self._class_to_ind[obj.find('name').text.lower().strip()]
             boxes[ix, :] = [x1, y1, x2, y2]
             gt_classes[ix] = cls
@@ -337,7 +339,8 @@ class image(imdb):
             self.config['cleanup'] = True
 
 if __name__ == '__main__':
-    from datasets.pascal_voc import pascal_voc
-    d = pascal_voc('trainval', '2007')
+    #from datasets.pascal_voc import pascal_voc
+    from datasets.image import image
+    d = image('trainval')
     res = d.roidb
     from IPython import embed; embed()

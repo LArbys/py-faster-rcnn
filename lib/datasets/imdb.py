@@ -106,12 +106,26 @@ class imdb(object):
             boxes = self.roidb[i]['boxes'].copy()
             oldx1 = boxes[:, 0].copy()
             oldx2 = boxes[:, 2].copy()
+            
             boxes[:, 0] = widths[i] - oldx2 - 1
             boxes[:, 2] = widths[i] - oldx1 - 1
-            assert (boxes[:, 2] >= boxes[:, 0]).all()
+            
+            # #vic
+            # print 'On image %d: ' % i
+            # if oldx1[0] > 6000 or oldx2[0] > 6000 :
+            #     raise Exception("BAD ANNO oldx1:{} oldx2:{}".format(oldx1[0],oldx2[0]))
+            # #vic
+            # print "------"
+            # print widths[i]
+            # print "oldx1",oldx1
+            # print "oldx2",oldx2
+            # print "0:",boxes[:, 0]
+            # print "2:",boxes[:, 2]
+            # print "------"
+            assert(boxes[:, 2] >= boxes[:, 0]).all()
             entry = {'boxes' : boxes,
                      'gt_overlaps' : self.roidb[i]['gt_overlaps'],
-                     'gt_classes' : self.roidb[i]['gt_classes'],
+                     'gt_classes'  : self.roidb[i]['gt_classes'],
                      'flipped' : True}
             self.roidb.append(entry)
         self._image_index = self._image_index * 2

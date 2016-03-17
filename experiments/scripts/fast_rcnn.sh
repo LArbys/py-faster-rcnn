@@ -23,17 +23,11 @@ EXTRA_ARGS=${array[@]:3:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
 case $DATASET in
-  pascal_voc)
-    TRAIN_IMDB="voc_2007_trainval"
-    TEST_IMDB="voc_2007_test"
-    PT_DIR="pascal_voc"
+  ub_singles)
+    TRAIN_IMDB="ub_trainval"
+    TEST_IMDB="ub_test"
+    PT_DIR="ub_singles"
     ITERS=40000
-    ;;
-  coco)
-    TRAIN_IMDB="coco_2014_train"
-    TEST_IMDB="coco_2014_minival"
-    PT_DIR="coco"
-    ITERS=280000
     ;;
   *)
     echo "No dataset given"
@@ -41,13 +35,14 @@ case $DATASET in
     ;;
 esac
 
+
 LOG="experiments/logs/fast_rcnn_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/fast_rcnn/solver.prototxt \
-  --weights data/imagenet_models/${NET}.v2.caffemodel \
+  --weights data/imagenet_models/${NET}.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
   ${EXTRA_ARGS}

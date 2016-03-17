@@ -10,7 +10,7 @@ import sys
 import inspect
 
 def bbox_transform(ex_rois, gt_rois):
-    print inspect.stack()[1]
+    # print inspect.stack()[1]
 
     ex_widths  = ex_rois[:, 2] - ex_rois[:, 0] + 1.0
     ex_heights = ex_rois[:, 3] - ex_rois[:, 1] + 1.0
@@ -27,24 +27,24 @@ def bbox_transform(ex_rois, gt_rois):
     targets_dx = (gt_ctr_x - ex_ctr_x) / ex_widths
     targets_dy = (gt_ctr_y - ex_ctr_y) / ex_heights
     
-    print '-----------------------'
-    print 'gt_rois',gt_rois
-    print 'gt_widths ',gt_widths
-    print 'gt_heights ',gt_heights
-    print 'ex_widths ',ex_widths
-    print 'ex_heights ',ex_heights
-    print 'targets_dx ',targets_dx
-    print 'targets_dy ',targets_dy
-    print '-----------------------'
-    print ''
+    # print '-----------------------'
+    # print 'gt_rois',gt_rois
+    # print 'gt_widths ',gt_widths
+    # print 'gt_heights ',gt_heights
+    # print 'ex_widths ',ex_widths
+    # print 'ex_heights ',ex_heights
+    # print 'targets_dx ',targets_dx
+    # print 'targets_dy ',targets_dy
+    # print '-----------------------'
+    # print ''
     targets_dw = np.log(gt_widths / ex_widths)
     targets_dh = np.log(gt_heights / ex_heights)
     
-    print '-----------------------'
-    print 'targets_dw = np.log(gt_widths/ex_widths) : ',targets_dw
-    print 'targets_dh = np.log(gt_widhts/ex_heights): ',targets_dh
-    print '-----------------------'
-    print '\n\n'
+    # print '-----------------------'
+    # print 'targets_dw = np.log(gt_widths/ex_widths) : ',targets_dw
+    # print 'targets_dh = np.log(gt_widhts/ex_heights): ',targets_dh
+    # print '-----------------------'
+    # print '\n\n'
 
     targets = np.vstack(
         (targets_dx, targets_dy, targets_dw, targets_dh)).transpose()

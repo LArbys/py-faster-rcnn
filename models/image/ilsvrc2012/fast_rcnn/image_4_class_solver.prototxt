@@ -1,0 +1,14 @@
+net: "models/image/ilsvrc2012/image_4_class_train.prototxt"
+test_iter: 1000
+test_interval: 1000
+base_lr: 0.01
+lr_policy: "step"
+gamma: 0.1
+stepsize: 100000
+display: 20
+max_iter: 450000
+momentum: 0.9
+weight_decay: 0.0005
+snapshot: 0
+snapshot_prefix: "models/image/ilsvrc2012/image_alexnet_train_4_class"
+solver_mode: GPU

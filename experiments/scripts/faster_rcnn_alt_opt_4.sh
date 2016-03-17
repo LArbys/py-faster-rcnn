@@ -47,7 +47,7 @@ time ./tools/train_faster_rcnn_alt_opt.py --gpu ${GPU_ID} \
   --net_name ${NET} \
   --weights data/imagenet_models/${NET}.caffemodel \
   --imdb ${TRAIN_IMDB} \
-  --cfg experiments/cfgs/faster_rcnn_alt_opt.yml \
+  --cfg experiments/cfgs/faster_rcnn_alt_opt_4.yml \
   ${EXTRA_ARGS}
 
 set +x
@@ -58,5 +58,5 @@ time ./tools/test_net.py --gpu ${GPU_ID} \
   --def models/${PT_DIR}/${NET}/faster_rcnn_alt_opt/faster_rcnn_test.pt \
   --net ${NET_FINAL} \
   --imdb ${TEST_IMDB} \
-  --cfg experiments/cfgs/faster_rcnn_alt_opt.yml \
+  --cfg experiments/cfgs/faster_rcnn_alt_opt_4.yml \
   ${EXTRA_ARGS}
