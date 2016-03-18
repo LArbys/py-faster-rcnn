@@ -1,5 +1,5 @@
 EXP_DIR: faster_rcnn_end2end
-MODELS_DIR : /share/vgenty/py-faster-rcnn/models/ub_singles
+MODELS_DIR : /share/vgenty/py-faster-rcnn/models/rpn_uboone
 
 TRAIN:
   HAS_RPN: True
@@ -11,10 +11,10 @@ TRAIN:
   BG_THRESH_LO: 0.0
 
   SCALES    : [448]
-  MAX_SIZE : 448
-
+  MAX_SIZE  : 448
+ 
 TEST:
   HAS_RPN: True
   SCALES    : [448]
-  MAX_SIZE : 448
+  MAX_SIZE  : 448
 

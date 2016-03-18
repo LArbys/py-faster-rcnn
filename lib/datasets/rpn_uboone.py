@@ -14,17 +14,18 @@ import uuid
 
 from fast_rcnn.config import cfg
 
-class ub_singles(imdb):
+class rpn_uboone(imdb):
     def __init__(self, image_set, devkit_path=None):
-        imdb.__init__(self, 'ub_alex_' + image_set)
+        imdb.__init__(self, 'rpn_uboone_' + image_set)
     
         self._image_set = image_set
         self._devkit_path = self._get_default_path() if devkit_path is None \
-                        else devkit_path
-
+                            else devkit_path
+        
         self._data_path = self._devkit_path
-        self._classes = ('__background__', # always index 0
-                         'eminus','proton','pizero','muminus')
+        print cfg
+        self._classes = ('__background__',
+                         'eminus','proton','pizero','muminus') # should read this from config
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext   = '.JPEG'
         self._image_index = self._load_image_set_index()
@@ -180,10 +181,10 @@ class ub_singles(imdb):
 
     def _load_uboone_annotation(self, index):
         """
-        Load image and bounding boxes info from XML file in the UBOONE VOC
+        Load image and bounding boxes info from TXT file in the UBOONE
         format.
         """
-        filename = os.path.join(self._data_path, 'Annotations', index + '.xml')
+        filename = os.path.join(self._data_path, 'Annotations', index + '.txt') # will be text file instead of xml
         
         # just load text file instead
         tree = ET.parse(filename)
@@ -228,11 +229,14 @@ class ub_singles(imdb):
     def _get_comp_id(self):
         comp_id = (self._comp_id + '_' + self._salt if self.config['use_salt']
             else self._comp_id)
+
         return comp_id
 
 
 if __name__ == '__main__':
     from datasets.rpn_uboone import rpn_uboone
+
     d = rpn_uboone('trainval') #no choice yet, must trainval
     res = d.roidb
+    
     from IPython import embed; embed()

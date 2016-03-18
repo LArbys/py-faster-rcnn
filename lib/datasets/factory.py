@@ -12,9 +12,15 @@ __sets = {}
 from datasets.pascal_voc import pascal_voc
 from datasets.coco import coco
 from datasets.ub_singles import ub_singles
+from datasets.rpn_uboone import rpn_uboone
 from datasets.image import image
 
 import numpy as np
+
+#setup rpn_uboone
+for split in ['train','val','trainval']:
+    name = 'rpn_uboone_{}'.format(split)
+    __sets[name] = (lambda split=split :  rpn_uboone(split))
 
 #setup image
 for split in ['train','val','trainval']:

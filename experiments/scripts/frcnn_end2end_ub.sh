@@ -23,10 +23,10 @@ EXTRA_ARGS=${array[@]:3:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
 case $DATASET in
-  ub_singles)
-    TRAIN_IMDB="ub_trainval"
+  rpn_uboone)
+    TRAIN_IMDB="ub_train" # instantiate this object from factory.py
     TEST_IMDB="ub_test"
-    PT_DIR="ub_singles"
+    PT_DIR="rpn_uboone"
     ITERS=700000
     ;;
   *)
@@ -41,7 +41,7 @@ echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} \
   --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
-  --weights data/imagenet_models/${NET}.caffemodel \
+  --weights data/rpn_uboone_models/${NET}.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
   --cfg experiments/cfgs/faster_rcnn_end2end_UB.yml \
