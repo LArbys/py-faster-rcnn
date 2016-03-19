@@ -24,8 +24,10 @@ class rpn_uboone(imdb):
         
         self._data_path = self._devkit_path
         print cfg
-        self._classes = ('__background__',
-                         'eminus','proton','pizero','muminus') # should read this from config
+
+        self._classes = tuple( ['__background__'] + cfg.UB_CLASSES )
+        print self._classes
+
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
         self._image_ext   = '.JPEG'
         self._image_index = self._load_image_set_index()
@@ -187,8 +189,8 @@ class rpn_uboone(imdb):
         filename = os.path.join(self._data_path, 'Annotations', index + '.txt') # will be text file instead of xml
         
         # just load text file instead
-        tree = ET.parse(filename)
-        objs = tree.findall('object')
+        tree = open(filename,'r')
+        objs = tree.read().split('\n')
         
         num_objs = len(objs)
 
@@ -200,16 +202,16 @@ class rpn_uboone(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         # Load object bounding boxes into a data frame -- what dataframe?
-        for ix, obj in enumerate(objs):
-            bbox = obj.find('bndbox')
-            # Make pixel indexes 0-based, like ub and imagenet
-            x1 = float(bbox.find('xmin').text)
-            y1 = float(bbox.find('ymin').text)
-            x2 = float(bbox.find('xmax').text)
-            y2 = float(bbox.find('ymax').text)
-            
+        for ix,obj in enumerate(objs):
+            data = obj.split(" ")
 
-            cls = self._class_to_ind[obj.find('name').text.lower().strip()]
+            cls = self._class_to_ind[data[1]]
+
+            x1 = float(data[2])
+            y1 = float(data[3])
+            x2 = float(data[4])
+            y2 = float(data[5])
+        
             boxes[ix, :]    = [x1, y1, x2, y2]
 
             gt_classes[ix]  = cls

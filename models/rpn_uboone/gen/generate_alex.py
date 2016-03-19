@@ -9,6 +9,9 @@ if len(sys.argv) != 3:
 name, numclasses = sys.argv[1:]
 print '\033[92m' + "\n\t generating alex frcnn {} with {} of classes\n".format(name,numclasses) + '\033[0m'
 
+numclasses = int(numclasses)
+numclasses += 1
+
 os.chdir("gen")
 
 solver = None
@@ -31,8 +34,8 @@ to_replace = { 'solver' : solver,
 for f in to_replace:
     ff = to_replace[f];
     ff = ff.replace('NAME',name)
-    ff = ff.replace('NUMCLASSES',numclasses)
-    ff = ff.replace('BBOXPRED',str(int(numclasses)*4))
+    ff = ff.replace('NUMCLASSES',str(numclasses))
+    ff = ff.replace('BBOXPRED',str(numclasses*4))
     to_replace[f] = ff #is this needed?
     
 # go back one directory

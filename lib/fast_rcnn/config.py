@@ -208,6 +208,10 @@ __C.USE_GPU_NMS = True
 # Default GPU device id
 __C.GPU_ID = 0
 
+# uboone specific
+__C.UB_CLASSES   = ('eminus',)
+__C.UB_N_CLASSES = 1
+
 
 def get_output_dir(imdb, net=None):
     """Return the directory where experimental artifacts are placed.
@@ -284,3 +288,7 @@ def cfg_from_list(cfg_list):
             'type {} does not match original type {}'.format(
             type(value), type(d[subkey]))
         d[subkey] = value
+
+
+
+

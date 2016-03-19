@@ -1,5 +1,5 @@
-name: "NAME_Train
-"
+name: "NAME_Train"
+
 layer {
   name: 'input-data'
   type: 'Python'

@@ -12,7 +12,6 @@
 import _init_paths
 from fast_rcnn.train import get_training_roidb, train_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
-from datasets.factory import get_imdb
 import datasets.imdb
 import caffe
 import argparse
@@ -86,11 +85,13 @@ if __name__ == '__main__':
         cfg_from_file(args.cfg_file)
     if args.set_cfgs is not None:
         cfg_from_list(args.set_cfgs)
-
     cfg.GPU_ID = args.gpu_id
 
     print('Using config:')
     pprint.pprint(cfg)
+    
+    #factory uses config file
+    from datasets.factory import get_imdb
 
     if not args.randomize:
         # fix the random seeds (numpy and caffe) for reproducibility

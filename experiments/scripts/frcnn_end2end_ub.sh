@@ -19,21 +19,14 @@ DATASET=$3
 
 array=( $@ )
 len=${#array[@]}
-EXTRA_ARGS=${array[@]:3:$len}
+EXTRA_ARGS=${array[@]:4:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
-case $DATASET in
-  rpn_uboone)
-    TRAIN_IMDB="ub_train" # instantiate this object from factory.py
-    TEST_IMDB="ub_test"
-    PT_DIR="rpn_uboone"
-    ITERS=700000
-    ;;
-  *)
-    echo "No dataset given"
-    exit
-    ;;
-esac
+TRAIN_IMDB='rpn_uboone_train_'$4
+TEST_IMDB='rpn_uboone_test_'$4
+PT_DIR="rpn_uboone"
+ITERS=700000
+
 
 LOG="experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
