@@ -25,14 +25,12 @@ EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 TRAIN_IMDB='rpn_uboone_train_'$4
 TEST_IMDB='rpn_uboone_test_'$4
 PT_DIR="rpn_uboone"
-ITERS=700000
-
 
 LOG="experiments/logs/ub_test_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-time ./tools/test_net.py --gpu ${GPU_ID} \
+time ./tools/uboone_diag.py --gpu ${GPU_ID} \
   --def models/${PT_DIR}/${NET}/faster_rcnn_end2end/test.prototxt \
   --net output/faster_rcnn_end2end/rpn_uboone_train_$4/rpn_uboone_alex_$4__iter_20000.caffemodel \
   --imdb ${TEST_IMDB} \
