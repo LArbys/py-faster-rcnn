@@ -290,7 +290,12 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
 
 
         #just take the top box from each class
+        delete = False;
         for j in xrange(1, imdb.num_classes):
+
+            if all_boxes[j][i].size == 0:
+                continue
+
             dets = all_boxes[j][i][0]
             f.write("{},{},{},{},{},{}\n".format(j,
                                                  dets[-1],
@@ -301,7 +306,7 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
 
         f.write("\n")
         f.close()
-        print ""
+
         print ""
         print ""
 
