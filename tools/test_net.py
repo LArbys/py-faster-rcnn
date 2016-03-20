@@ -12,7 +12,6 @@
 import _init_paths
 from fast_rcnn.test import test_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list
-from datasets.factory import get_imdb
 import caffe
 import argparse
 import pprint
@@ -81,6 +80,8 @@ if __name__ == '__main__':
     caffe.set_device(args.gpu_id)
     net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
     net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
+    
+    from datasets.factory import get_imdb
 
     imdb = get_imdb(args.imdb_name)
     imdb.competition_mode(args.comp_mode)

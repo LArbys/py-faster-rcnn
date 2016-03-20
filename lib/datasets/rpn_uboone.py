@@ -3,7 +3,6 @@
 import os
 from datasets.imdb import imdb
 import datasets.ds_utils as ds_utils
-import xml.etree.ElementTree as ET
 import numpy as np
 import scipy.sparse
 import scipy.io as sio
@@ -11,6 +10,7 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 import uuid
+from rpn_uboone_eval import rpn_uboone_eval
 
 from fast_rcnn.config import cfg
 
@@ -233,6 +233,74 @@ class rpn_uboone(imdb):
             else self._comp_id)
 
         return comp_id
+
+
+    def _get_ub_results_file_template(self):
+        filename = self._get_comp_id() + '_det_' + self._image_set + '_{:s}.txt'
+        path = os.path.join(
+            self._devkit_path,
+            'results',
+            'Main',
+            filename)
+        return path
+
+    def _write_ub_results_file(self, all_boxes):
+        for cls_ind, cls in enumerate(self.classes):
+            if cls == '__background__':
+                continue
+            print 'Writing {} ub results file'.format(cls)
+            filename = self._get_ub_results_file_template().format(cls)
+            with open(filename, 'wt') as f:
+                for im_ind, index in enumerate(self.image_index):
+                    dets = all_boxes[cls_ind][im_ind]
+                    if dets == []:
+                        continue
+                    # the ub expects 0-based indices
+                    for k in xrange(dets.shape[0]):
+                        f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f}\n'.
+                                format(index, dets[k, -1],
+                                       dets[k, 0], dets[k, 1],
+                                       dets[k, 2], dets[k, 3]))
+
+
+    def _do_python_eval(self, output_dir = 'output'):
+        annopath = os.path.join(
+            self._devkit_path,
+            'Annotations',
+            '{:s}.txt')
+        imagesetfile = os.path.join(
+            self._devkit_path,
+            'ImageSets',
+            'Main',
+            self._image_set + '.txt')
+        cachedir = os.path.join(self._devkit_path, 'annotations_cache')
+        aps = []
+
+        if not os.path.isdir(output_dir):
+            os.mkdir(output_dir)
+        for i, cls in enumerate(self._classes):
+            if cls == '__background__':
+                continue
+            filename = self._get_ub_results_file_template().format(cls)
+            rec, prec, ap = rpn_uboone_eval(
+                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.25)
+            aps += [ap]
+            print('AP   for {} = {:.4f}'.format(cls, ap))
+            with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
+                cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
+        print('Mean AP = {:.4f}'.format(np.mean(aps)))
+        print('~~~~~~~~')
+        print('Results:')
+        for ap in aps:
+            print('{:.3f}'.format(ap))
+        print('{:.3f}'.format(np.mean(aps)))
+        print('~~~~~~~~')
+        print('')
+        print('\tComplete')
+
+    def evaluate_detections(self, all_boxes, output_dir):
+        self._write_ub_results_file(all_boxes)
+        self._do_python_eval(output_dir)
 
 
 if __name__ == '__main__':

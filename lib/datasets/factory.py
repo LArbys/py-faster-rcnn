@@ -21,7 +21,8 @@ import numpy as np
 # Setup rpn_uboone
 for split in ['train_'    + str(cfg.UB_N_CLASSES),\
               'val_'      + str(cfg.UB_N_CLASSES),\
-              'trainval_' + str(cfg.UB_N_CLASSES)] :
+              'trainval_' + str(cfg.UB_N_CLASSES),\
+              'test_'     + str(cfg.UB_N_CLASSES)] :
     
     print split
     name = 'rpn_uboone_{}'.format(split)
