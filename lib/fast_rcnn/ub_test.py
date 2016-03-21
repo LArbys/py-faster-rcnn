@@ -261,8 +261,8 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
         gtruth  = truth.search(image)
         class_  = gtruth.group(1)
         class_n = gtruth.group(2)
-
-        f = open("output/detections/det_{}_{}.txt".format(class_ + class_n,class_),'w+')
+        print int(imdb.num_classes) - 1
+        f = open("output/detections_{}/det_{}_{}.txt".format(int(imdb.num_classes) - 1,class_ + class_n,class_),'w+')
 
         im = cv2.imread(imdb.image_path_at(i))
         _t['im_detect'].tic()

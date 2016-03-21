@@ -3,6 +3,8 @@ MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/rpn_uboone
 UB_CLASSES   : [eminus,proton,pizero,muminus]
 UB_N_CLASSES : 4
 
+
+
 TRAIN:
   HAS_RPN: True
   IMS_PER_BATCH: 1

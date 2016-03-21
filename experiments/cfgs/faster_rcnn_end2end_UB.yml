@@ -14,7 +14,7 @@ TRAIN:
 
   SCALES    : [448]
   MAX_SIZE  : 448
-    
+      
 
    
 TEST:

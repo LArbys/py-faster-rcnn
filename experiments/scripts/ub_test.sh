@@ -32,7 +32,7 @@ echo Logging output to "$LOG"
 
 time ./tools/uboone_diag.py --gpu ${GPU_ID} \
   --def models/${PT_DIR}/${NET}/faster_rcnn_end2end/test.prototxt \
-  --net output/faster_rcnn_end2end/rpn_uboone_train_$4/rpn_uboone_alex_$4__iter_290000.caffemodel \
+  --net output/faster_rcnn_end2end/rpn_uboone_train_$4/rpn_uboone_alex_$4.caffemodel \
   --imdb ${TEST_IMDB} \
   --cfg experiments/cfgs/faster_rcnn_end2end_UB_alex_$4.yml \
   ${EXTRA_ARGS}
