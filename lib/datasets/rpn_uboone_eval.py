@@ -14,8 +14,6 @@ def parse_rec(filename):
         obj_struct = {}
         data = obj.split(" ")
         obj_struct['name'] = data[1]
-        obj_struct['truncated'] = 0 # none are truncated
-        obj_struct['difficult'] = 0 # none are difficult
         obj_struct['bbox'] = [int(data[2]),
                               int(data[3]),
                               int(data[4]),
@@ -82,8 +80,9 @@ def rpn_uboone_eval(detpath,
     with open(imagesetfile, 'r') as f:
         lines = f.readlines()
     imagenames = [x.strip() for x in lines]
-    
-    
+
+    print('Deleting cache file for new evaluation run\n')
+    os.system("rm -rf " + cachefile)
     if not os.path.isfile(cachefile):
         print "Load annotations"
 
@@ -109,38 +108,38 @@ def rpn_uboone_eval(detpath,
     for imagename in imagenames:
         R = [obj for obj in recs[imagename] if obj['name'] == classname]
         bbox = np.array([x['bbox'] for x in R])
-        difficult = np.array([x['difficult'] for x in R]).astype(np.bool)
-        det = [False] * len(R)
-        npos = npos + sum(~difficult)
+        det  = [False] * len(R)
+        npos = npos + len(R)
         class_recs[imagename] = {'bbox': bbox,
-                                 'difficult': difficult,
                                  'det': det}
 
     # read dets
     detfile = detpath.format(classname)
     with open(detfile, 'r') as f:
         lines = f.readlines()
-
+    
     splitlines = [x.strip().split(' ') for x in lines]
-    image_ids = [x[0] for x in splitlines]
+    image_ids  = [x[0] for x in splitlines]
+    pred_ids   = [x[6] for x in splitlines]
     confidence = np.array([float(x[1]) for x in splitlines])
-    BB = np.array([[float(z) for z in x[2:]] for x in splitlines])
+    BB = np.array([[float(z) for z in x[2:6]] for x in splitlines])
 
     # sort by confidence
-    sorted_ind = np.argsort(-confidence)
+    sorted_ind    = np.argsort(-confidence)
     sorted_scores = np.sort(-confidence)
     BB = BB[sorted_ind, :]
     image_ids = [image_ids[x] for x in sorted_ind]
 
     # go down dets and mark TPs and FPs
-    nd = len(image_ids)
+    nd = len(image_ids) #number of detections
     tp = np.zeros(nd)
     fp = np.zeros(nd)
+    print ('go down dets and mark TPs and FPs')
     for d in range(nd):
         R = class_recs[image_ids[d]]
-        bb = BB[d, :].astype(float)
+        bb = BB[d, :].astype(float) #predicted bounding box, what is predicted class?
         ovmax = -np.inf
-        BBGT = R['bbox'].astype(float)
+        BBGT = R['bbox'].astype(float) #bounding box ground truth
 
         if BBGT.size > 0:
             # compute overlaps
@@ -149,26 +148,28 @@ def rpn_uboone_eval(detpath,
             iymin = np.maximum(BBGT[:, 1], bb[1])
             ixmax = np.minimum(BBGT[:, 2], bb[2])
             iymax = np.minimum(BBGT[:, 3], bb[3])
+
             iw = np.maximum(ixmax - ixmin + 1., 0.)
             ih = np.maximum(iymax - iymin + 1., 0.)
+            
             inters = iw * ih
 
             # union
             uni = ((bb[2] - bb[0] + 1.) * (bb[3] - bb[1] + 1.) +
                    (BBGT[:, 2] - BBGT[:, 0] + 1.) *
                    (BBGT[:, 3] - BBGT[:, 1] + 1.) - inters)
-
+            
+            # IoU
             overlaps = inters / uni
             ovmax = np.max(overlaps)
-            jmax = np.argmax(overlaps)
+            jmax  = np.argmax(overlaps)
 
         if ovmax > ovthresh:
-            if not R['difficult'][jmax]:
-                if not R['det'][jmax]:
-                    tp[d] = 1.
-                    R['det'][jmax] = 1
-                else:
-                    fp[d] = 1.
+            if not R['det'][jmax]:
+                tp[d] = 1.
+                R['det'][jmax] = 1
+            else:
+                fp[d] = 1.
         else:
             fp[d] = 1.
 

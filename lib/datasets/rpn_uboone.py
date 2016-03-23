@@ -257,10 +257,11 @@ class rpn_uboone(imdb):
                         continue
                     # the ub expects 0-based indices
                     for k in xrange(dets.shape[0]):
-                        f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f}\n'.
+                        f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.
                                 format(index, dets[k, -1],
                                        dets[k, 0], dets[k, 1],
-                                       dets[k, 2], dets[k, 3]))
+                                       dets[k, 2], dets[k, 3],
+                                       cls_ind))
 
 
     def _do_python_eval(self, output_dir = 'output'):

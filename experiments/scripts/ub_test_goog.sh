@@ -25,21 +25,14 @@ EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 TRAIN_IMDB='rpn_uboone_train_'$4
 TEST_IMDB='rpn_uboone_test_'$4
 PT_DIR="rpn_uboone"
-ITERS=700000
 
-
-LOG="experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
+LOG="experiments/logs/ub_test_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
 
-time ./tools/train_net.py --gpu ${GPU_ID} \
-  --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
-  --weights data/rpn_uboone_models/${NET}.caffemodel \
-  --imdb ${TRAIN_IMDB} \
-  --iters ${ITERS} \
+time ./tools/uboone_diag.py --gpu ${GPU_ID} \
+  --def models/${PT_DIR}/${NET}/faster_rcnn_end2end/test.prototxt \
+  --net output/faster_rcnn_end2end/rpn_uboone_train_$4/rpn_uboone_goog_test_4__iter_50000.caffemodel \
+  --imdb ${TEST_IMDB} \
   --cfg experiments/cfgs/faster_rcnn_end2end_UB_goog_test_$4.yml \
   ${EXTRA_ARGS}
-
-set +x
-NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`
-set -x
