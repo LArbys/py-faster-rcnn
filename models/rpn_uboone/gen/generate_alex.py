@@ -15,15 +15,15 @@ numclasses += 1
 os.chdir("gen")
 
 solver = None
-with open("alex_solver.prototxt",'r') as f:
+with open("alex/alex_solver.prototxt",'r') as f:
     solver = f.read()
 
 train = None
-with open("alex_train.prototxt",'r') as f:
+with open("alex/alex_train.prototxt",'r') as f:
     train = f.read()
 
 test = None
-with open("alex_test.prototxt",'r') as f:
+with open("alex/alex_test.prototxt",'r') as f:
     test = f.read()
     
 

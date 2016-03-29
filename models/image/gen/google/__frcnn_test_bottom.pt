@@ -1,0 +1,26 @@
+layer {
+  name: "cls_score"
+  type: "InnerProduct"
+  bottom: "pool5/7x7_s1"
+  top: "cls_score"
+  inner_product_param {
+    num_output: NUMCLASSES
+  }
+}
+layer {
+  name: "bbox_pred"
+  type: "InnerProduct"
+  bottom: "pool5/7x7_s1"
+  top: "bbox_pred"
+  inner_product_param {
+    num_output: BBOXPRED
+  }
+}
+layer {
+  name: "cls_prob"
+  type: "Softmax"
+  bottom: "cls_score"
+  top: "cls_prob"
+}
+
+

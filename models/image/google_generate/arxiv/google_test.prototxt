@@ -1,11 +1,11 @@
-name: "NAME_FRCNNTEST_layers"
+name: "NAME_Test"
 
 input: "data"
 input_shape {
   dim: 1
   dim: 3
-  dim: 224
-  dim: 224
+  dim: 448
+  dim: 448
 }
 
 input: "im_info"
@@ -13,10 +13,9 @@ input_shape {
   dim: 1
   dim: 3
 }
-
-  ######################
-###########GOOGLENET##
-######################
+#########################
+#########GOOGLENET#######
+########################
  
 layer {
   name: "conv1/7x7_s2"
@@ -797,6 +796,145 @@ layer {
   top: "inception_4a/output"
 }
 
+###VIC
+# layer {
+#   name: "loss1/ave_pool"
+#   type: "Pooling"
+#   bottom: "inception_4a/output"
+#   top: "loss1/ave_pool"
+#   pooling_param {
+#     pool: AVE
+#     kernel_size: 5
+#     stride: 3
+#   }
+# }
+# layer {
+#   name: "loss1/conv"
+#   type: "Convolution"
+#   bottom: "loss1/ave_pool"
+#   top: "loss1/conv"
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set to zero
+#   }
+#   convolution_param {
+#     num_output: 128
+#     kernel_size: 1
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0.2
+#     }
+#   }
+# }
+# layer {
+#   name: "loss1/relu_conv"
+#   type: "ReLU"
+#   bottom: "loss1/conv"
+#   top: "loss1/conv"
+# }
+# layer {
+#   name: "loss1/fc"
+#   type: "InnerProduct"
+#   bottom: "loss1/conv"
+#   top: "loss1/fc"
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   inner_product_param {
+#     num_output: 1024
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0.2
+#     }
+#   }
+# }
+# layer {
+#   name: "loss1/relu_fc"
+#   type: "ReLU"
+#   bottom: "loss1/fc"
+#   top: "loss1/fc"
+# }
+# layer {
+#   name: "loss1/drop_fc"
+#   type: "Dropout"
+#   bottom: "loss1/fc"
+#   top: "loss1/fc"
+#   dropout_param {
+#     dropout_ratio: 0.7
+#   }
+# }
+# layer {
+#   name: "loss1/classifier"
+#   type: "InnerProduct"
+#   bottom: "loss1/fc"
+#   top: "loss1/classifier"
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   inner_product_param {
+#     num_output: 1000
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0
+#     }
+#   }
+#}
+
+###END VIC
+#layer {
+#  name: "loss1/loss"
+#  type: "SoftmaxWithLoss"
+#  bottom: "loss1/classifier"
+#  bottom: "label"
+#  top: "loss1/loss1"
+#  loss_weight: 0.3
+#}
+#layer {
+#  name: "loss1/top-1"
+#  type: "Accuracy"
+#  bottom: "loss1/classifier"
+#  bottom: "label"
+#  top: "loss1/top-1"
+#  include {
+#    phase: TEST
+#  }
+#}
+#layer {
+#  name: "loss1/top-5"
+#  type: "Accuracy"
+#  bottom: "loss1/classifier"
+#  bottom: "label"
+#  top: "loss1/top-5"
+#  include {
+#    phase: TEST
+#  }
+#  accuracy_param {
+#    top_k: 5
+#  }
+#}
 layer {
   name: "inception_4b/1x1"
   type: "Convolution"
@@ -1215,102 +1353,10 @@ layer {
   bottom: "inception_4c/pool_proj"
   top: "inception_4c/output"
 }
-#========= RPN ============
-
-layer {
-  name: "rpn_conv/3x3"
-  type: "Convolution"
-  bottom: "inception_4c/output"
-  top: "rpn/output"
-  convolution_param {
-    num_output: 512
-    kernel_size: 3 pad: 1 stride: 1
-  }
-}
-layer {
-  name: "rpn_relu/3x3"
-  type: "ReLU"
-  bottom: "rpn/output"
-  top: "rpn/output"
-}
-
-layer {
-  name: "rpn_cls_score"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_cls_score"
-  convolution_param {
-    num_output: 18   # 2(bg/fg) * 9(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-  }
-}
-layer {
-  name: "rpn_bbox_pred"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_bbox_pred"
-  convolution_param {
-    num_output: 36   # 4 * 9(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-  }
-}
-layer {
-   bottom: "rpn_cls_score"
-   top: "rpn_cls_score_reshape"
-   name: "rpn_cls_score_reshape"
-   type: "Reshape"
-   reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
-}
-
-#========= RoI Proposal ============
-
-layer {
-  name: "rpn_cls_prob"
-  type: "Softmax"
-  bottom: "rpn_cls_score_reshape"
-  top: "rpn_cls_prob"
-}
-layer {
-  name: 'rpn_cls_prob_reshape'
-  type: 'Reshape'
-  bottom: 'rpn_cls_prob'
-  top: 'rpn_cls_prob_reshape'
-  reshape_param { shape { dim: 0 dim: 18 dim: -1 dim: 0 } }
-}
-layer {
-  name: 'proposal'
-  type: 'Python'
-  bottom: 'rpn_cls_prob_reshape'
-  bottom: 'rpn_bbox_pred'
-  bottom: 'im_info'
-  top: 'rois'
-  python_param {
-    module: 'rpn.proposal_layer'
-    layer: 'ProposalLayer'
-    param_str: "'feat_stride': 16"
-  }
-}
-
-#========= RCNN ============
-
-layer {
-  name: "roi_pool5"
-  type: "ROIPooling"
-  bottom: "inception_4c/output"
-  bottom: "rois"
-  top: "pool5"
-  roi_pooling_param {
-    pooled_w: 14
-    pooled_h: 14
-    spatial_scale: 0.0625 # 1/16
-  }
-}
-
-########==>
 layer {
   name: "inception_4d/1x1"
   type: "Convolution"
-  bottom: "pool5"
+  bottom: "inception_4c/output"
   top: "inception_4d/1x1"
   param {
     lr_mult: 1
@@ -1341,7 +1387,7 @@ layer {
 layer {
   name: "inception_4d/3x3_reduce"
   type: "Convolution"
-  bottom: "pool5"
+  bottom: "inception_4c/output"
   top: "inception_4d/3x3_reduce"
   param {
     lr_mult: 1
@@ -1404,7 +1450,7 @@ layer {
 layer {
   name: "inception_4d/5x5_reduce"
   type: "Convolution"
-  bottom: "pool5"
+  bottom: "inception_4c/output"
   top: "inception_4d/5x5_reduce"
   param {
     lr_mult: 1
@@ -1467,7 +1513,7 @@ layer {
 layer {
   name: "inception_4d/pool"
   type: "Pooling"
-  bottom: "pool5"
+  bottom: "inception_4c/output"
   top: "inception_4d/pool"
   pooling_param {
     pool: MAX
@@ -1517,6 +1563,146 @@ layer {
   top: "inception_4d/output"
 }
 
+###VIC
+# layer {
+#   name: "loss2/ave_pool"
+#   type: "Pooling"
+#   bottom: "inception_4d/output"
+#   top: "loss2/ave_pool"
+#   pooling_param {
+#     pool: AVE
+#     kernel_size: 5
+#     stride: 3
+#   }
+# }
+# layer {
+#   name: "loss2/conv"
+#   type: "Convolution"
+#   bottom: "loss2/ave_pool"
+#   top: "loss2/conv"
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   convolution_param {
+#     num_output: 128
+#     kernel_size: 1
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0.2
+#     }
+#   }
+# }
+# layer {
+#   name: "loss2/relu_conv"
+#   type: "ReLU"
+#   bottom: "loss2/conv"
+#   top: "loss2/conv"
+# }
+# layer {
+#   name: "loss2/fc"
+#   type: "InnerProduct"
+#   bottom: "loss2/conv"
+#   top: "loss2/fc"
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   inner_product_param {
+#     num_output: 1024
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0.2
+#     }
+#   }
+# }
+# layer {
+#   name: "loss2/relu_fc"
+#   type: "ReLU"
+#   bottom: "loss2/fc"
+#   top: "loss2/fc"
+# }
+# layer {
+#   name: "loss2/drop_fc"
+#   type: "Dropout"
+#   bottom: "loss2/fc"
+#   top: "loss2/fc"
+#   dropout_param {
+#     dropout_ratio: 0.7
+#   }
+# }
+# layer {
+#   name: "loss2/classifier"
+#   type: "InnerProduct"
+#   bottom: "loss2/fc"
+#   top: "loss2/classifier"
+#   param {
+#     lr_mult: 0 #set zero to not learn
+#     decay_mult: 0 #set zero
+#   }
+#   param {
+#     lr_mult: 0 #set zero
+#     decay_mult: 0 #set zero
+#   }
+#   inner_product_param {
+#     num_output: 1000
+#     weight_filler {
+#       type: "xavier"
+#     }
+#     bias_filler {
+#       type: "constant"
+#       value: 0
+#     }
+#   }
+# }
+### END VIC
+
+
+#layer {
+#  name: "loss2/loss"
+#  type: "SoftmaxWithLoss"
+#  bottom: "loss2/classifier"
+#  bottom: "label"
+#  top: "loss2/loss1"
+#  loss_weight: 0.3
+#}
+#layer {
+#  name: "loss2/top-1"
+#  type: "Accuracy"
+#  bottom: "loss2/classifier"
+#  bottom: "label"
+#  top: "loss2/top-1"
+#  include {
+#    phase: TEST
+#  }
+#}
+#layer {
+#  name: "loss2/top-5"
+#  type: "Accuracy"
+#  bottom: "loss2/classifier"
+#  bottom: "label"
+#  top: "loss2/top-5"
+#  include {
+#    phase: TEST
+#  }
+#  accuracy_param {
+#    top_k: 5
+#  }
+#}
 layer {
   name: "inception_4e/1x1"
   type: "Convolution"
@@ -2158,10 +2344,118 @@ layer {
   top: "inception_5b/output"
 }
 
+#########################
+###########GOOGLENET#####
+########################
+
+#========= RPN ============
+
+layer {
+  name: "rpn_conv/3x3"
+  type: "Convolution"
+  bottom: "inception_5b/output"
+  top: "rpn/output"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 512
+    kernel_size: 3 pad: 1 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "rpn_relu/3x3"
+  type: "ReLU"
+  bottom: "rpn/output"
+  top: "rpn/output"
+}
+
+layer {
+  name: "rpn_cls_score"
+  type: "Convolution"
+  bottom: "rpn/output"
+  top: "rpn_cls_score"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 18   # 2(bg/fg) * 9(anchors)
+    kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "rpn_bbox_pred"
+  type: "Convolution"
+  bottom: "rpn/output"
+  top: "rpn_bbox_pred"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 36   # 4 * 9(anchors)
+    kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+   bottom: "rpn_cls_score"
+   top: "rpn_cls_score_reshape"
+   name: "rpn_cls_score_reshape"
+   type: "Reshape"
+   reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
+}
+
+#========= RoI Proposal ============
+layer {
+  name: "rpn_cls_prob"
+  type: "Softmax"
+  bottom: "rpn_cls_score_reshape"
+  top: "rpn_cls_prob"
+}
+layer {
+  name: 'rpn_cls_prob_reshape'
+  type: 'Reshape'
+  bottom: 'rpn_cls_prob'
+  top: 'rpn_cls_prob_reshape'
+  reshape_param { shape { dim: 0 dim: 18 dim: -1 dim: 0 } }
+}
+layer {
+  name: 'proposal'
+  type: 'Python'
+  bottom: 'rpn_cls_prob_reshape'
+  bottom: 'rpn_bbox_pred'
+  bottom: 'im_info'
+  top: 'rois'
+  python_param {
+    module: 'rpn.proposal_layer'
+    layer: 'ProposalLayer'
+    param_str: "'feat_stride': 16"
+  }
+}
+
+#========= RCNN ============
+layer {
+  name: "roi_pool5"
+  type: "ROIPooling"
+  bottom: "inception_5b/output"
+  bottom: "rois"
+  top: "pool5"
+  roi_pooling_param {
+    pooled_w: 7
+    pooled_h: 7
+    spatial_scale: 0.0625 # 1/16
+  }
+}
+
+
+
+#########VIC DROPPED ME#######
 layer {
   name: "pool5/7x7_s1"
   type: "Pooling"
-  bottom: "inception_5b/output"
+  bottom: "pool5"
   top: "pool5/7x7_s1"
   pooling_param {
     pool: AVE
@@ -2182,22 +2476,56 @@ layer {
 
 
 
+#####ENDVIC
+
 layer {
   name: "cls_score"
   type: "InnerProduct"
-  bottom: "pool5/drop_7x7_s1"
+  bottom: "pool5/7x7_s1"
   top: "cls_score"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   inner_product_param {
     num_output: NUMCLASSES
+    weight_filler {
+      type: "gaussian"
+      std: 0.01
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 layer {
   name: "bbox_pred"
   type: "InnerProduct"
-  bottom: "pool5/drop_7x7_s1"
+  bottom: "pool5/7x7_s1"
   top: "bbox_pred"
+  param {
+    lr_mult: 1
+    decay_mult: 1
+  }
+  param {
+    lr_mult: 2
+    decay_mult: 0
+  }
   inner_product_param {
-    num_output: BBOXREG
+    num_output: BBOXPRED
+    weight_filler {
+      type: "gaussian"
+      std: 0.001
+    }
+    bias_filler {
+      type: "constant"
+      value: 0
+    }
   }
 }
 layer {
@@ -2206,4 +2534,3 @@ layer {
   bottom: "cls_score"
   top: "cls_prob"
 }
-
