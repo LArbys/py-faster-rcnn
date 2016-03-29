@@ -28,8 +28,8 @@ CLASSES = ('__background__',
            'n01664065','n01693334','n01443537','n01688243','n01622779','n01631663','n01630670','n01632777','n01537544','n01531178','n01530575','n01697457','n01644373','n01629819','n01496331','n01641577','n01582220','n01514668','n01498041','n01616318','n01667778','n01682714','n01685808','n01692333','n01677366','n01694178','n01518878','n01440764','n01558993','n01632458','n01484850','n01665541','n01534433','n01592084','n01494475','n01667114','n01532829','n01514859','n01675722','n01614925','n01687978','n01491361','n01601694','n01689811','n01560419','n01695060','n01644900','n01669191','n01580077','n01608432'
        )
 
-NETS = {'image': ('ilsvrc2012',
-                  'image_vgg16_ilsvrc_faster_rcnn_iter_10000.caffemodel') }
+NETS = {'image': ('google_50',
+                  'google_50_faster_rcnn_final.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, thresh=0.5):
@@ -80,7 +80,7 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.2
+    CONF_THRESH = 0.5
     NMS_THRESH = 0.05
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -114,8 +114,11 @@ if __name__ == '__main__':
     
     cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/image'
 
+    # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
+    #                         'faster_rcnn_end2end', 'test.prototxt')
+
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
-                            'faster_rcnn_end2end', 'test.prototxt')
+                            'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
     caffemodel = os.path.join(cfg.DATA_DIR, 'faster_rcnn_models',
                               NETS[args.demo_net][1])
 
@@ -141,7 +144,7 @@ if __name__ == '__main__':
     #im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
     #            '001763.jpg', '004545.jpg']
 
-    im_names = ['n01677366_12637.JPEG']
+    im_names = ['hen-white-and-black-color.jpg','logger.jpg']
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

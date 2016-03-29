@@ -37,8 +37,10 @@ time ./tools/train_net.py --gpu ${GPU_ID} \
   --weights data/rpn_uboone_models/${NET}.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
-  --cfg experiments/cfgs/faster_rcnn_end2end_UB_goog_test_$4.yml \
+  --cfg experiments/cfgs/faster_rcnn_end2end_UB_alex_$4.yml \
   ${EXTRA_ARGS}
+
+#--cfg experiments/cfgs/faster_rcnn_end2end_UB_google_$4.yml
 
 set +x
 NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`

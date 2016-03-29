@@ -54,7 +54,7 @@ class image(imdb):
         """
         Return the absolute path to image i in the image sequence.
         """
-        print "%s at image_path is" % i
+        # print "%s at image_path is" % i
         return self.image_path_from_index(self._image_index[i])
 
     def image_path_from_index(self, index):
@@ -65,7 +65,7 @@ class image(imdb):
                                   index + self._image_ext)
         assert os.path.exists(image_path), \
                 'Path does not exist: {}'.format(image_path)
-        print image_path
+        # print image_path
         return image_path
 
     def _load_image_set_index(self):

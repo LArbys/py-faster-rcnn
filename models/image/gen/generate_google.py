@@ -3,11 +3,11 @@
 import os,sys
 
 if len(sys.argv) != 3:
-    print '\033[91m' + "\n\t Usage: generate_alex.py [name] [numclasses]\n" + '\033[0m'
+    print '\033[91m' + "\n\t Usage: generate_google.py [name] [numclasses]\n" + '\033[0m'
     sys.exit(1)
 
 name, numclasses = sys.argv[1:]
-print '\033[92m' + "\n\t generating alex frcnn {} with {} of classes\n".format(name,numclasses) + '\033[0m'
+print '\033[92m' + "\n\t generating google frcnn {} with {} of classes\n".format(name,numclasses) + '\033[0m'
 
 numclasses = int(numclasses)
 numclasses += 1
@@ -15,15 +15,15 @@ numclasses += 1
 os.chdir("gen")
 
 solver = None
-with open("alex_solver.prototxt",'r') as f:
+with open("newest_google_solver.prototxt",'r') as f:
     solver = f.read()
 
 train = None
-with open("alex_train.prototxt",'r') as f:
+with open("newest_google_train.prototxt",'r') as f:
     train = f.read()
 
 test = None
-with open("alex_test.prototxt",'r') as f:
+with open("newest_google_test.prototxt",'r') as f:
     test = f.read()
     
 
