@@ -16,7 +16,6 @@ Proposal Networks." Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun.)
 import _init_paths
 from fast_rcnn.train import get_training_roidb, train_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
-from datasets.factory import get_imdb
 from rpn.generate import imdb_proposals
 import argparse
 import pprint
@@ -215,6 +214,9 @@ if __name__ == '__main__':
         cfg_from_list(args.set_cfgs)
     cfg.GPU_ID = args.gpu_id
 
+    #factory uses config file    
+    from datasets.factory import get_imdb
+    
     # --------------------------------------------------------------------------
     # Pycaffe doesn't reliably free GPU memory when instantiated nets are
     # discarded (e.g. "del net" in Python code). To work around this issue, each

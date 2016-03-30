@@ -17,21 +17,14 @@ DATASET=$3
 
 array=( $@ )
 len=${#array[@]}
-EXTRA_ARGS=${array[@]:3:$len}
+EXTRA_ARGS=${array[@]:4:$len}
 EXTRA_ARGS_SLUG=${EXTRA_ARGS// /_}
 
-case $DATASET in
-  ub_singles)
-    TRAIN_IMDB="ub_trainval"
-    TEST_IMDB="ub_test"
-    PT_DIR="ub_singles"
-    ITERS=40000
-    ;;
-  *)
-    echo "No dataset given"
-    exit
-    ;;
-esac
+TRAIN_IMDB='rpn_uboone_train_'$4
+TEST_IMDB='rpn_uboone_test_'$4
+PT_DIR='rpn_uboone'
+
+ITERS=400
 
 LOG="experiments/logs/frcnn_alt_opt_ub_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
@@ -39,18 +32,11 @@ echo Logging output to "$LOG"
 
 time ./tools/train_faster_rcnn_alt_opt.py --gpu ${GPU_ID} \
     --net_name ${NET} \
-    --weights data/imagenet_models/${NET}.caffemodel \
+    --weights data/rpn_uboone_models/${NET}.caffemodel \
     --imdb ${TRAIN_IMDB} \
-    --cfg experiments/cfgs/faster_rcnn_alt_opt_UB.yml \
+    --cfg experiments/cfgs/faster_rcnn_alt_opt_UB_google_$4.yml \
     ${EXTRA_ARGS}
 
 set +x
 NET_FINAL=`grep "Final model:" ${LOG} | awk '{print $3}'`
 set -x
-
-time ./tools/test_net.py --gpu ${GPU_ID} \
-    --def models/${PT_DIR}/${NET}/faster_rcnn_alt_opt/faster_rcnn_test.pt \
-    --net ${NET_FINAL} \
-    --imdb ${TEST_IMDB} \
-    --cfg experiments/cfgs/faster_rcnn_alt_opt_UB.yml \
-    ${EXTRA_ARGS}

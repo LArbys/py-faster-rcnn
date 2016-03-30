@@ -25,10 +25,10 @@ import caffe, os, sys, cv2
 import argparse
 
 CLASSES = ('__background__',
-           'eminus','proton','pizero','muminus')
+           'eminus','proton','pizero','muminus','gamma')
 
-NETS = {'ub_singles': ('real_alex',
-                       'alex_ub.caffemodel') }
+NETS = {'rpn_uboone': ('google_5',
+                       'google_5_rpn.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -112,11 +112,15 @@ if __name__ == '__main__':
 
     args = parse_args()
     
-    cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/ub_singles'
+    cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
 
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
-                            'faster_rcnn_end2end', 'test.prototxt')
-    caffemodel = os.path.join(cfg.DATA_DIR, 'faster_rcnn_models',
+                            'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
+
+    # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
+    #                         'faster_rcnn_end2end', 'test.prototxt')
+
+    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/',
                               NETS[args.demo_net][1])
 
     if not os.path.isfile(caffemodel):
@@ -141,48 +145,12 @@ if __name__ == '__main__':
     #im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
     #            '001763.jpg', '004545.jpg']
 
-    im_names = [
-        'eminus004602.JPEG',
-        'eminus004618.JPEG',
-        'eminus006302.JPEG',
-        'eminus007479.JPEG',
-        'eminus009953.JPEG',
-        'eminus010049.JPEG',
-        'eminus010892.JPEG',
-        'eminus013648.JPEG',
-        'eminus014900.JPEG',
-        'eminus016120.JPEG',
-        'muminus005154.JPEG',
-        'muminus007706.JPEG',
-        'muminus008121.JPEG',
-        'muminus008286.JPEG',
-        'muminus008457.JPEG',
-        'muminus010810.JPEG',
-        'muminus011607.JPEG',
-        'muminus013982.JPEG',
-        'muminus014848.JPEG',
-        'muminus015613.JPEG',
-        'pizero003281.JPEG',
-        'pizero006996.JPEG',
-        'pizero009167.JPEG',
-        'pizero009730.JPEG',
-        'pizero012576.JPEG',
-        'pizero013446.JPEG',
-        'pizero013925.JPEG',
-        'pizero017442.JPEG',
-        'pizero017471.JPEG',
-        'pizero019791.JPEG',
-        'proton000468.JPEG',
-        'proton001704.JPEG',
-        'proton010076.JPEG',
-        'proton011533.JPEG',
-        'proton011694.JPEG',
-        'proton014920.JPEG',
-        'proton016697.JPEG',
-        'proton017971.JPEG',
-        'proton018441.JPEG',
-        'proton018679.JPEG',
-    ]
+    # im_names = ['muminus000003.JPEG','muminus000004.JPEG',
+    #             'pizero000006.JPEG','pizero000008.JPEG','pizero000009.JPEG',
+    #             'gamma019984.JPEG','muminus019996.JPEG','gamma019506.JPEG','muminus019804.JPEG']
+    
+    im_names = ['muminus000003.JPEG','muminus000004.JPEG',
+                'muminus019996.JPEG','muminus019804.JPEG']
 
 
     for im_name in im_names:
@@ -190,4 +158,4 @@ if __name__ == '__main__':
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
 
-    #plt.show()
+    plt.show()

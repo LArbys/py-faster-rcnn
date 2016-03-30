@@ -79,8 +79,10 @@ if __name__ == '__main__':
     print("\t==> Set GPU mode " + '\033[94m' + "ON" + '\033[0m')
     caffe.set_mode_gpu()
     caffe.set_device(args.gpu_id)
+    
+    for i in xrange(10):
+        print("\t==> Loading " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')
 
-    print("\t==> Loading " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')
     net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
     net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
     
@@ -90,5 +92,8 @@ if __name__ == '__main__':
     imdb.competition_mode(args.comp_mode)
     if not cfg.TEST.HAS_RPN:
         imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)
+
+    for i in xrange(10):
+        print("\t==> TESTING " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')
 
     test_net(net, imdb, max_per_image=args.max_per_image, vis=False)
