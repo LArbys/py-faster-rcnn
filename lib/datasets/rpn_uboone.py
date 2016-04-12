@@ -23,7 +23,6 @@ class rpn_uboone(imdb):
                             else devkit_path
         
         self._data_path = self._devkit_path
-        print cfg
 
         self._classes = tuple( ['__background__'] + cfg.UB_CLASSES )
         print self._classes
@@ -236,7 +235,7 @@ class rpn_uboone(imdb):
 
 
     def _get_ub_results_file_template(self):
-        filename = self._get_comp_id() + '_det_' + self._image_set + '_{:s}.txt'
+        filename = self._get_comp_id() + '_' + self._name  + '_det_' + self._image_set + '_{:s}.txt'
         path = os.path.join(
             self._devkit_path,
             'results',

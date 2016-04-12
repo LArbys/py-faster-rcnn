@@ -79,6 +79,8 @@ if __name__ == '__main__':
     print("\t==> Set GPU mode " + '\033[94m' + "ON" + '\033[0m')
     caffe.set_mode_gpu()
     caffe.set_device(args.gpu_id)
+
+    # caffe.set_mode_cpu()
     
     for i in xrange(10):
         print("\t==> Loading " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')

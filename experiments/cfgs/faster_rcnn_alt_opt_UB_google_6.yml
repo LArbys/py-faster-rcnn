@@ -1,0 +1,19 @@
+EXP_DIR: faster_rcnn_alt_opt
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [eminus,proton,pizero,muminus,gamma,piminus]
+UB_N_CLASSES : 6
+PIXEL_MEANS  : [[[167.9375, 85.0346, 0.0600]]]
+
+TRAIN:
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [448]
+  MAX_SIZE  : 448
+    
+
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [448]
+  MAX_SIZE  : 448
+

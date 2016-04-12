@@ -152,10 +152,14 @@ for t in trainers:
         if stage == 'stage1':
             a = a.replace("WEIGHT_LR",str(1))
             a = a.replace("BIAS_LR"  ,str(2))
+            a = a.replace("WEIGHTLR_BOT",str(1))
+            a = a.replace("BIASLR_BOT"  ,str(2))
 
         if stage == 'stage2':
             a = a.replace("WEIGHT_LR",str(0))
             a = a.replace("BIAS_LR"  ,str(0))
+            a = a.replace("WEIGHTLR_BOT",str(1))
+            a = a.replace("BIASLR_BOT"  ,str(2))
 
         otrainers[ofile] = a
             
@@ -230,6 +234,8 @@ for t in tests:
         th = th.replace("NAME",name)
         th = th.replace("WEIGHT_LR",str(1))
         th = th.replace("BIAS_LR"  ,str(2))
+        th = th.replace("WEIGHTLR_BOT",str(1))
+        th = th.replace("BIASLR_BOT"  ,str(2))
         th = th.replace("NUMCLASSES",numclasses)
         th = th.replace("BBOXPRED",bboxpred)
         th = th.replace("POOLEDH",str(14))

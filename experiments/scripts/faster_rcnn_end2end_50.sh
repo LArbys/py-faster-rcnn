@@ -48,3 +48,4 @@ time ./tools/train_net.py --gpu ${GPU_ID} \
   --iters ${ITERS} \
   --cfg experiments/cfgs/faster_rcnn_end2end_50.yml \
   ${EXTRA_ARGS}
+
