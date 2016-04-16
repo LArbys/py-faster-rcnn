@@ -1,7 +1,7 @@
 EXP_DIR: faster_rcnn_end2end
-MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/rpn_uboone
-UB_CLASSES   : [eminus,proton,pizero,muminus,gamma]
-UB_N_CLASSES : 5
+MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/root_uboone
+UB_CLASSES   : [eminus,proton,pizero,muminus]
+UB_N_CLASSES : 4
 
 TRAIN:
   HAS_RPN: True
@@ -12,12 +12,13 @@ TRAIN:
   PROPOSAL_METHOD: gt
   BG_THRESH_LO: 0.0
 
-  SCALES    : [448]
-  MAX_SIZE  : 448
-  
+  SCALES    : [864]
+  MAX_SIZE  : 864
+    
+
    
 TEST:
   HAS_RPN: True
-  SCALES    : [448]
-  MAX_SIZE  : 448
+  SCALES    : [864]
+  MAX_SIZE  : 864
 

@@ -26,6 +26,7 @@ class SolverWrapper(object):
     def __init__(self, solver_prototxt, roidb, output_dir,
                  pretrained_model=None):
         """Initialize the SolverWrapper."""
+
         self.output_dir = output_dir
 
         if (cfg.TRAIN.HAS_RPN and cfg.TRAIN.BBOX_REG and
@@ -35,21 +36,26 @@ class SolverWrapper(object):
             assert cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED
 
         if cfg.TRAIN.BBOX_REG:
-            print 'Computing bounding-box regression targets...'
+            print 'Computing bounding-box regression targets... in SolverWrapper'
             self.bbox_means, self.bbox_stds = \
                     rdl_roidb.add_bbox_regression_targets(roidb)
             print 'done'
 
+        print "Making SGDSolver"
         self.solver = caffe.SGDSolver(solver_prototxt)
         if pretrained_model is not None:
             print ('Loading pretrained model '
                    'weights from {:s}').format(pretrained_model)
             self.solver.net.copy_from(pretrained_model)
 
+        print "self.solver_param..."
         self.solver_param = caffe_pb2.SolverParameter()
+
+        print self.solver_param
+
         with open(solver_prototxt, 'rt') as f:
             pb2.text_format.Merge(f.read(), self.solver_param)
-
+        
         self.solver.net.layers[0].set_roidb(roidb)
 
     def snapshot(self):

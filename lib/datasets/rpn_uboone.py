@@ -23,7 +23,7 @@ class rpn_uboone(imdb):
                             else devkit_path
         
         self._data_path = self._devkit_path
-
+        
         self._classes = tuple( ['__background__'] + cfg.UB_CLASSES )
         print self._classes
 

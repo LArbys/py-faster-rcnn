@@ -22,6 +22,7 @@ class RoIDataLayer(caffe.Layer):
 
     def _shuffle_roidb_inds(self):
         """Randomly permute the training roidb."""
+        print "\t>> randomly permitting training roidb"
         if cfg.TRAIN.ASPECT_GROUPING:
             widths = np.array([r['width'] for r in self._roidb])
             heights = np.array([r['height'] for r in self._roidb])
@@ -66,6 +67,7 @@ class RoIDataLayer(caffe.Layer):
         """Set the roidb to be used by this layer during training."""
         self._roidb = roidb
         self._shuffle_roidb_inds()
+
         if cfg.TRAIN.USE_PREFETCH:
             self._blob_queue = Queue(10)
             self._prefetch_process = BlobFetcher(self._blob_queue,
@@ -189,6 +191,8 @@ class BlobFetcher(Process):
 
     def run(self):
         print 'BlobFetcher started'
+        raise RunTimeError()
+
         while True:
             db_inds = self._get_next_minibatch_inds()
             minibatch_db = [self._roidb[i] for i in db_inds]

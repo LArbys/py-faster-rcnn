@@ -211,6 +211,9 @@ __C.GPU_ID = 0
 # uboone specific
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
+__C.ROOTFILES = ["/home/vgenty/super_rcnn_test.root"]
+__C.IMAGE2DPROD = "bnb_mc"
+__C.ROIPROD = "bnb_mc"
 
 
 def get_output_dir(imdb, net=None):

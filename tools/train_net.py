@@ -92,7 +92,7 @@ if __name__ == '__main__':
     
     #factory uses config file
     from datasets.factory import get_imdb
-
+    
     if not args.randomize:
         # fix the random seeds (numpy and caffe) for reproducibility
         np.random.seed(cfg.RNG_SEED)
@@ -111,3 +111,4 @@ if __name__ == '__main__':
     train_net(args.solver, roidb, output_dir,
               pretrained_model=args.pretrained_model,
               max_iters=args.max_iters)
+    

@@ -1,0 +1,74 @@
+from ROOT import larcv
+larcv.load_pycvutil
+import numpy as np
+
+from fast_rcnn.config import cfg
+from utils.blob import im_list_to_blob
+
+FILES = cfg.ROOTFILES
+
+IMAGE2DPROD = cfg.IMAGE2DPROD
+ROIPROD     = cfg.ROIPRODUCER
+
+#Load 
+
+print "'\033[92m'\t>> IOManager Loading in root_handler.py\n'\033[0m'"
+IOM = larcv.IOManager(larcv.IOManager.kREAD)
+
+for F in FILE:
+    larcv.add_in_file(F)
+    
+print "'\033[94m'\t>> initialize IOManager \n'\033[0m'"
+IOM.initialize()
+
+def get_n_images() :
+    return IOM.get_n_entries()
+
+def get_roi_data(entry) :
+    
+    IOM.read_entry(entry)
+    ev_roi = IOM.get_data(larcv.kProductROI,ROIPROD)
+
+    #plane == 0
+    return larcv.split_ev_rois(ev_roi,0)
+
+
+def get_im_blob(roidb,scale_inds) :
+    """Builds an input blob from the images in the roidb at the specified
+    scales.
+    """
+    num_images = len(roidb)
+    processed_ims = []
+    im_scales = []
+
+    for i in xrange(num_images):
+        #im = cv2.imread(roidb[i]['image'])
+        
+        IOM.read_entry( roidb[i]['image'] )
+        ev_img = IOM.get_data(larcv.kImage2D,IMAGE2DPROD)
+
+        im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
+        s   = im.shape
+        imm = np.zeros([ s[0], s[1], 3 ])
+        
+        for i in xrange(3):
+            imm[:,:,i]  = larcv.as_ndarray( ev_img.Image2DArray()[i] )
+            imm[:,:,i] -= np.mean(imm[:,:,i])
+
+        if roidb[i]['flipped']:
+            imm = imm[:, ::-1, :]
+
+        im_scales.append(1) #1 to 1 scaling!
+        processed_ims.append(imm)
+
+    # Create a blob to hold the input images
+    blob = im_list_to_blob(processed_ims)
+
+    return blob, im_scales
+    
+    
+    
+
+        
+
+

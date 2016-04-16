@@ -11,9 +11,12 @@ import numpy as np
 import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
+from utils import root_handler as rh
+
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
 def get_minibatch(roidb, num_classes):
+    print roidb
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
     # Sample random scales to use for each image in this batch
@@ -26,7 +29,8 @@ def get_minibatch(roidb, num_classes):
     fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
 
     # Get the input image blob, formatted for caffe
-    im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
+    #im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
+    im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)
 
     blobs = {'data': im_blob}
 
@@ -69,7 +73,7 @@ def get_minibatch(roidb, num_classes):
         # For debug visualizations
         # _vis_minibatch(im_blob, rois_blob, labels_blob, all_overlaps)
 
-        blobs['rois'] = rois_blob
+        blobs['rois']   = rois_blob
         blobs['labels'] = labels_blob
 
         if cfg.TRAIN.BBOX_REG:

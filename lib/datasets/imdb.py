@@ -110,18 +110,6 @@ class imdb(object):
             boxes[:, 0] = widths[i] - oldx2 - 1
             boxes[:, 2] = widths[i] - oldx1 - 1
             
-            # #vic
-            # print 'On image %d: ' % i
-            # if oldx1[0] > 6000 or oldx2[0] > 6000 :
-            #     raise Exception("BAD ANNO oldx1:{} oldx2:{}".format(oldx1[0],oldx2[0]))
-            # #vic
-            # print "------"
-            # print widths[i]
-            # print "oldx1",oldx1
-            # print "oldx2",oldx2
-            # print "0:",boxes[:, 0]
-            # print "2:",boxes[:, 2]
-            # print "------"
             assert(boxes[:, 2] >= boxes[:, 0]).all()
             entry = {'boxes' : boxes,
                      'gt_overlaps' : self.roidb[i]['gt_overlaps'],
