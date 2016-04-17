@@ -20,8 +20,10 @@ def prepare_roidb(imdb):
     each ground-truth box. The class with maximum overlap is also
     recorded.
     """
-    sizes = [PIL.Image.open(imdb.image_path_at(i)).size
-             for i in xrange(imdb.num_images)]
+    #sizes = [PIL.Image.open(imdb.image_path_at(i)).size
+    #         for i in xrange(imdb.num_images)]
+
+    sizes = [(788,768) for i in xrange(imdb.num_images)]
     roidb = imdb.roidb
     for i in xrange(len(imdb.image_index)):
         roidb[i]['image'] = imdb.image_path_at(i)

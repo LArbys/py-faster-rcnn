@@ -2240,12 +2240,12 @@ layer {
   layer {
   name: "rpn_conv/3x3"
   type: "Convolution"
-  bottom: "lastpool_dropout"
+  bottom: "lastpool"
   top: "rpn/output"
   param { lr_mult: 1.0 }
   param { lr_mult: 2.0 }
   convolution_param {
-    num_output: 256
+    num_output: 512
     kernel_size: 3 pad: 1 stride: 1
     weight_filler { type: "gaussian" std: 0.01 }
     bias_filler   { type: "constant" value: 0 }
@@ -2396,7 +2396,7 @@ layer {
   layer {
   name: "roi_pool5"
   type: "ROIPooling"
-  bottom: "lastpool_dropout"
+  bottom: "lastpool"
   bottom: "rois"
   top: "pool5"
   roi_pooling_param {
@@ -2407,10 +2407,10 @@ layer {
 }
 
 layer {
-  name: "InnerProduct1"
+  name: "InnerProduct1-rn"
     type: "InnerProduct"
     bottom: "pool5"
-    top: "InnerProduct1"
+    top: "InnerProduct1-rn"
     inner_product_param {
     num_output: 256
       weight_filler {
@@ -2419,10 +2419,10 @@ layer {
   }
 }
 layer {
-  name: "InnerProduct2"
+  name: "InnerProduct2-rn"
     type: "InnerProduct"
-    bottom: "InnerProduct1"
-    top: "InnerProduct2"
+    bottom: "InnerProduct1-rn"
+    top: "InnerProduct2-rn"
     inner_product_param {
     num_output: 4096
       weight_filler {
@@ -2435,7 +2435,7 @@ layer {
 layer {
   name: "cls_score"
     type: "InnerProduct"
-    bottom: "InnerProduct2"
+    bottom: "InnerProduct2-rn"
     top: "cls_score"
     param {
     lr_mult: 1
@@ -2458,7 +2458,7 @@ layer {
 layer {
   name: "bbox_pred"
     type: "InnerProduct"
-    bottom: "InnerProduct2"
+    bottom: "InnerProduct2-rn"
     top: "bbox_pred"
     param {
     lr_mult: 1

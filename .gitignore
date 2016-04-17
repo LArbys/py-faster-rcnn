@@ -7,3 +7,4 @@ lib/pycocotools/_mask.so
 *.jpeg
 *.tar
 data/*
+*DS_Store

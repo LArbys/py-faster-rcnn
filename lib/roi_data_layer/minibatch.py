@@ -13,6 +13,15 @@ import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
+
+import lmdb
+import caffe
+from caffe.proto import caffe_pb2 as cpb
+
+lmdb_env = lmdb.open( "/stage/vgenty/Singledevkit2/ccqe_supported_images_train.db" )
+lmdb_txn = lmdb_env.begin()
+lmdb_cursor = lmdb_txn.cursor()
+
 def get_minibatch(roidb, num_classes):
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
@@ -134,7 +143,14 @@ def _get_image_blob(roidb, scale_inds):
     processed_ims = []
     im_scales = []
     for i in xrange(num_images):
-        im = cv2.imread(roidb[i]['image'])
+        #im = cv2.imread(roidb[i]['image'])
+        datum = cpb.Datum()
+        im = lmdb_cursor.get(roidb[i]['image'])
+        datum.ParseFromString(im)
+        im = caffe.io.datum_to_array(datum)
+        im = np.transpose(im, (1,2,0))
+        # print "\t>> getting image blob...",im.shape
+        
         if roidb[i]['flipped']:
             im = im[:, ::-1, :]
         target_size = cfg.TRAIN.SCALES[scale_inds[i]]
