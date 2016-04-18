@@ -60,10 +60,12 @@ def get_im_blob(roidb,scale_inds) :
 
         for j in xrange(3):
             imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-            imm = imm[:,::-1,:]
-            #imm[:,:,i] -= np.mean(imm[:,:,i])
-            
+        
+        imm[ imm < 5 ]   = 0
+        imm[ imm > 400 ] = 400              
 
+        imm = imm[:,::-1,:]
+        
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
         
