@@ -64,11 +64,9 @@ def get_im_blob(roidb,scale_inds) :
             #imm[:,:,i] -= np.mean(imm[:,:,i])
             
 
-        print imm.shape
-
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
-        print im_scales
+        
         im_scales.append(1) #1 to 1 scaling!
         processed_ims.append(imm)
 
