@@ -16,7 +16,7 @@ from utils import root_handler as rh
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
 def get_minibatch(roidb, num_classes):
-    print roidb
+    #print roidb
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
     # Sample random scales to use for each image in this batch

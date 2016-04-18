@@ -28,14 +28,14 @@ class rpn_uboone(imdb):
         print self._classes
 
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
-        self._image_ext   = '.JPEG'
+        #self._image_ext   = '.JPEG'
         self._image_index = self._load_image_set_index()
         
         # Default to roidb handler
         self._roidb_handler = self.selective_search_roidb
         self._salt = str(uuid.uuid4())
         self._comp_id = 'comp4'
-
+        
         # UBOONE specific config options
         self.config = {'use_salt'    : True,
                        'rpn_file'    : None,
@@ -56,18 +56,17 @@ class rpn_uboone(imdb):
         """
         Construct an image path from the image's "index" identifier.
         """
-        image_path = os.path.join(self._data_path, 'JPEGImages',
-                                  index + self._image_ext)
-        assert os.path.exists(image_path), \
-                'Path does not exist: {}'.format(image_path)
-        return image_path
+        # image_path = os.path.join(self._data_path, 'JPEGImages',
+        #                           index + self._image_ext)
+        # assert os.path.exists(image_path), \
+        #         'Path does not exist: {}'.format(image_path)
+        return index
 
     def _load_image_set_index(self):
         """
         Load the indexes listed in this dataset's image set file.
         """
-        image_set_file = os.path.join(self._data_path, 'ImageSets', 'Main',
-                                      self._image_set + '.txt')
+        image_set_file = os.path.join(self._data_path,self._image_set + '.txt')
         assert os.path.exists(image_set_file), \
             'Path does not exist: {}'.format(image_set_file)
         with open(image_set_file) as f:
@@ -78,7 +77,7 @@ class rpn_uboone(imdb):
         """
         Return the default path where Singlesdevikit is expected to be installed.
         """
-        return os.path.join(cfg.DATA_DIR, 'Singlesdevkit')
+        return os.path.join(cfg.DATA_DIR, 'Singlesdevkit3')
 
     def gt_roidb(self): # can this become ROOT ?
         """
@@ -189,9 +188,9 @@ class rpn_uboone(imdb):
         
         # just load text file instead
         tree = open(filename,'r')
-        objs = tree.read().split('\n')
+        objs = tree.read().split(' ')
         
-        num_objs = len(objs)
+        num_objs = 1
 
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
@@ -201,15 +200,14 @@ class rpn_uboone(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         # Load object bounding boxes into a data frame -- what dataframe?
-        for ix,obj in enumerate(objs):
-            data = obj.split(" ")
+        for ix in xrange(1):
+            data = objs
+            cls = self._class_to_ind[data[0]]
 
-            cls = self._class_to_ind[data[1]]
-
-            x1 = float(data[2])
-            y1 = float(data[3])
-            x2 = float(data[4])
-            y2 = float(data[5])
+            x1 = float(data[1])
+            y1 = float(data[2])
+            x2 = float(data[3])
+            y2 = float(data[4])
         
             boxes[ix, :]    = [x1, y1, x2, y2]
 
@@ -301,6 +299,9 @@ class rpn_uboone(imdb):
     def evaluate_detections(self, all_boxes, output_dir):
         self._write_ub_results_file(all_boxes)
         self._do_python_eval(output_dir)
+        
+    def _get_widths(self):
+        return [ int(864) for i in xrange(self.num_images) ]
 
 
 if __name__ == '__main__':
