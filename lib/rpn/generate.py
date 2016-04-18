@@ -11,6 +11,17 @@ from utils.timer import Timer
 import numpy as np
 import cv2
 
+import lmdb
+import caffe
+from caffe.proto import caffe_pb2 as cpb
+
+lmdb_env = lmdb.open( "/stage/vgenty/Singledevkit2/ccqe_supported_images_train.db" )
+lmdb_txn = lmdb_env.begin()
+lmdb_cursor = lmdb_txn.cursor()
+
+
+
+
 def _vis_proposals(im, dets, thresh=0.5):
     """Draw detected bounding boxes."""
     inds = np.where(dets[:, -1] >= thresh)[0]
@@ -102,7 +113,14 @@ def imdb_proposals(net, imdb):
     _t = Timer()
     imdb_boxes = [[] for _ in xrange(imdb.num_images)]
     for i in xrange(imdb.num_images):
-        im = cv2.imread(imdb.image_path_at(i))
+        datum = cpb.Datum()
+        im = lmdb_cursor.get(imdb.image_path_at(i))
+        datum.ParseFromString(im)
+        im = caffe.io.datum_to_array(datum)
+        im = np.transpose(im, (1,2,0))
+        
+        #im = cv2.imread(imdb.image_path_at(i))
+        
         _t.tic()
         imdb_boxes[i], scores = im_proposals(net, im)
         _t.toc()

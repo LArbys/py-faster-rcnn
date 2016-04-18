@@ -311,7 +311,7 @@ class rpn_uboone(imdb):
         self._do_python_eval(output_dir)
     
     def _get_widths(self):
-        return [788 for i in xrange(self.num_images)]
+        return [768 for i in xrange(self.num_images)]
 
 if __name__ == '__main__':
     from datasets.rpn_uboone import rpn_uboone

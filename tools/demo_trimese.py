@@ -104,7 +104,8 @@ def demo(net, image_name):
     datum.ParseFromString(im)
     im = caffe.io.datum_to_array(datum)
     im = np.transpose(im, (1,2,0))
-    
+    print im.shape
+
     # Detect all object classes and regress object bounds
     timer = Timer()
     timer.tic()
