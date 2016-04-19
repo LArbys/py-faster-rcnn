@@ -1696,10 +1696,122 @@ layer {
     bottom: "resnet6_eltwise"
     top: "resnet6_eltwise"
     }
+
+
+
+
+#########################
+#########################
+########################
+
+#========= RPN ============
+
+layer {
+  name: "rpn_conv/3x3"
+  type: "Convolution"
+  bottom: "resnet6_eltwise"
+  top: "rpn/output"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 512
+    kernel_size: 3 pad: 1 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "rpn_relu/3x3"
+  type: "ReLU"
+  bottom: "rpn/output"
+  top: "rpn/output"
+}
+
+layer {
+  name: "rpn_cls_score"
+  type: "Convolution"
+  bottom: "rpn/output"
+  top: "rpn_cls_score"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 18   # 2(bg/fg) * 9(anchors)
+    kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+  name: "rpn_bbox_pred"
+  type: "Convolution"
+  bottom: "rpn/output"
+  top: "rpn_bbox_pred"
+  param { lr_mult: 1.0 decay_mult: 1.0 }
+  param { lr_mult: 2.0 decay_mult: 0 }
+  convolution_param {
+    num_output: 36   # 4 * 9(anchors)
+    kernel_size: 1 pad: 0 stride: 1
+    weight_filler { type: "gaussian" std: 0.01 }
+    bias_filler { type: "constant" value: 0 }
+  }
+}
+layer {
+   bottom: "rpn_cls_score"
+   top: "rpn_cls_score_reshape"
+   name: "rpn_cls_score_reshape"
+   type: "Reshape"
+   reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
+}
+
+#========= RoI Proposal ============
+
+layer {
+  name: "rpn_cls_prob"
+  type: "Softmax"
+  bottom: "rpn_cls_score_reshape"
+  top: "rpn_cls_prob"
+}
+layer {
+  name: 'rpn_cls_prob_reshape'
+  type: 'Reshape'
+  bottom: 'rpn_cls_prob'
+  top: 'rpn_cls_prob_reshape'
+  reshape_param { shape { dim: 0 dim: 18 dim: -1 dim: 0 } }
+}
+layer {
+  name: 'proposal'
+  type: 'Python'
+  bottom: 'rpn_cls_prob_reshape'
+  bottom: 'rpn_bbox_pred'
+  bottom: 'im_info'
+  top: 'rois'
+  python_param {
+    module: 'rpn.proposal_layer'
+    layer: 'ProposalLayer'
+    param_str: "'feat_stride': 16"
+  }
+}
+
+#========= RCNN ============
+
+layer {
+  name: "roi_pool5"
+  type: "ROIPooling"
+  bottom: "resnet6_eltwise"
+  bottom: "rois"
+  top: "pool5"
+  roi_pooling_param {
+    pooled_w: 7
+    pooled_h: 7
+    spatial_scale: 0.0625 # 1/16
+  }
+}
+
+
 layer {
   name: "resnet7_btlnk"
     type: "Convolution"
-    bottom: "resnet6_eltwise"
+    bottom: "pool5"
     top: "resnet7_btlnk"
     convolution_param {
     num_output: 16
@@ -1840,7 +1952,7 @@ layer {
 layer {
   name: "resnet7_eltwise"
     type: "Eltwise"
-    bottom: "resnet6_eltwise"
+    bottom: "pool5"
     bottom: "resnet7_expnd"
     top: "resnet7_eltwise"
     eltwise_param {
@@ -2233,118 +2345,10 @@ layer {
 
 
 
-
-#########################
-#########################
-########################
-
-#========= RPN ============
-
-layer {
-  name: "rpn_conv/3x3"
-  type: "Convolution"
-  bottom: "lastpool"
-  top: "rpn/output"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 512
-    kernel_size: 3 pad: 1 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "rpn_relu/3x3"
-  type: "ReLU"
-  bottom: "rpn/output"
-  top: "rpn/output"
-}
-
-layer {
-  name: "rpn_cls_score"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_cls_score"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 18   # 2(bg/fg) * 9(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-  name: "rpn_bbox_pred"
-  type: "Convolution"
-  bottom: "rpn/output"
-  top: "rpn_bbox_pred"
-  param { lr_mult: 1.0 decay_mult: 1.0 }
-  param { lr_mult: 2.0 decay_mult: 0 }
-  convolution_param {
-    num_output: 36   # 4 * 9(anchors)
-    kernel_size: 1 pad: 0 stride: 1
-    weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
-  }
-}
-layer {
-   bottom: "rpn_cls_score"
-   top: "rpn_cls_score_reshape"
-   name: "rpn_cls_score_reshape"
-   type: "Reshape"
-   reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
-}
-
-#========= RoI Proposal ============
-
-layer {
-  name: "rpn_cls_prob"
-  type: "Softmax"
-  bottom: "rpn_cls_score_reshape"
-  top: "rpn_cls_prob"
-}
-layer {
-  name: 'rpn_cls_prob_reshape'
-  type: 'Reshape'
-  bottom: 'rpn_cls_prob'
-  top: 'rpn_cls_prob_reshape'
-  reshape_param { shape { dim: 0 dim: 18 dim: -1 dim: 0 } }
-}
-layer {
-  name: 'proposal'
-  type: 'Python'
-  bottom: 'rpn_cls_prob_reshape'
-  bottom: 'rpn_bbox_pred'
-  bottom: 'im_info'
-  top: 'rois'
-  python_param {
-    module: 'rpn.proposal_layer'
-    layer: 'ProposalLayer'
-    param_str: "'feat_stride': 16"
-  }
-}
-
-#========= RCNN ============
-
-layer {
-  name: "roi_pool5"
-  type: "ROIPooling"
-  bottom: "lastpool"
-  bottom: "rois"
-  top: "pool5"
-  roi_pooling_param {
-    pooled_w: 7
-    pooled_h: 7
-    spatial_scale: 0.0625 # 1/16
-  }
-}
-
 layer {
   name: "InnerProduct1-rn"
     type: "InnerProduct"
-    bottom: "pool5"
+    bottom: "lastpool"
     top: "InnerProduct1-rn"
     inner_product_param {
     num_output: 256
@@ -2354,10 +2358,10 @@ layer {
   }
 }
 layer {
-  name: "InnerProduct2-rn"
+  name: "InnerProduct2"
     type: "InnerProduct"
     bottom: "InnerProduct1-rn"
-    top: "InnerProduct2-rn"
+    top: "InnerProduct2"
     inner_product_param {
     num_output: 4096
       weight_filler {
@@ -2369,7 +2373,7 @@ layer {
 layer {
   name: "cls_score"
   type: "InnerProduct"
-  bottom: "InnerProduct2-rn"
+  bottom: "InnerProduct2"
   top: "cls_score"
   param {
     lr_mult: 1
@@ -2394,7 +2398,7 @@ layer {
 layer {
   name: "bbox_pred"
   type: "InnerProduct"
-  bottom: "InnerProduct2-rn"
+  bottom: "InnerProduct2"
   top: "bbox_pred"
   param {
     lr_mult: 1

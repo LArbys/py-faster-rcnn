@@ -1,11 +1,13 @@
-name: "tritree_end2end_train"
-
+name: "trimese_alt_opt_frcnn_layers"
 layer {
-  name: 'input-data'
+  name: 'data'
     type: 'Python'
     top: 'data'
-    top: 'im_info'
-    top: 'gt_boxes'
+    top: 'rois'
+    top: 'labels'
+    top: 'bbox_targets'
+    top: 'bbox_inside_weights'
+    top: 'bbox_outside_weights'
     python_param {
     module: 'roi_data_layer.layer'
       layer: 'RoIDataLayer'
@@ -37,7 +39,9 @@ layer {
   param {
     name: "par_tri_conv1_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       pad: 3
       kernel_size: 7
@@ -74,7 +78,9 @@ layer {
     type: "Scale"
     bottom: "plane0_conv1_conv"
     top: "plane0_conv1_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -106,7 +112,9 @@ layer {
   param {
     name: "par_tri_conv2_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -143,7 +151,9 @@ layer {
     type: "Scale"
     bottom: "plane0_conv2_conv"
     top: "plane0_conv2_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -164,7 +174,9 @@ layer {
   param {
     name: "par_tri_conv3_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -201,7 +213,9 @@ layer {
     type: "Scale"
     bottom: "plane0_conv3_conv"
     top: "plane0_conv3_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -233,7 +247,9 @@ layer {
   param {
     name: "par_tri_conv1_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       pad: 3
       kernel_size: 7
@@ -270,7 +286,9 @@ layer {
     type: "Scale"
     bottom: "plane1_conv1_conv"
     top: "plane1_conv1_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -302,7 +320,9 @@ layer {
   param {
     name: "par_tri_conv2_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -339,7 +359,9 @@ layer {
     type: "Scale"
     bottom: "plane1_conv2_conv"
     top: "plane1_conv2_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -360,7 +382,9 @@ layer {
   param {
     name: "par_tri_conv3_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -397,7 +421,9 @@ layer {
     type: "Scale"
     bottom: "plane1_conv3_conv"
     top: "plane1_conv3_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -429,7 +455,9 @@ layer {
   param {
     name: "par_tri_conv1_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       pad: 3
       kernel_size: 7
@@ -466,7 +494,9 @@ layer {
     type: "Scale"
     bottom: "plane2_conv1_conv"
     top: "plane2_conv1_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -498,7 +528,9 @@ layer {
   param {
     name: "par_tri_conv2_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -535,7 +567,9 @@ layer {
     type: "Scale"
     bottom: "plane2_conv2_conv"
     top: "plane2_conv2_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -556,7 +590,9 @@ layer {
   param {
     name: "par_tri_conv3_conv_b"
       }
-  convolution_param {
+  param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       pad: 3
       kernel_size: 3
@@ -593,7 +629,9 @@ layer {
     type: "Scale"
     bottom: "plane2_conv3_conv"
     top: "plane2_conv3_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -630,7 +668,9 @@ layer {
     type: "Convolution"
     bottom: "mergeplanes_concat"
     top: "resnet1_bypass"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       bias_term: false
       pad: 0
@@ -664,7 +704,9 @@ layer {
     type: "Scale"
     bottom: "resnet1_bypass"
     top: "resnet1_bypass"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -673,7 +715,9 @@ layer {
     type: "Convolution"
     bottom: "mergeplanes_concat"
     top: "resnet1_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 0
@@ -707,7 +751,9 @@ layer {
     type: "Scale"
     bottom: "resnet1_btlnk"
     top: "resnet1_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -722,7 +768,9 @@ layer {
     type: "Convolution"
     bottom: "resnet1_btlnk"
     top: "resnet1_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 1
@@ -756,7 +804,9 @@ layer {
     type: "Scale"
     bottom: "resnet1_conv"
     top: "resnet1_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -771,7 +821,9 @@ layer {
     type: "Convolution"
     bottom: "resnet1_conv"
     top: "resnet1_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       bias_term: false
       pad: 0
@@ -805,7 +857,9 @@ layer {
     type: "Scale"
     bottom: "resnet1_expnd"
     top: "resnet1_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -830,7 +884,9 @@ layer {
     type: "Convolution"
     bottom: "resnet1_eltwise"
     top: "resnet2_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 0
@@ -864,7 +920,9 @@ layer {
     type: "Scale"
     bottom: "resnet2_btlnk"
     top: "resnet2_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -879,7 +937,9 @@ layer {
     type: "Convolution"
     bottom: "resnet2_btlnk"
     top: "resnet2_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 1
@@ -913,7 +973,9 @@ layer {
     type: "Scale"
     bottom: "resnet2_conv"
     top: "resnet2_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -928,7 +990,9 @@ layer {
     type: "Convolution"
     bottom: "resnet2_conv"
     top: "resnet2_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       bias_term: false
       pad: 0
@@ -962,7 +1026,9 @@ layer {
     type: "Scale"
     bottom: "resnet2_expnd"
     top: "resnet2_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -987,7 +1053,9 @@ layer {
     type: "Convolution"
     bottom: "resnet2_eltwise"
     top: "resnet3_bypass"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       bias_term: false
       pad: 0
@@ -1021,7 +1089,9 @@ layer {
     type: "Scale"
     bottom: "resnet3_bypass"
     top: "resnet3_bypass"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1030,7 +1100,9 @@ layer {
     type: "Convolution"
     bottom: "resnet2_eltwise"
     top: "resnet3_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 0
@@ -1064,7 +1136,9 @@ layer {
     type: "Scale"
     bottom: "resnet3_btlnk"
     top: "resnet3_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1079,7 +1153,9 @@ layer {
     type: "Convolution"
     bottom: "resnet3_btlnk"
     top: "resnet3_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 1
@@ -1087,7 +1163,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1113,7 +1189,9 @@ layer {
     type: "Scale"
     bottom: "resnet3_conv"
     top: "resnet3_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1128,7 +1206,9 @@ layer {
     type: "Convolution"
     bottom: "resnet3_conv"
     top: "resnet3_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       bias_term: false
       pad: 0
@@ -1136,7 +1216,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1162,7 +1242,9 @@ layer {
     type: "Scale"
     bottom: "resnet3_expnd"
     top: "resnet3_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1187,7 +1269,9 @@ layer {
     type: "Convolution"
     bottom: "resnet3_eltwise"
     top: "resnet4_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 0
@@ -1195,7 +1279,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1221,7 +1305,9 @@ layer {
     type: "Scale"
     bottom: "resnet4_btlnk"
     top: "resnet4_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1236,7 +1322,9 @@ layer {
     type: "Convolution"
     bottom: "resnet4_btlnk"
     top: "resnet4_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 1
@@ -1270,7 +1358,9 @@ layer {
     type: "Scale"
     bottom: "resnet4_conv"
     top: "resnet4_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1285,7 +1375,9 @@ layer {
     type: "Convolution"
     bottom: "resnet4_conv"
     top: "resnet4_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       bias_term: false
       pad: 0
@@ -1319,7 +1411,9 @@ layer {
     type: "Scale"
     bottom: "resnet4_expnd"
     top: "resnet4_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1344,7 +1438,9 @@ layer {
     type: "Convolution"
     bottom: "resnet4_eltwise"
     top: "resnet5_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 0
@@ -1378,7 +1474,9 @@ layer {
     type: "Scale"
     bottom: "resnet5_btlnk"
     top: "resnet5_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1393,7 +1491,9 @@ layer {
     type: "Convolution"
     bottom: "resnet5_btlnk"
     top: "resnet5_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 8
       bias_term: false
       pad: 1
@@ -1427,7 +1527,9 @@ layer {
     type: "Scale"
     bottom: "resnet5_conv"
     top: "resnet5_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1442,7 +1544,9 @@ layer {
     type: "Convolution"
     bottom: "resnet5_conv"
     top: "resnet5_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 32
       bias_term: false
       pad: 0
@@ -1450,7 +1554,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1476,7 +1580,9 @@ layer {
     type: "Scale"
     bottom: "resnet5_expnd"
     top: "resnet5_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1501,7 +1607,9 @@ layer {
     type: "Convolution"
     bottom: "resnet5_eltwise"
     top: "resnet6_bypass"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 64
       bias_term: false
       pad: 0
@@ -1509,7 +1617,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1535,7 +1643,9 @@ layer {
     type: "Scale"
     bottom: "resnet6_bypass"
     top: "resnet6_bypass"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1544,7 +1654,9 @@ layer {
     type: "Convolution"
     bottom: "resnet5_eltwise"
     top: "resnet6_btlnk"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       bias_term: false
       pad: 0
@@ -1552,7 +1664,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1578,7 +1690,9 @@ layer {
     type: "Scale"
     bottom: "resnet6_btlnk"
     top: "resnet6_btlnk"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1593,7 +1707,9 @@ layer {
     type: "Convolution"
     bottom: "resnet6_btlnk"
     top: "resnet6_conv"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 16
       bias_term: false
       pad: 1
@@ -1627,7 +1743,9 @@ layer {
     type: "Scale"
     bottom: "resnet6_conv"
     top: "resnet6_conv"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1642,7 +1760,9 @@ layer {
     type: "Convolution"
     bottom: "resnet6_conv"
     top: "resnet6_expnd"
-    convolution_param {
+    param { lr_mult: 0  }
+param { lr_mult: 0  }
+convolution_param {
     num_output: 64
       bias_term: false
       pad: 0
@@ -1676,7 +1796,9 @@ layer {
     type: "Scale"
     bottom: "resnet6_expnd"
     top: "resnet6_expnd"
-    scale_param {
+      param { lr_mult: 0  }
+  param { lr_mult: 0  }
+scale_param {
     bias_term: true
       }
 }
@@ -1697,26 +1819,21 @@ layer {
     top: "resnet6_eltwise"
     }
 
-
-
-
-
-######################
-
 #========= RPN ============
+# Dummy layers so that initial parameters are saved into the output net
 
   layer {
   name: "rpn_conv/3x3"
   type: "Convolution"
   bottom: "resnet6_eltwise"
   top: "rpn/output"
-  param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
+  param { lr_mult: 0 decay_mult: 0 }
+  param { lr_mult: 0 decay_mult: 0 }
   convolution_param {
     num_output: 512
     kernel_size: 3 pad: 1 stride: 1
     weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler   { type: "constant" value: 0 }
+    bias_filler { type: "constant" value: 0 }
   }
 }
 layer {
@@ -1731,8 +1848,8 @@ layer {
     type: "Convolution"
     bottom: "rpn/output"
     top: "rpn_cls_score"
-    param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
+    param { lr_mult: 0 decay_mult: 0 }
+  param { lr_mult: 0 decay_mult: 0 }
   convolution_param {
     num_output: 18   # 2(bg/fg) * 9(anchors)
       kernel_size: 1 pad: 0 stride: 1
@@ -1740,14 +1857,13 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
 layer {
   name: "rpn_bbox_pred"
     type: "Convolution"
     bottom: "rpn/output"
     top: "rpn_bbox_pred"
-    param { lr_mult: 1.0 }
-  param { lr_mult: 2.0 }
+    param { lr_mult: 0 decay_mult: 0 }
+  param { lr_mult: 0 decay_mult: 0 }
   convolution_param {
     num_output: 36   # 4 * 9(anchors)
       kernel_size: 1 pad: 0 stride: 1
@@ -1755,124 +1871,32 @@ layer {
     bias_filler { type: "constant" value: 0 }
   }
 }
-
 layer {
-  bottom: "rpn_cls_score"
-    top: "rpn_cls_score_reshape"
-    name: "rpn_cls_score_reshape"
-    type: "Reshape"
-    reshape_param { shape { dim: 0 dim: 2 dim: -1 dim: 0 } }
-}
-
+  name: "silence_rpn_cls_score"
+    type: "Silence"
+    bottom: "rpn_cls_score"
+    }
 layer {
-  name: 'rpn-data'
-    type: 'Python'
-    bottom: 'rpn_cls_score'
-    bottom: 'gt_boxes'
-    bottom: 'im_info'
-    bottom: 'data'
-    top: 'rpn_labels'
-    top: 'rpn_bbox_targets'
-    top: 'rpn_bbox_inside_weights'
-    top: 'rpn_bbox_outside_weights'
-    python_param {
-    module: 'rpn.anchor_target_layer'
-      layer: 'AnchorTargetLayer'
-      param_str: "'feat_stride': 16"
-      }
-}
-
-layer {
-  name: "rpn_loss_cls"
-    type: "SoftmaxWithLoss"
-    bottom: "rpn_cls_score_reshape"
-    bottom: "rpn_labels"
-    propagate_down: 1
-    propagate_down: 0
-    top: "rpn_cls_loss"
-    loss_weight: 1
-    loss_param {
-    ignore_label: -1
-      normalize: true
-      }
-}
-
-layer {
-  name: "rpn_loss_bbox"
-    type: "SmoothL1Loss"
+  name: "silence_rpn_bbox_pred"
+    type: "Silence"
     bottom: "rpn_bbox_pred"
-    bottom: "rpn_bbox_targets"
-    bottom: 'rpn_bbox_inside_weights'
-    bottom: 'rpn_bbox_outside_weights'
-    top: "rpn_loss_bbox"
-    loss_weight: 1
-    smooth_l1_loss_param { sigma: 3.0 }
-}
+    }
 
-#========= RoI Proposal ============
-
-  layer {
-  name: "rpn_cls_prob"
-  type: "Softmax"
-  bottom: "rpn_cls_score_reshape"
-  top: "rpn_cls_prob"
-}
-
+    
+    
 layer {
-  name: 'rpn_cls_prob_reshape'
-    type: 'Reshape'
-    bottom: 'rpn_cls_prob'
-    top: 'rpn_cls_prob_reshape'
-    reshape_param { shape { dim: 0 dim: 18 dim: -1 dim: 0 } }
-}
-
-layer {
-  name: 'proposal'
-    type: 'Python'
-    bottom: 'rpn_cls_prob_reshape'
-    bottom: 'rpn_bbox_pred'
-    bottom: 'im_info'
-    top: 'rpn_rois'
-    #top: 'rpn_scores'
-    python_param {
-    module: 'rpn.proposal_layer'
-      layer: 'ProposalLayer'
-      param_str: "'feat_stride': 16"
-      }
-}
-
-
-layer {
-  name: 'roi-data'
-    type: 'Python'
-    bottom: 'rpn_rois'
-    bottom: 'gt_boxes'
-    top: 'rois'
-    top: 'labels'
-    top: 'bbox_targets'
-    top: 'bbox_inside_weights'
-    top: 'bbox_outside_weights'
-    python_param {
-    module: 'rpn.proposal_target_layer'
-      layer: 'ProposalTargetLayer'
-      param_str: "'num_classes': 2"
-      }
-}
-
-#========= RCNN ============
-
-  layer {
   name: "roi_pool5"
-  type: "ROIPooling"
-  bottom: "resnet6_eltwise"
-  bottom: "rois"
-  top: "pool5"
-  roi_pooling_param {
+    type: "ROIPooling"
+    bottom: "resnet6_eltwise"
+    bottom: "rois"
+    top: "pool5"
+    roi_pooling_param {
     pooled_w: 7
-    pooled_h: 7
-    spatial_scale: 0.0625 # 1/16
-  }
+      pooled_h: 7
+      spatial_scale: 0.0625 # 1/16
+      }
 }
+
 
 layer {
   name: "resnet7_btlnk"
@@ -1887,7 +1911,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1936,7 +1960,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -1985,7 +2009,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -2044,7 +2068,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -2093,7 +2117,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -2142,7 +2166,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -2188,6 +2212,8 @@ layer {
     bottom: "resnet8_eltwise"
     top: "resnet8_eltwise"
     }
+
+    
 layer {
   name: "resnet9_bypass"
     type: "Convolution"
@@ -2201,7 +2227,7 @@ layer {
       stride: 1
       weight_filler {
       type: "msra"
-	}
+}
   }
 }
 layer {
@@ -2372,6 +2398,7 @@ layer {
     bias_term: true
       }
 }
+
 layer {
   name: "resnet9_eltwise"
     type: "Eltwise"
@@ -2410,11 +2437,12 @@ layer {
 }
 
 
+
 layer {
-  name: "InnerProduct1-rn"
+  name: "InnerProduct1-rl"
     type: "InnerProduct"
     bottom: "lastpool"
-    top: "InnerProduct1-rn"
+    top: "InnerProduct1-rl"
     inner_product_param {
     num_output: 256
       weight_filler {
@@ -2425,7 +2453,7 @@ layer {
 layer {
   name: "InnerProduct2"
     type: "InnerProduct"
-    bottom: "InnerProduct1-rn"
+    bottom: "InnerProduct1-rl"
     top: "InnerProduct2"
     inner_product_param {
     num_output: 4096
@@ -2434,31 +2462,31 @@ layer {
 	}
   }
 }
-
-
-layer {
-  name: "cls_score"
-    type: "InnerProduct"
-    bottom: "InnerProduct2"
-    top: "cls_score"
+  
+  #######################
+  layer {
+    name: "cls_score"
+      type: "InnerProduct"
+      bottom: "InnerProduct2"
+      top: "cls_score"
+      param {
+      lr_mult: 1
+	}
     param {
-    lr_mult: 1
-      }
-  param {
-    lr_mult: 2
-      }
-  inner_product_param {
-    num_output: 2
-      weight_filler {
-      type: "gaussian"
-	std: 0.01
+      lr_mult: 2
 	}
-    bias_filler {
-      type: "constant"
-	value: 0
-	}
+    inner_product_param {
+      num_output: 2
+	weight_filler {
+	type: "gaussian"
+	  std: 0.01
+	  }
+      bias_filler {
+	type: "constant"
+	  value: 0
+	  }
+    }
   }
-}
 layer {
   name: "bbox_pred"
     type: "InnerProduct"
@@ -2482,14 +2510,11 @@ layer {
 	}
   }
 }
-
 layer {
   name: "loss_cls"
     type: "SoftmaxWithLoss"
     bottom: "cls_score"
     bottom: "labels"
-    propagate_down: 1
-    propagate_down: 0
     top: "loss_cls"
     loss_weight: 1
     }

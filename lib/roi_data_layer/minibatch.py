@@ -13,7 +13,7 @@ import cv2
 from fast_rcnn.config import cfg
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
-
+import time
 import lmdb
 import caffe
 from caffe.proto import caffe_pb2 as cpb
@@ -144,18 +144,35 @@ def _get_image_blob(roidb, scale_inds):
     im_scales = []
     for i in xrange(num_images):
         #im = cv2.imread(roidb[i]['image'])
+        tic = time.time()
         datum = cpb.Datum()
+        tock = time.time()
+        print "Made datum: {}".format(tock-tic)
+        tic = time.time()
         im = lmdb_cursor.get(roidb[i]['image'])
+        tock = time.time()
+        print "get im: {}".format(tock-tic)
+        tic = time.time()
         datum.ParseFromString(im)
+        tock = time.time()
+        print "parse from string: {}".format(tock-tic)
+        tic = time.time()
         im = caffe.io.datum_to_array(datum)
+        tock = time.time()
+        print "datum_to_array : {}".format(tock-tic)
+        
         im = np.transpose(im, (1,2,0))
-        # print "\t>> getting image blob...",im.shape
         
         if roidb[i]['flipped']:
             im = im[:, ::-1, :]
+        
+        tic = time.time()
         target_size = cfg.TRAIN.SCALES[scale_inds[i]]
         im, im_scale = prep_im_for_blob(im, cfg.PIXEL_MEANS, target_size,
                                         cfg.TRAIN.MAX_SIZE)
+        tock = time.time()
+        print "prep_im_for_blob : {}".format(tock-tic)
+
         im_scales.append(im_scale)
         processed_ims.append(im)
 

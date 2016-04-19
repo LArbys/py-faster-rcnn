@@ -58,7 +58,7 @@ __C.TRAIN.BG_THRESH_HI = 0.5
 __C.TRAIN.BG_THRESH_LO = 0.1
 
 # Use horizontally-flipped images during training?
-__C.TRAIN.USE_FLIPPED = True
+__C.TRAIN.USE_FLIPPED = False #vic, no we have validation
 
 # Train bounding-box regressors
 __C.TRAIN.BBOX_REG = True
@@ -68,7 +68,7 @@ __C.TRAIN.BBOX_REG = True
 __C.TRAIN.BBOX_THRESH = 0.5
 
 # Iterations between snapshots
-__C.TRAIN.SNAPSHOT_ITERS = 10000
+__C.TRAIN.SNAPSHOT_ITERS = 500
 
 # solver.prototxt specifies the snapshot path prefix, this adds an optional
 # infix to yield the path: <prefix>[_<infix>]_iters_XYZ.caffemodel
@@ -94,7 +94,7 @@ __C.TRAIN.PROPOSAL_METHOD = 'selective_search'
 # Make minibatches from images that have similar aspect ratios (i.e. both
 # tall and thin or both short and wide) in order to avoid wasting computation
 # on zero-padding.
-__C.TRAIN.ASPECT_GROUPING = True
+__C.TRAIN.ASPECT_GROUPING = False #doesn't matter
 
 # Use RPN to detect objects
 __C.TRAIN.HAS_RPN = False

@@ -36,8 +36,8 @@ lmdb_cursor = lmdb_txn.cursor()
 CLASSES = ('__background__',
            'neutrino')
 
-NETS = {'rpn_uboone': ('trimese',
-                       'rpn_uboone_trimese__iter_20000.caffemodel') }
+NETS = {'rpn_uboone': ('trimese_2',
+                       'rpn_uboone_trimese_2__iter_17000.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -46,7 +46,11 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         return
     
-    im = im[:, :, (2, 1, 0)]
+
+
+    print "before (2,1,0) : {}".format(im.shape)
+    im = im[:, :, 0:3]
+    print "after shape: {}".format(im.shape)
 
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
@@ -54,17 +58,17 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     annos = None
     with open( "data/Singlesdevkit2/Annotations/{}.txt".format(image_name) ) as f:
         annos = f.read()
-        
+    
     annos = annos.split(" ");
-    annos = annos[2:]
-    annos = annos[:-2]
+    annos = annos[1:]
+
     a = []
     for anno in annos:
         anno = anno.rstrip()
         a.append(int(anno))
         
     ax.add_patch(
-        plt.Rectangle( (a[1],a[0]),a[3]-a[1], a[2]-a[0],fill=False,edgecolor='blue',linewidth=3.5) )
+        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
 
     for i in inds:
         bbox = dets[i, :4]
@@ -90,7 +94,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
 
     plt.tight_layout()
     plt.draw()
-    #plt.savefig('det_%s_%s.png'%(image_name,class_name), format='png', dpi=100)
+    plt.savefig('det_%s_%s.png'%(image_name,class_name), format='png', dpi=100)
 
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
@@ -104,7 +108,6 @@ def demo(net, image_name):
     datum.ParseFromString(im)
     im = caffe.io.datum_to_array(datum)
     im = np.transpose(im, (1,2,0))
-    print im.shape
 
     # Detect all object classes and regress object bounds
     timer = Timer()
@@ -116,7 +119,7 @@ def demo(net, image_name):
     
 
     # Visualize detections for each class
-    CONF_THRESH = 0.001
+    CONF_THRESH = 0.1
     NMS_THRESH = 0.05
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -179,13 +182,48 @@ if __name__ == '__main__':
     # for i in xrange(2):
     #     _, _= im_detect(net, im)
 
-    im_names = ['0000000036_01','0000050000_01','0000049956_01','0000049945_01','0000049811_01']
     
-    
+    im_names = ['0000014141_01',
+                '0000021267_01',
+                '0000028601_01',
+                '0000006773_01',
+                '0000028114_01',
+                '0000042158_01',
+                '0000027440_01',
+                '0000019756_01',
+                '0000019366_01',
+                '0000049979_01',
+                '0000047751_01',
+                '0000046963_01',
+                '0000046398_01',
+                '0000045841_01',
+                '0000045518_01',
+                '0000045275_01',
+                '0000045064_01',
+                '0000043946_01',
+                '0000043162_01',
+                '0000042391_01',
+                '0000041822_01',
+                '0000040410_01',
+                '0000039577_01',
+                '0000038925_01',
+                '0000038094_01',
+                '0000037049_01',
+                '0000036129_01',
+                '0000035081_01',
+                '0000031838_01',
+                '0000031322_01',
+                '0000005130_01',
+                '0000005133_01',
+                '0000005137_01',
+                '0000005138_01',
+                '0000005141_01',
+                '0000005150_01',
+                '0000005155_01']
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
 
-    plt.show()
+    #plt.show()
