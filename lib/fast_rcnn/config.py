@@ -224,6 +224,7 @@ __C.GPU_ID = 0
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
 
+__C.RMSPROP = False
 
 def get_output_dir(imdb, net=None):
     """Return the directory where experimental artifacts are placed.

@@ -68,10 +68,11 @@ if __name__ == '__main__':
     # RPN test settings
     cfg.TEST.RPN_PRE_NMS_TOP_N = -1
     cfg.TEST.RPN_POST_NMS_TOP_N = 2000
+    cfg.TRAIN.BBOX_REG = False
 
     print('Using config:')
     pprint.pprint(cfg)
-
+    
     while not os.path.exists(args.caffemodel) and args.wait:
         print('Waiting for {} to exist...'.format(args.caffemodel))
         time.sleep(10)
@@ -83,7 +84,7 @@ if __name__ == '__main__':
 
     imdb = get_imdb(args.imdb_name)
     imdb_boxes = imdb_proposals(net, imdb)
-
+    print imdb_boxes
     output_dir = get_output_dir(imdb, net)
     rpn_file = os.path.join(output_dir, net.name + '_rpn_proposals.pkl')
     with open(rpn_file, 'wb') as f:

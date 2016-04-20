@@ -39,8 +39,16 @@ class SolverWrapper(object):
             self.bbox_means, self.bbox_stds = \
                     rdl_roidb.add_bbox_regression_targets(roidb)
             print 'done'
+        
+        self.solver = None
+        
+        if cfg.RMSPROP == True:
+            self.solver = caffe.RMSPropSolver(solver_prototxt)
+        else:
+            self.solver = caffe.SGDSolver(solver_prototxt)
+        
+        print "Solver is...{}".format(self.solver)
 
-        self.solver = caffe.SGDSolver(solver_prototxt)
         if pretrained_model is not None:
             print ('Loading pretrained model '
                    'weights from {:s}').format(pretrained_model)
