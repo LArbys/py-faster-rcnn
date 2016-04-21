@@ -7,3 +7,9 @@ lib/pycocotools/_mask.so
 *.jpeg
 *DS_Store
 *.tar
+Singlesdevkit*
+output
+ILSVRC2012*
+data/demo
+data/faster_rcnn_models
+data/rpn_uboone_models

@@ -188,8 +188,8 @@ class rpn_uboone(imdb):
         
         # just load text file instead
         tree = open(filename,'r')
-        objs = tree.read().split(' ')
-        
+        objs = tree.read().split(" ")
+        objs = objs[:-1]
         num_objs = 1
 
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
@@ -201,7 +201,10 @@ class rpn_uboone(imdb):
 
         # Load object bounding boxes into a data frame -- what dataframe?
         for ix in xrange(1):
+            
+            #data = obj.split(" ")
             data = objs
+            
             cls = self._class_to_ind[data[0]]
 
             x1 = float(data[1])

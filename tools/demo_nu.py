@@ -30,15 +30,14 @@ import numpy as np
 IOM = larcv.IOManager(larcv.IOManager.kREAD)
 
 
-IOM.add_in_file("/stage/drinkingkazu/validate.root")
-
+IOM.add_in_file("/stage/drinkingkazu/train.root")
 
 
 CLASSES = ('__background__',
            'neutrino')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'alex_nu.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_128000.caffemodel') }
 
 
 IOM.set_verbosity(0)
@@ -54,8 +53,26 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
         return
     
     im = im[:, :, (2, 1, 0)]
+
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
+
+    annos = None
+    with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
+        annos = f.read()
+    
+    annos = annos.split(" ");
+    annos = annos[1:]
+
+    a = []
+    for anno in annos:
+        anno = anno.rstrip()
+        a.append(float(anno))
+        
+    ax.add_patch(
+        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+
+
     for i in inds:
         bbox = dets[i, :4]
         score = dets[i, -1]
@@ -94,15 +111,15 @@ def demo(net, image_name):
     
     img_v = ev_img.Image2DArray()
 
-    assert img_v.size() == 3
-
     for j in xrange(3):
         imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-    
-    imm[ imm < 5 ]  = 0
-    imm[ imm > 400 ] = 400
+        imm[:,:,j] = imm[:,:,j].T
 
-    # imm = imm[:,::-1,:]
+    imm[ imm < 5 ]   = 0
+    imm[ imm > 400 ] = 400              
+    
+    imm = imm[::-1,:,:]
+
     im = imm
 
 
@@ -172,19 +189,8 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-    # Warmup on a dummy image
-    im = 128 * np.ones((300, 500, 3), dtype=np.uint8)
-    for i in xrange(2):
-        _, _= im_detect(net, im)
-
-    #im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
-    #            '001763.jpg', '004545.jpg']
-
-    # im_names = ['muminus000003.JPEG','muminus000004.JPEG',
-    #             'pizero000006.JPEG','pizero000008.JPEG','pizero000009.JPEG',
-    #             'gamma019984.JPEG','muminus019996.JPEG','gamma019506.JPEG','muminus019804.JPEG']
     
-    im_names = [i for i in xrange(10)]
+    im_names = [11,8038,2485,1753,7351,6641]
 
 
     for im_name in im_names:
