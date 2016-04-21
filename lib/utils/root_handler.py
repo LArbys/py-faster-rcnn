@@ -57,15 +57,15 @@ def get_im_blob(roidb,scale_inds) :
         img_v = ev_img.Image2DArray()
 
         assert img_v.size() == 3
-
         for j in xrange(3):
             imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-        
+            imm[:,:,j] = imm[:,:,j].T
+            
         imm[ imm < 5 ]   = 0
         imm[ imm > 400 ] = 400              
-
-        imm = imm[:,::-1,:]
-        
+    
+        imm = imm[::-1,:,:]
+    
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
         
