@@ -69,6 +69,8 @@ def get_im_blob(roidb,scale_inds) :
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
         
+        imm = imm[:,:,2:] # just take the last plane!
+
         im_scales.append(1) #1 to 1 scaling!
         processed_ims.append(imm)
 

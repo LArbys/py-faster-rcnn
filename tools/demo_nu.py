@@ -120,8 +120,7 @@ def demo(net, image_name):
     
     imm = imm[::-1,:,:]
 
-    im = imm
-
+    im = imm[:,:,2:]
 
     # Detect all object classes and regress object bounds
     timer = Timer()
