@@ -43,6 +43,11 @@ class SolverWrapper(object):
 
         print "Making SGDSolver"
         self.solver = caffe.SGDSolver(solver_prototxt)
+
+        #print "\n\n\n\tMaking RMS!!!!\n\n\n\n"
+        #self.solver = caffe.RMSPropSolver(solver_prototxt)
+
+
         if pretrained_model is not None:
             print ('Loading pretrained model '
                    'weights from {:s}').format(pretrained_model)
@@ -52,7 +57,7 @@ class SolverWrapper(object):
         self.solver_param = caffe_pb2.SolverParameter()
 
         print self.solver_param
-
+        print roidb
         with open(solver_prototxt, 'rt') as f:
             pb2.text_format.Merge(f.read(), self.solver_param)
         
@@ -108,7 +113,7 @@ class SolverWrapper(object):
             timer.toc()
             if self.solver.iter % (10 * self.solver_param.display) == 0:
                 print 'speed: {:.3f}s / iter'.format(timer.average_time)
-
+            
             if self.solver.iter % cfg.TRAIN.SNAPSHOT_ITERS == 0:
                 last_snapshot_iter = self.solver.iter
                 model_paths.append(self.snapshot())

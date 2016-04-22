@@ -7,12 +7,12 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 from ROOT import larcv
-larcv.load_pycvutil
+larcv.load_pyutil
 
 
 iom = larcv.IOManager(larcv.IOManager.kREAD)
 
-iom.add_in_file("/stage/drinkingkazu/train.root")
+iom.add_in_file("/stage/vgenty/out.root")
 iom.set_verbosity(0)
 iom.initialize()
 
@@ -29,7 +29,7 @@ for i,entry in enumerate(entries):
     #EXACT COPY OF ROOT HANDLER
     iom.read_entry(entry)
 
-    ev_img = iom.get_data(larcv.kProductImage2D,"train")
+    ev_img = iom.get_data(larcv.kProductImage2D,"fake_color")
 
     im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
     s   = im.shape
@@ -48,16 +48,17 @@ for i,entry in enumerate(entries):
     
     imm = imm[::-1,:,:]
     #imm = imm[::-1,:,:]
+    
+    imm = imm[:,:,2:]
 
-    annos = None
-    with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
-        annos = f.read()
+    # annos = None
+    # with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
+    #     annos = f.read()
 
     annoz = None
-    with open( "/stage/vgenty/Singledevkit3/split/{}.txt".format(entry)) as f:
+    with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
         annoz = f.read()
 
-    
         
     annos_v = annoz.split("\n")
     
@@ -74,17 +75,17 @@ for i,entry in enumerate(entries):
         a_v.append(aa)
     
 
-    annos = annos.split(" ");
-    annos = annos[1:]
+    # annos = annos.split(" ");
+    # annos = annos[1:]
 
-    a = []
-    for anno in annos:
-        anno = anno.rstrip()
-        a.append(float(anno))
+    # a = []
+    # for anno in annos:
+    #     anno = anno.rstrip()
+    #     a.append(float(anno))
 
 
     fig,ax = plt.subplots(figsize = (12,12))
-    plt.imshow(imm)
+    plt.imshow(imm[:,:,0])
     plt.axis('off')
     for b in a_v:
         ax.add_patch(plt.Rectangle( (b[0],b[1]),
@@ -92,12 +93,12 @@ for i,entry in enumerate(entries):
                                     b[3]-b[1],
                                     fill=False,edgecolor='red',linewidth=2.5) )
 
-    ax.add_patch(plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=2.5) )
+    # ax.add_patch(plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=2.5) )
 
     ax.set_title("ENTRY: {}".format(entry))
     plt.savefig("f_entry_{}.png".format(entry))
     print "entry: {}".format(entry)
-    print "that's fine: {}".format(a)
+    # print "that's fine: {}".format(a)
 
     if i == 25:
         break

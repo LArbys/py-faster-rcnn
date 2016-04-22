@@ -2,7 +2,7 @@ EXP_DIR: faster_rcnn_end2end
 MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/rpn_uboone
 UB_CLASSES   : [neutrino]
 UB_N_CLASSES : 1
-PIXEL_MEANS  : [[[0.0, 0.0, 0.0]]]
+PIXEL_MEANS  : [[[168.803604126, 85.3542709351, 0.842070877552]]]
 
 TRAIN:
   HAS_RPN: True

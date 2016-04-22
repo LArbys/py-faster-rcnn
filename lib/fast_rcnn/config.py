@@ -180,7 +180,8 @@ __C.DEDUP_BOXES = 1./16.
 # they were trained with
 #__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
 #__C.PIXEL_MEANS = np.array([[[167.9375, 85.0346, 0.0600]]]) # we may have been subtracting TOO much red
-__C.PIXEL_MEANS = np.array([[[0.0]]]) # we may have been subtracting TOO much red
+__C.PIXEL_MEANS  = np.array([[[168.803604126, 85.3542709351, 0.842070877552]]])
+#__C.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]]) # we may have been subtracting TOO much red
 
 # For reproducibility
 __C.RNG_SEED = 3
@@ -212,9 +213,9 @@ __C.GPU_ID = 0
 # uboone specific
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
-__C.ROOTFILES = ["/stage/drinkingkazu/train.root"]
-__C.IMAGE2DPROD = "train"
-__C.ROIPROD = "train"
+__C.ROOTFILES = ["/stage/vgenty/out.root"]
+__C.IMAGE2DPROD = "fake_color"
+__C.ROIPROD = "fake_color"
 
 
 def get_output_dir(imdb, net=None):

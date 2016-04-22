@@ -24,20 +24,21 @@ import scipy.io as sio
 import caffe, os, sys, cv2
 import argparse
 from ROOT import larcv
-larcv.load_pycvutil
+larcv.load_pyutil
 import numpy as np
 
 IOM = larcv.IOManager(larcv.IOManager.kREAD)
 
 
-IOM.add_in_file("/stage/drinkingkazu/train.root")
+IOM.add_in_file("/stage/vgenty/out.root")
 
 
 CLASSES = ('__background__',
            'neutrino')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_128000.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_7000.caffemodel') }
+
 
 
 IOM.set_verbosity(0)
@@ -74,7 +75,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
 
 
     for i in inds:
-        bbox = dets[i, :4]
+        bbox  = dets[i, :4]
         score = dets[i, -1]
 
         ax.add_patch(
@@ -103,7 +104,7 @@ def demo(net, image_name):
     #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
     
     IOM.read_entry( image_name )
-    ev_img = IOM.get_data(larcv.kProductImage2D,"train")
+    ev_img = IOM.get_data(larcv.kProductImage2D,"fake_color")
 
     im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
     s   = im.shape
@@ -115,13 +116,11 @@ def demo(net, image_name):
         imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
         imm[:,:,j] = imm[:,:,j].T
 
-    imm[ imm < 5 ]   = 0
-    imm[ imm > 400 ] = 400              
+    imm[ imm < 0 ]   = 0
+    imm[ imm > 256 ] = 256
     
     imm = imm[::-1,:,:]
-
-    im = imm[:,:,2:]
-
+    im = imm
     # Detect all object classes and regress object bounds
     timer = Timer()
     timer.tic()
@@ -141,6 +140,7 @@ def demo(net, image_name):
                           cls_scores[:, np.newaxis])).astype(np.float32)
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
+        print cls_scores
         vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
 
 def parse_args():
@@ -189,7 +189,7 @@ if __name__ == '__main__':
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
     
-    im_names = [11,8038,2485,1753,7351,6641]
+    im_names = [999,948,95]
 
 
     for im_name in im_names:
