@@ -28,7 +28,7 @@ CLASSES = ('__background__',
            'eminus','proton','pizero','muminus','gamma')
 
 NETS = {'rpn_uboone': ('alex_5',
-                       'rpn_uboone_alex_5.caffemodel') }
+                       'rpn_uboone_alex_5__iter_10000.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -37,11 +37,26 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         return
 
+
+    with open( "data/Singlesdevkit/Annotations/{}.txt".format(image_name[:-5]) ) as f:
+        annos = f.read()
+    
+    annos = annos.split(" ");
+    annos = annos[2:]
+
+    a = []
+    for anno in annos:
+        anno = anno.rstrip()
+        a.append(float(anno))
+
     im = im[:, :, (2, 1, 0)]
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
+    ax.add_patch(
+        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+
     for i in inds:
-        bbox = dets[i, :4]
+        bbox  = dets[i, :4]
         score = dets[i, -1]
 
         ax.add_patch(
@@ -56,7 +71,9 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                 fontsize=14, color='white')
 
     ax.set_title(('{} : {} detections with '
-                  'p({} | box) >= {:.1f}').format(image_name,class_name, class_name,
+                  'p({} | box) >= {:.1f}').format(image_name,
+                                                  class_name, 
+                                                  class_name,
                                                   thresh),
                   fontsize=14)
     plt.axis('off')
@@ -69,7 +86,7 @@ def demo(net, image_name):
 
     # Load the demo image
     im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
-    im = cv2.imread(im_file)
+    im = cv2.imread(image_name)
 
     # Detect all object classes and regress object bounds
     timer = Timer()
@@ -114,9 +131,6 @@ if __name__ == '__main__':
     
     cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
 
-    # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
-    #                         'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
-
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
@@ -138,16 +152,20 @@ if __name__ == '__main__':
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
     # Warmup on a dummy image
-    im = 128 * np.ones((300, 500, 3), dtype=np.uint8)
-    for i in xrange(2):
-        _, _= im_detect(net, im)
+    #im = 128 * np.ones((300, 500, 3), dtype=np.uint8)
+    #for i in xrange(2):
+    #    _, _= im_detect(net, im)
 
     #im_names = ['000456.jpg', '000542.jpg', '001150.jpg',
     #            '001763.jpg', '004545.jpg']
 
-    im_names = ['muminus000003.JPEG','muminus000004.JPEG',
-                'pizero000006.JPEG','pizero000008.JPEG','pizero000009.JPEG',
-                'gamma019984.JPEG','muminus019996.JPEG','gamma019506.JPEG','muminus019804.JPEG']
+    im_names = [
+        'pizero000001.JPEG',
+        'pizero000005.JPEG',
+        'pizero000006.JPEG',
+        'pizero000008.JPEG',
+        'pizero000009.JPEG'
+    ]
     
     #im_names = ['muminus000003.JPEG','muminus000004.JPEG',
     #            'muminus019996.JPEG','muminus019804.JPEG']
