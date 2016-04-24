@@ -56,10 +56,6 @@ class rpn_uboone(imdb):
         """
         Construct an image path from the image's "index" identifier.
         """
-        # image_path = os.path.join(self._data_path, 'JPEGImages',
-        #                           index + self._image_ext)
-        # assert os.path.exists(image_path), \
-        #         'Path does not exist: {}'.format(image_path)
         return index
 
     def _load_image_set_index(self):
@@ -77,7 +73,7 @@ class rpn_uboone(imdb):
         """
         Return the default path where Singlesdevikit is expected to be installed.
         """
-        return os.path.join(cfg.DATA_DIR, 'Singledevkit4')
+        return os.path.join(cfg.DATA_DIR, cfg.DEVKIT)
 
     def gt_roidb(self): # can this become ROOT ?
         """
@@ -303,7 +299,7 @@ class rpn_uboone(imdb):
         self._do_python_eval(output_dir)
         
     def _get_widths(self):
-        return [ int(864) for i in xrange(self.num_images) ]
+        return [ int(cfg.WIDTH) for i in xrange(self.num_images) ]
 
 
 if __name__ == '__main__':

@@ -9,55 +9,32 @@ import matplotlib.pyplot as plt
 from ROOT import larcv
 larcv.load_pyutil
 
-
-iom = larcv.IOManager(larcv.IOManager.kREAD)
-
-iom.add_in_file("/stage/vgenty/detect.root")
-iom.set_verbosity(0)
-iom.initialize()
+import _init_paths
+from fast_rcnn.config import cfg
 
 entries = None
+
 with open("/stage/vgenty/Singledevkit4/train_4.txt") as f:
     entries = f.read()
 
 entries = [im for im in entries.split("\n") if im != "" ] 
 
+
+cfg.IMAGE_LOADER = "LarbysDetectLoader"
+cfg.ROOT_FILES   = ["/stage/vgenty/detect.root"]
+cfg.IMAGE2DPROD  = "larbys_detect"
+
+import lib.utils.root_handler as rh
+
 for i,entry in enumerate(entries):
-    entry = int(entry)
+    entry = int(entry)    
     
+    imm = rh.get_image(entry)
     
-    #EXACT COPY OF ROOT HANDLER
-    iom.read_entry(entry)
-
-    ev_img = iom.get_data(larcv.kProductImage2D,"larbys_detect")
-
-    im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
-    s   = im.shape
-    imm = np.zeros([ s[0], s[1], 3 ])
-
-    img_v = ev_img.Image2DArray()
-    
-    assert img_v.size() == 3
-
-    for j in xrange(3):
-        imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-        imm[:,:,j] = imm[:,:,j]
-
-    #imm[ imm < 5 ]   = 0
-    #imm[ imm > 400 ] = 400              
-    
-    #imm = imm[::-1,:,:]
-    #imm = imm[::-1,:,:]
-    
-    # annos = None
-    # with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
-    #     annos = f.read()
-
     annoz = None
     with open( "/stage/vgenty/Singledevkit4/Annotations/{}.txt".format(entry)) as f:
         annoz = f.read()
 
-        
     annos_v = annoz.split("\n")
     
     a_v = []
@@ -72,14 +49,6 @@ for i,entry in enumerate(entries):
             aa.append(float(anno))
         a_v.append(aa)
     
-
-    # annos = annos.split(" ");
-    # annos = annos[1:]
-
-    # a = []
-    # for anno in annos:
-    #     anno = anno.rstrip()
-    #     a.append(float(anno))
 
 
     fig,ax = plt.subplots(figsize = (12,12))

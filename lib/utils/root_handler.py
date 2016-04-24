@@ -5,6 +5,8 @@ import numpy as np
 from fast_rcnn.config import cfg
 from utils.blob import im_list_to_blob
 
+from utils.image_loader_factory import ImageLoaderFactory
+
 FILES = cfg.ROOTFILES
 
 IMAGE2DPROD = cfg.IMAGE2DPROD
@@ -22,16 +24,29 @@ for F in FILES:
 print "'\033[94m'\t>> initialize IOManager \n'\033[0m'"
 IOM.initialize()
 
+print "'\033[94m'\t>> Getting image loader \n'\033[0m'"
+ILF = ImageLoaderFactory()
+IMAGELOADER = ILF.get(cfg.IMAGE_LOADER)
+
 def get_n_images() :
     return IOM.get_n_entries()
 
-# def get_roi_data(entry) :
+def get_image(ttree_index):
     
-#     IOM.read_entry(entry)
-#     ev_roi = IOM.get_data(larcv.kProductROI,ROIPROD)
+    IOM.read_entry( ttree_index )
+    ev_img = IOM.get_data(larcv.kProductImage2D,IMAGE2DPROD)
+    
+    im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
+    s   = im.shape
+    imm = np.zeros([ s[0], s[1], 3 ])
 
-#     #plane == 0
-#     return larcv.split_ev_rois(ev_roi,0)
+    img_v = ev_img.Image2DArray()
+        
+    assert img_v.size() == 3
+    for j in xrange(3):
+        imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
+        
+    return IMAGELOADER.load_image(imm)
 
 
 def get_im_blob(roidb,scale_inds) :
@@ -44,29 +59,11 @@ def get_im_blob(roidb,scale_inds) :
 
     for i in xrange(num_images):
         
-        IOM.read_entry( int( roidb[i]['image'] ) )
-        ev_img = IOM.get_data(larcv.kProductImage2D,IMAGE2DPROD)
-
-        im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
-        s   = im.shape
-        imm = np.zeros([ s[0], s[1], 3 ])
+        imm = get_image( int( roidb[i]['image'] ) )
         
-        img_v = ev_img.Image2DArray()
-
-        assert img_v.size() == 3
-        for j in xrange(3):
-            imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-            imm[:,:,j] = imm[:,:,j].T
-            
-        imm[ imm < 0 ]   = 0
-        imm[ imm > 256 ] = 256
-    
-        imm = imm[::-1,:,:]
-    
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
         
-
         im_scales.append(1) #1 to 1 scaling!
         processed_ims.append(imm)
 
