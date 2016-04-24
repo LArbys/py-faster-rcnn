@@ -213,9 +213,9 @@ __C.GPU_ID = 0
 # uboone specific
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
-__C.ROOTFILES = ["/stage/vgenty/out.root"]
-__C.IMAGE2DPROD = "fake_color"
-__C.ROIPROD = "fake_color"
+__C.ROOTFILES = ["/stage/vgenty/detect.root"]
+__C.IMAGE2DPROD = "larbys_detect"
+__C.ROIPROD = "larbys_detect"
 
 
 def get_output_dir(imdb, net=None):

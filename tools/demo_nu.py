@@ -34,10 +34,10 @@ IOM.add_in_file("/stage/vgenty/out.root")
 
 
 CLASSES = ('__background__',
-           'neutrino')
+           'eminus','proton','pizero','muminus')
 
-NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_7000.caffemodel') }
+NETS = {'rpn_uboone': ('alex_4',
+                       'rpn_uboone_alex_4__iter_15000.caffemodel') }
 
 
 
@@ -54,6 +54,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
         return
     
     im = im[:, :, (2, 1, 0)]
+    im = im.astype(np.uint8)
 
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
@@ -114,12 +115,12 @@ def demo(net, image_name):
 
     for j in xrange(3):
         imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-        imm[:,:,j] = imm[:,:,j].T
+        #imm[:,:,j] = imm[:,:,j].T
 
-    imm[ imm < 0 ]   = 0
-    imm[ imm > 256 ] = 256
+    #imm[ imm < 0 ]   = 0
+    #imm[ imm > 256 ] = 256
     
-    imm = imm[::-1,:,:]
+    #imm = imm[::-1,:,:]
     im = imm
     # Detect all object classes and regress object bounds
     timer = Timer()
@@ -130,7 +131,7 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.01
+    CONF_THRESH = 0.5
     NMS_THRESH = 0.05
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -171,7 +172,7 @@ if __name__ == '__main__':
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
-    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/',
+    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_4/',
                               NETS[args.demo_net][1])
 
     if not os.path.isfile(caffemodel):
@@ -188,9 +189,8 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-    
-    im_names = [999,948,95]
-
+    cfg.PIXEL_MEANS = np.array([[[168.803604126, 85.3542709351, 0.842070877552]]])
+    im_names = [2115,2454,2772,3457,4115,4440,5110]
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

@@ -28,7 +28,7 @@ class rpn_uboone(imdb):
         print self._classes
 
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
-        #self._image_ext   = '.JPEG'
+
         self._image_index = self._load_image_set_index()
         
         # Default to roidb handler
@@ -77,7 +77,7 @@ class rpn_uboone(imdb):
         """
         Return the default path where Singlesdevikit is expected to be installed.
         """
-        return os.path.join(cfg.DATA_DIR, 'Singlesdevkit3')
+        return os.path.join(cfg.DATA_DIR, 'Singledevkit4')
 
     def gt_roidb(self): # can this become ROOT ?
         """
