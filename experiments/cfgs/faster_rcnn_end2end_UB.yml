@@ -1,7 +1,20 @@
 EXP_DIR: faster_rcnn_end2end
 MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/rpn_uboone
-UB_CLASSES   : [eminus,proton,pizero,muminus,gamma]
-UB_N_CLASSES : 5
+UB_CLASSES   : [eminus,proton,pizero,muminus]
+UB_N_CLASSES : 4
+
+PIXEL_MEANS  : [[[167.205322266, 85.9359436035, 0.85868966579]]]
+
+ROOTFILES : ["/stage/vgenty/detect.root"]
+
+IMAGE2DPROD : "larbys_detect"
+ROIPROD : "larbys_detect"
+WIDTH : 448
+DEVKIT : "Singledevkit4"
+IMAGE_LOADER : "LarbysDetectLoader"
+RNG_SEED: 5
+
+DEBUG: True
 
 TRAIN:
   HAS_RPN: True

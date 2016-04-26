@@ -13,7 +13,7 @@ from fast_rcnn.config import cfg
 from fast_rcnn.bbox_transform import bbox_transform
 from utils.cython_bbox import bbox_overlaps
 
-DEBUG = False
+DEBUG = cfg.DEBUG
 
 class ProposalTargetLayer(caffe.Layer):
     """
@@ -35,6 +35,10 @@ class ProposalTargetLayer(caffe.Layer):
         top[3].reshape(1, self._num_classes * 4)
         # bbox_outside_weights
         top[4].reshape(1, self._num_classes * 4)
+        
+        if DEBUG:
+            print "top is : {}".format(top)
+            print "num_classes {}".format(self._num_classes)
 
     def forward(self, bottom, top):
         # Proposal ROIs (0, x1, y1, x2, y2) coming from RPN
@@ -44,6 +48,8 @@ class ProposalTargetLayer(caffe.Layer):
         # TODO(rbg): it's annoying that sometimes I have extra info before
         # and other times after box coordinates -- normalize to one format
         gt_boxes = bottom[1].data
+        if DEBUG:
+            print "forward: {}".format(gt_boxes)
 
         # Include ground-truth boxes in the set of candidate rois
         zeros = np.zeros((gt_boxes.shape[0], 1), dtype=gt_boxes.dtype)
@@ -57,23 +63,47 @@ class ProposalTargetLayer(caffe.Layer):
 
         num_images = 1
         rois_per_image = cfg.TRAIN.BATCH_SIZE / num_images
+        if DEBUG:
+            print "rois_per_image: {}".format(rois_per_image)
+        
+
         fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
+        if DEBUG:
+            print "fg_rois_per_image: {}".format(fg_rois_per_image)
 
         # Sample rois with classification labels and bounding box regression
         # targets
         labels, rois, bbox_targets, bbox_inside_weights = _sample_rois(
             all_rois, gt_boxes, fg_rois_per_image,
             rois_per_image, self._num_classes)
+        if DEBUG:
+            print "labels: {}".format(labels)
+            print "rois: {}".format(rois)
+            print "bbox_targets : {}".format(bbox_targets)
+            print "bbox_inside_weights : {}".format(bbox_inside_weights)
+            
+
 
         if DEBUG:
             print 'num fg: {}'.format((labels > 0).sum())
             print 'num bg: {}'.format((labels == 0).sum())
-            self._count += 1
-            self._fg_num += (labels > 0).sum()
-            self._bg_num += (labels == 0).sum()
+            try : self._count += 1
+            except AttributeError: self._count = 1
+
+            try : self._fg_num += (labels > 0).sum()
+            except AttributeError: self._fg_num = (labels > 0).sum()
+
+            try : self._bg_num += (labels == 0).sum()
+            except AttributeError: self._bg_num = (labels == 0).sum()
             print 'num fg avg: {}'.format(self._fg_num / self._count)
             print 'num bg avg: {}'.format(self._bg_num / self._count)
-            print 'ratio: {:.3f}'.format(float(self._fg_num) / float(self._bg_num))
+            ratio = 0
+            if self._bg_num == 0:
+                ratio = 0
+            else:
+                ratio = float(self._fg_num) / float(self._bg_num)
+
+            print 'ratio: {:.3f}'.format(ratio)
 
         # sampled rois
         top[0].reshape(*rois.shape)
@@ -151,10 +181,16 @@ def _sample_rois(all_rois, gt_boxes, fg_rois_per_image, rois_per_image, num_clas
     # overlaps: (rois x gt_boxes)
     overlaps = bbox_overlaps(
         np.ascontiguousarray(all_rois[:, 1:5], dtype=np.float),
-        np.ascontiguousarray(gt_boxes[:, :4], dtype=np.float))
+        np.ascontiguousarray(gt_boxes[:, :4], dtype=np.float) )
+
     gt_assignment = overlaps.argmax(axis=1)
     max_overlaps = overlaps.max(axis=1)
     labels = gt_boxes[gt_assignment, 4]
+    if DEBUG:
+        print "sroi: overlaps {} shape: {}".format(overlaps,overlaps.shape)
+        print "sroi: gt_assignment {}".format(gt_assignment)
+        print "sroi: max_overlaps {}".format(max_overlaps)
+        print "sroi: labels {}".format(labels)
 
     # Select foreground RoIs as those with >= FG_THRESH overlap
     fg_inds = np.where(max_overlaps >= cfg.TRAIN.FG_THRESH)[0]
@@ -178,10 +214,21 @@ def _sample_rois(all_rois, gt_boxes, fg_rois_per_image, rois_per_image, num_clas
 
     # The indices that we're selecting (both fg and bg)
     keep_inds = np.append(fg_inds, bg_inds)
+    if DEBUG:
+        print "fg_inds: {}".format(fg_inds)
+        print "bg_inds: {}".format(bg_inds)
+        print "keep inds: {}".format(keep_inds)
+
+
     # Select sampled values from various arrays:
     labels = labels[keep_inds]
+    if DEBUG:
+        print "labels {}".format(labels)
+        print "fg_rois_per_this_image: {}".format(fg_rois_per_this_image)
+
     # Clamp labels for the background RoIs to 0
     labels[fg_rois_per_this_image:] = 0
+
     rois = all_rois[keep_inds]
 
     bbox_target_data = _compute_targets(

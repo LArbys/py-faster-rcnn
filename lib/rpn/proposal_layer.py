@@ -13,7 +13,7 @@ from generate_anchors import generate_anchors
 from fast_rcnn.bbox_transform import bbox_transform_inv, clip_boxes
 from fast_rcnn.nms_wrapper import nms
 
-DEBUG = False
+DEBUG = cfg.DEBUG
 
 class ProposalLayer(caffe.Layer):
     """
@@ -82,6 +82,7 @@ class ProposalLayer(caffe.Layer):
 
         if DEBUG:
             print 'score map size: {}'.format(scores.shape)
+            print "height : {} width: {}".format(height,width)
 
         # Enumerate all shifts
         shift_x = np.arange(0, width) * self._feat_stride

@@ -31,6 +31,7 @@ def _get_image_blob(im):
             in the image pyramid
     """
     im_orig = im.astype(np.float32, copy=True)
+    print cfg.PIXEL_MEANS
     im_orig -= cfg.PIXEL_MEANS
 
     im_shape = im_orig.shape

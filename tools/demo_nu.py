@@ -15,6 +15,8 @@ See README.md for installation instructions before running.
 
 import _init_paths
 from fast_rcnn.config import cfg
+cfg.DEBUG = True
+
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
@@ -27,24 +29,28 @@ from ROOT import larcv
 larcv.load_pyutil
 import numpy as np
 
-IOM = larcv.IOManager(larcv.IOManager.kREAD)
+
+#cfg.IMAGE_LOADER = "LarbysDetectLoader"
+#cfg.ROOTFILES   = ["/stage/vgenty/detect.root"]
+#cfg.IMAGE2DPROD  = "larbys_detect"
 
 
-IOM.add_in_file("/stage/vgenty/out.root")
+cfg.IMAGE_LOADER = "MergedLoader"
+cfg.ROOTFILES   = ["/stage/vgenty/nucropper_864_train_overlay.root"]
+cfg.IMAGE2DPROD  = "fake_color"
 
+import lib.utils.root_handler as rh
 
 CLASSES = ('__background__',
-           'eminus','proton','pizero','muminus')
+           'neutrino')
+           #'eminus','proton','pizero','muminus')
 
-NETS = {'rpn_uboone': ('alex_4',
-                       'rpn_uboone_alex_4__iter_15000.caffemodel') }
+NETS = {'rpn_uboone': ('alex_nu',
+                       'rpn_uboone_alex_nu__iter_2000.caffemodel') }
+                       #'rpn_uboone_alex_4__iter_2000.caffemodel') }
 
 
 
-IOM.set_verbosity(0)
-
-print "'\033[94m'\t>> initialize IOManager \n'\033[0m'"
-IOM.initialize()
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     """Draw detected bounding boxes."""
@@ -59,22 +65,23 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
 
-    annos = None
-    with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
-        annos = f.read()
+    # annos = None
+    # with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
+    #     annos = f.read()
     
-    annos = annos.split(" ");
-    annos = annos[1:]
+    # annos = annos.split(" ");
+    # annos = annos[1:]
 
-    a = []
-    for anno in annos:
-        anno = anno.rstrip()
-        a.append(float(anno))
+    # a = []
+    # for anno in annos:
+    #     anno = anno.rstrip()
+    #     a.append(float(anno))
         
-    ax.add_patch(
-        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
-
-
+    # ax.add_patch(
+    #     plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+    print "~~~~~~~~~dets~~~~~~~~~~~~~"
+    print dets
+    print "~~~~~~~end dets~~~~~~~~~~~"
     for i in inds:
         bbox  = dets[i, :4]
         score = dets[i, -1]
@@ -103,26 +110,9 @@ def demo(net, image_name):
 
     # Load the demo image
     #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
-    
-    IOM.read_entry( image_name )
-    ev_img = IOM.get_data(larcv.kProductImage2D,"fake_color")
 
-    im  = larcv.as_ndarray( ev_img.Image2DArray()[0] )
-    s   = im.shape
-    imm = np.zeros([ s[0], s[1], 3 ])
+    im = rh.get_image(int(image_name))
     
-    img_v = ev_img.Image2DArray()
-
-    for j in xrange(3):
-        imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
-        #imm[:,:,j] = imm[:,:,j].T
-
-    #imm[ imm < 0 ]   = 0
-    #imm[ imm > 256 ] = 256
-    
-    #imm = imm[::-1,:,:]
-    im = imm
-    # Detect all object classes and regress object bounds
     timer = Timer()
     timer.tic()
     scores, boxes = im_detect(net, im)
@@ -131,7 +121,7 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.5
+    CONF_THRESH = 0.01
     NMS_THRESH = 0.05
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -172,9 +162,9 @@ if __name__ == '__main__':
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
-    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_4/',
+    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/',
                               NETS[args.demo_net][1])
-
+    
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
                        'fetch_faster_rcnn_models.sh?').format(caffemodel))
@@ -189,8 +179,12 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-    cfg.PIXEL_MEANS = np.array([[[168.803604126, 85.3542709351, 0.842070877552]]])
-    im_names = [2115,2454,2772,3457,4115,4440,5110]
+    cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
+    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 0.85868966579]]])
+
+    #cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
+    im_names = [241,242,246,247,25]
+    #im_names  = [1,2,3,4,5,6,7]
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

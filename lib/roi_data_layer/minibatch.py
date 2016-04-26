@@ -31,23 +31,33 @@ def get_minibatch(roidb, num_classes):
 
     # Get the input image blob, formatted for caffe
     #im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
-    im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)
-
+    im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)    
+    
     blobs = {'data': im_blob}
 
     if cfg.TRAIN.HAS_RPN:
         assert len(im_scales) == 1, "Single batch only"
         assert len(roidb) == 1, "Single batch only"
         # gt boxes: (x1, y1, x2, y2, cls)
+        #print roidb
         gt_inds = np.where(roidb[0]['gt_classes'] != 0)[0]
+        #print "gt_inds : {}".format(gt_inds)
         gt_boxes = np.empty((len(gt_inds), 5), dtype=np.float32)
+        #print "gt_boxes1 : {}".format(gt_boxes)
         gt_boxes[:, 0:4] = roidb[0]['boxes'][gt_inds, :] * im_scales[0]
+        #print "gt_boxes2 : {}".format(gt_boxes)
         gt_boxes[:, 4] = roidb[0]['gt_classes'][gt_inds]
+        #print "gt_boxes3 : {}".format(gt_boxes)
+        #print 'im_info : {}'.format(np.array([[im_blob.shape[2], 
+        #                                       im_blob.shape[3], 
+        #                                       im_scales[0]]],
+        #                                     dtype=np.float32))
         blobs['gt_boxes'] = gt_boxes
         blobs['im_info'] = np.array(
             [[im_blob.shape[2], im_blob.shape[3], im_scales[0]]],
             dtype=np.float32)
     else: # not using RPN
+        print "~~~~~~RPN~~~~~~"
         # Now, build the region of interest and label blobs
         rois_blob = np.zeros((0, 5), dtype=np.float32)
         labels_blob = np.zeros((0), dtype=np.float32)

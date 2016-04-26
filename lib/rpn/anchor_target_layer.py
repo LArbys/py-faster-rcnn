@@ -15,7 +15,7 @@ from generate_anchors import generate_anchors
 from utils.cython_bbox import bbox_overlaps
 from fast_rcnn.bbox_transform import bbox_transform
 
-DEBUG = False
+DEBUG = cfg.DEBUG
 
 class AnchorTargetLayer(caffe.Layer):
     """
@@ -137,7 +137,16 @@ class AnchorTargetLayer(caffe.Layer):
         gt_argmax_overlaps = overlaps.argmax(axis=0)
         gt_max_overlaps = overlaps[gt_argmax_overlaps,
                                    np.arange(overlaps.shape[1])]
+        if DEBUG:
+            print "ATL overlaps: {}".format(overlaps)
+            print "ATL argmax_overlaps: {}".format(argmax_overlaps)
+            print "ATL gt_argmax_overlaps: {}".format(gt_argmax_overlaps)
+            print "ATL gt_max_overlaps: {}".format(gt_max_overlaps)
+
         gt_argmax_overlaps = np.where(overlaps == gt_max_overlaps)[0]
+        
+        if DEBUG:    
+            print "ATL (np.where...)  gt_argmax_overlaps: {} ".format(gt_argmax_overlaps)
 
         if not cfg.TRAIN.RPN_CLOBBER_POSITIVES:
             # assign bg labels first so that positive labels can clobber them
@@ -156,6 +165,10 @@ class AnchorTargetLayer(caffe.Layer):
         # subsample positive labels if we have too many
         num_fg = int(cfg.TRAIN.RPN_FG_FRACTION * cfg.TRAIN.RPN_BATCHSIZE)
         fg_inds = np.where(labels == 1)[0]
+        if DEBUG :
+            print "ATL num_fg: {}".format(num_fg)
+            print "ATL fg_inds: {}".format(fg_inds)
+
         if len(fg_inds) > num_fg:
             disable_inds = npr.choice(
                 fg_inds, size=(len(fg_inds) - num_fg), replace=False)

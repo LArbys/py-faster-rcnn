@@ -132,10 +132,10 @@ __C.TEST = edict()
 
 # Scales to use during testing (can list multiple scales)
 # Each scale is the pixel size of an image's shortest side
-__C.TEST.SCALES = (600,)
+__C.TEST.SCALES = (864,)
 
 # Max pixel size of the longest side of a scaled input image
-__C.TEST.MAX_SIZE = 1000
+__C.TEST.MAX_SIZE = 864
 
 # Overlap threshold used for non-maximum suppression (suppress boxes with
 # IoU >= this threshold)
@@ -161,7 +161,8 @@ __C.TEST.RPN_PRE_NMS_TOP_N = 6000
 ## Number of top scoring boxes to keep after applying NMS to RPN proposals
 __C.TEST.RPN_POST_NMS_TOP_N = 300
 # Proposal height and width both need to be greater than RPN_MIN_SIZE (at orig image scale)
-__C.TEST.RPN_MIN_SIZE = 16
+#__C.TEST.RPN_MIN_SIZE = 16
+__C.TEST.RPN_MIN_SIZE = 8
 
 
 #
@@ -210,12 +211,15 @@ __C.USE_GPU_NMS = True
 # Default GPU device id
 __C.GPU_ID = 0
 
+#DEBUG MODE
+__C.DEBUG = False
+
 # uboone specific
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
 __C.ROOTFILES = ["/stage/vgenty/detect.root"]
-__C.IMAGE2DPROD = "larbys_detect"
-__C.ROIPROD = "larbys_detect"
+__C.IMAGE2DPROD = "fake_color"
+__C.ROIPROD = "fake_color"
 __C.WIDTH = 864
 __C.DEVKIT = "Singledevkit4"
 __C.IMAGE_LOADER = "LarbysDetectLoader"

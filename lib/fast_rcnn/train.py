@@ -143,8 +143,10 @@ def filter_roidb(roidb):
         #   (1) At least one foreground RoI OR
         #   (2) At least one background RoI
         overlaps = entry['max_overlaps']
+        
         # find boxes with sufficient overlap
         fg_inds = np.where(overlaps >= cfg.TRAIN.FG_THRESH)[0]
+
         # Select background RoIs as those within [BG_THRESH_LO, BG_THRESH_HI)
         bg_inds = np.where((overlaps < cfg.TRAIN.BG_THRESH_HI) &
                            (overlaps >= cfg.TRAIN.BG_THRESH_LO))[0]

@@ -14,15 +14,14 @@ from fast_rcnn.config import cfg
 
 entries = None
 
-with open("/stage/vgenty/Singledevkit4/train_4.txt") as f:
+with open("/stage/vgenty/Singledevkit3/train_1.txt") as f:
     entries = f.read()
 
 entries = [im for im in entries.split("\n") if im != "" ] 
 
-
-cfg.IMAGE_LOADER = "LarbysDetectLoader"
-cfg.ROOT_FILES   = ["/stage/vgenty/detect.root"]
-cfg.IMAGE2DPROD  = "larbys_detect"
+cfg.IMAGE_LOADER = "MergedLoader"
+cfg.ROOTFILES   = ["/stage/vgenty/nucropper_864_train_overlay.root"]
+cfg.IMAGE2DPROD  = "fake_color"
 
 import lib.utils.root_handler as rh
 
@@ -32,7 +31,7 @@ for i,entry in enumerate(entries):
     imm = rh.get_image(entry)
     
     annoz = None
-    with open( "/stage/vgenty/Singledevkit4/Annotations/{}.txt".format(entry)) as f:
+    with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
         annoz = f.read()
 
     annos_v = annoz.split("\n")
@@ -50,10 +49,10 @@ for i,entry in enumerate(entries):
         a_v.append(aa)
     
 
-
     fig,ax = plt.subplots(figsize = (12,12))
     imm = imm.astype(np.uint8)
     plt.imshow(imm[:,:,(2,1,0)])
+
     plt.axis('off')
     for b in a_v:
         ax.add_patch(plt.Rectangle( (b[0],b[1]),

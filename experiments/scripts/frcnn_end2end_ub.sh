@@ -36,7 +36,7 @@ time ./tools/train_net.py --gpu ${GPU_ID} --solver models/${PT_DIR}/${NET}/faste
   --weights data/rpn_uboone_models/${NET}.caffemodel \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
-  --cfg experiments/cfgs/faster_rcnn_end2end_UB_alex_$4.yml \
+  --cfg experiments/cfgs/faster_rcnn_end2end_UB.yml \
   ${EXTRA_ARGS}
 
 set +x
