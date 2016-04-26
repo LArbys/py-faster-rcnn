@@ -43,6 +43,7 @@ def get_image(ttree_index):
     img_v = ev_img.Image2DArray()
         
     assert img_v.size() == 3
+
     for j in xrange(3):
         imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
         

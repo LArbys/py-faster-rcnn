@@ -15,6 +15,8 @@ from utils import root_handler as rh
 
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
+DEBUG = cfg.DEBUG
+
 def get_minibatch(roidb, num_classes):
     #print roidb
     """Given a roidb, construct a minibatch sampled from it."""
@@ -33,7 +35,7 @@ def get_minibatch(roidb, num_classes):
     #im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
     im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)    
     
-    blobs = {'data': im_blob}
+    blobs = { 'data': im_blob }
 
     if cfg.TRAIN.HAS_RPN:
         assert len(im_scales) == 1, "Single batch only"
@@ -41,23 +43,26 @@ def get_minibatch(roidb, num_classes):
         # gt boxes: (x1, y1, x2, y2, cls)
         #print roidb
         gt_inds = np.where(roidb[0]['gt_classes'] != 0)[0]
-        #print "gt_inds : {}".format(gt_inds)
+
+        if DEBUG: print "gt_inds : {}".format(gt_inds)
         gt_boxes = np.empty((len(gt_inds), 5), dtype=np.float32)
-        #print "gt_boxes1 : {}".format(gt_boxes)
+
+        if DEBUG: print "gt_boxes1 : {}".format(gt_boxes)
         gt_boxes[:, 0:4] = roidb[0]['boxes'][gt_inds, :] * im_scales[0]
-        #print "gt_boxes2 : {}".format(gt_boxes)
+
+        if DEBUG: print "gt_boxes2 : {}".format(gt_boxes)
         gt_boxes[:, 4] = roidb[0]['gt_classes'][gt_inds]
-        #print "gt_boxes3 : {}".format(gt_boxes)
-        #print 'im_info : {}'.format(np.array([[im_blob.shape[2], 
-        #                                       im_blob.shape[3], 
-        #                                       im_scales[0]]],
-        #                                     dtype=np.float32))
+        if DEBUG:
+            print "gt_boxes3 : {}".format(gt_boxes)
+            print 'im_info : {}'.format(np.array([[im_blob.shape[2], 
+                                                   im_blob.shape[3], 
+                                                   im_scales[0]]],
+                                                 dtype=np.float32))
         blobs['gt_boxes'] = gt_boxes
         blobs['im_info'] = np.array(
             [[im_blob.shape[2], im_blob.shape[3], im_scales[0]]],
             dtype=np.float32)
     else: # not using RPN
-        print "~~~~~~RPN~~~~~~"
         # Now, build the region of interest and label blobs
         rois_blob = np.zeros((0, 5), dtype=np.float32)
         labels_blob = np.zeros((0), dtype=np.float32)
