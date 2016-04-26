@@ -46,7 +46,7 @@ CLASSES = ('__background__',
            #'eminus','proton','pizero','muminus')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_1000.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_100000.caffemodel') }
                        #'rpn_uboone_alex_4__iter_2000.caffemodel') }
 
 
@@ -65,20 +65,20 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(im, aspect='equal')
 
-    # annos = None
-    # with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
-    #     annos = f.read()
+    annos = None
+    with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
+        annos = f.read()
     
-    # annos = annos.split(" ");
-    # annos = annos[1:]
+    annos = annos.split(" ");
+    annos = annos[1:]
 
-    # a = []
-    # for anno in annos:
-    #     anno = anno.rstrip()
-    #     a.append(float(anno))
+    a = []
+    for anno in annos:
+        anno = anno.rstrip()
+        a.append(float(anno))
         
-    # ax.add_patch(
-    #     plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+    ax.add_patch(
+        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
     print "~~~~~~~~~dets~~~~~~~~~~~~~"
     print dets
     print "~~~~~~~end dets~~~~~~~~~~~"

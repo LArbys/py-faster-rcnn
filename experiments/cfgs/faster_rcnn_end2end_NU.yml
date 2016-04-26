@@ -19,8 +19,8 @@ TRAIN:
   HAS_RPN: True
   IMS_PER_BATCH: 1
 
-  BBOX_NORMALIZE_TARGETS : False
-  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: False
+  BBOX_NORMALIZE_TARGETS : True
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
 
   RPN_BATCHSIZE: 256
   PROPOSAL_METHOD: gt
@@ -28,17 +28,17 @@ TRAIN:
   # Overlap threshold for a ROI to be considered background (class = 0 if
   # overlap in [LO, HI))
   BG_THRESH_LO: 0.0  
-  BG_THRESH_HI: 0.7
+  BG_THRESH_HI: 0.5
 
   # Overlap threshold for a ROI to be considered foreground (if >= FG_THRESH)
-  FG_THRESH :  0.7
+  FG_THRESH :  0.5
   
   # Fraction of minibatch that is labeled foreground (i.e. class > 0)
   FG_FRACTION: 1.0
 
   # Overlap required between a ROI and ground-truth box in order for that ROI to
   # be used as a bounding-box regression training example
-  BBOX_THRESH : 0.7
+  BBOX_THRESH : 0.5
   
   # NMS threshold used on RPN proposals
   RPN_NMS_THRESH : 0.7
@@ -47,16 +47,16 @@ TRAIN:
   RPN_POSITIVE_OVERLAP : 0.7
   
   # If an anchor statisfied by positive and negative conditions set to negative
-  RPN_CLOBBER_POSITIVES : True
+  RPN_CLOBBER_POSITIVES : False
 
   # IOU < thresh: negative example
-  RPN_NEGATIVE_OVERLAP : 0.7
+  RPN_NEGATIVE_OVERLAP : 0.3
 
   # Max number of foreground examples
   RPN_FG_FRACTION : 0.5
   
    # Proposal height and width both need to be greater than RPN_MIN_SIZE (at orig image scale) 		  
-  RPN_MIN_SIZE : 32
+  RPN_MIN_SIZE : 16
 
   SCALES    : [864]
   MAX_SIZE  : 864
