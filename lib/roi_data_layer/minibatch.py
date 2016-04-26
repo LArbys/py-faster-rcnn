@@ -35,6 +35,7 @@ def get_minibatch(roidb, num_classes):
     #im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
     im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)    
     
+
     blobs = { 'data': im_blob }
 
     if cfg.TRAIN.HAS_RPN:

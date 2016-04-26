@@ -19,6 +19,9 @@ import cPickle
 from utils.blob import im_list_to_blob
 import os
 
+
+DEBUG = cfg.DEBUG
+
 def _get_image_blob(im):
     """Converts an image into a network input.
 
@@ -31,7 +34,9 @@ def _get_image_blob(im):
             in the image pyramid
     """
     im_orig = im.astype(np.float32, copy=True)
-    print cfg.PIXEL_MEANS
+
+    if DEBUG: print cfg.PIXEL_MEANS
+
     im_orig -= cfg.PIXEL_MEANS
 
     im_shape = im_orig.shape
@@ -156,6 +161,7 @@ def im_detect(net, im, boxes=None):
         forward_kwargs['im_info'] = blobs['im_info'].astype(np.float32, copy=False)
     else:
         forward_kwargs['rois'] = blobs['rois'].astype(np.float32, copy=False)
+    
     blobs_out = net.forward(**forward_kwargs)
 
     if cfg.TEST.HAS_RPN:

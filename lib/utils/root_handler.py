@@ -3,7 +3,7 @@ larcv.load_pyutil
 import numpy as np
 
 from fast_rcnn.config import cfg
-from utils.blob import im_list_to_blob
+from utils.blob import im_list_to_blob, prep_im_for_blob
 
 from utils.image_loader_factory import ImageLoaderFactory
 
@@ -65,6 +65,9 @@ def get_im_blob(roidb,scale_inds) :
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
         
+        imm, im_scale = prep_im_for_blob(imm, cfg.PIXEL_MEANS, imm.shape[0],
+                                         cfg.TRAIN.MAX_SIZE)
+
         im_scales.append(1) #1 to 1 scaling!
         processed_ims.append(imm)
 

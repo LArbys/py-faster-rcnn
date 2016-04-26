@@ -10,8 +10,9 @@
 """Train a Fast R-CNN network on a region of interest database."""
 
 import _init_paths
+from fast_rcnn.config import cfg
 from fast_rcnn.train import get_training_roidb, train_net
-from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
+from fast_rcnn.config import cfg_from_file, cfg_from_list, get_output_dir
 import datasets.imdb
 import caffe
 import argparse

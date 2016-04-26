@@ -46,7 +46,7 @@ CLASSES = ('__background__',
            #'eminus','proton','pizero','muminus')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_2000.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_1000.caffemodel') }
                        #'rpn_uboone_alex_4__iter_2000.caffemodel') }
 
 

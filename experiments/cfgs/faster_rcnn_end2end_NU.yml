@@ -18,9 +18,11 @@ TRAIN:
 
   HAS_RPN: True
   IMS_PER_BATCH: 1
-  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
 
-  RPN_BATCHSIZE: 1024
+  BBOX_NORMALIZE_TARGETS : False
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: False
+
+  RPN_BATCHSIZE: 256
   PROPOSAL_METHOD: gt
   
   # Overlap threshold for a ROI to be considered background (class = 0 if
@@ -36,7 +38,7 @@ TRAIN:
 
   # Overlap required between a ROI and ground-truth box in order for that ROI to
   # be used as a bounding-box regression training example
-  BBOX_THRESH : 0.8
+  BBOX_THRESH : 0.7
   
   # NMS threshold used on RPN proposals
   RPN_NMS_THRESH : 0.7

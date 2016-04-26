@@ -13,9 +13,11 @@ import roi_data_layer.roidb as rdl_roidb
 from utils.timer import Timer
 import numpy as np
 import os
-
+import time
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
+
+DEBUG = cfg.DEBUG
 
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
@@ -44,20 +46,19 @@ class SolverWrapper(object):
         print "Making SGDSolver"
         self.solver = caffe.SGDSolver(solver_prototxt)
 
-        #print "\n\n\n\tMaking RMS!!!!\n\n\n\n"
         #self.solver = caffe.RMSPropSolver(solver_prototxt)
-
 
         if pretrained_model is not None:
             print ('Loading pretrained model '
                    'weights from {:s}').format(pretrained_model)
             self.solver.net.copy_from(pretrained_model)
 
-        print "self.solver_param..."
         self.solver_param = caffe_pb2.SolverParameter()
 
-        print self.solver_param
-        print roidb
+        if DEBUG: 
+            print self.solver_param
+            print roidb
+
         with open(solver_prototxt, 'rt') as f:
             pb2.text_format.Merge(f.read(), self.solver_param)
         
@@ -110,6 +111,15 @@ class SolverWrapper(object):
             # Make one SGD update
             timer.tic()
             self.solver.step(1)
+            
+            #if DEBUG:
+            # print "Made one SGD update"
+            # print self.solver.net
+            # net = self.solver.net
+            # print "Available keys: {}".format(net.blobs.keys())
+            # for k in net.blobs.keys():
+            #     print "{} shape {} : {}".format(k,net.blobs[k].data.shape,net.blobs[k].data)
+            # time.sleep(10)
             timer.toc()
             if self.solver.iter % (10 * self.solver_param.display) == 0:
                 print 'speed: {:.3f}s / iter'.format(timer.average_time)
@@ -164,6 +174,8 @@ def filter_roidb(roidb):
 def train_net(solver_prototxt, roidb, output_dir,
               pretrained_model=None, max_iters=40000):
     """Train a Fast R-CNN network."""
+
+    if DEBUG: print "Training a Fast R-CNN network"
 
     roidb = filter_roidb(roidb)
     sw = SolverWrapper(solver_prototxt, roidb, output_dir,
