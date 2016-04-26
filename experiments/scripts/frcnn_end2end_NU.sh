@@ -26,6 +26,7 @@ echo Logging output to "$LOG"
 
 time ./tools/train_net.py --gpu ${GPU_ID} --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
   --imdb ${TRAIN_IMDB} \
+  --weights data/rpn_uboone_models/${NET}.caffemodel \
   --iters ${ITERS} \
   --cfg experiments/cfgs/faster_rcnn_end2end_NU.yml \
   ${EXTRA_ARGS}
@@ -33,4 +34,4 @@ time ./tools/train_net.py --gpu ${GPU_ID} --solver models/${PT_DIR}/${NET}/faste
 set +x
 NET_FINAL=`grep -B 1 "done solving" ${LOG} | grep "Wrote snapshot" | awk '{print $4}'`
 set -x
-#--weights data/rpn_uboone_models/${NET}.caffemodel \
+
