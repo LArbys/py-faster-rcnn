@@ -20,7 +20,8 @@ with open("/stage/vgenty/Singledevkit3/train_1.txt") as f:
 entries = [im for im in entries.split("\n") if im != "" ] 
 
 cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/stage/vgenty/nucropper_864_train_overlay.root"]
+cfg.ROOTFILES   = ["/stage/vgenty/nucropper_overlay_today_fake_color.root"
+]
 cfg.IMAGE2DPROD  = "fake_color"
 
 import lib.utils.root_handler as rh

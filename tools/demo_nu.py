@@ -36,7 +36,7 @@ import numpy as np
 
 
 cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/stage/vgenty/nucropper_864_train_overlay.root"]
+cfg.ROOTFILES   = ["/stage/vgenty/nucropper_overlay_today_fake_color.root"]
 cfg.IMAGE2DPROD  = "fake_color"
 
 import lib.utils.root_handler as rh
@@ -46,7 +46,7 @@ CLASSES = ('__background__',
            #'eminus','proton','pizero','muminus')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_100000.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_13000.caffemodel') }
                        #'rpn_uboone_alex_4__iter_2000.caffemodel') }
 
 
@@ -79,9 +79,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
         
     ax.add_patch(
         plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
-    print "~~~~~~~~~dets~~~~~~~~~~~~~"
-    print dets
-    print "~~~~~~~end dets~~~~~~~~~~~"
+
     for i in inds:
         bbox  = dets[i, :4]
         score = dets[i, -1]
@@ -104,7 +102,8 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
-
+    plt.savefig("{}_demo.png".format(image_name),format="png")
+    
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
 
@@ -131,7 +130,7 @@ def demo(net, image_name):
                           cls_scores[:, np.newaxis])).astype(np.float32)
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
-        print cls_scores
+        print "{}".format(dets)
         vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
 
 def parse_args():
@@ -179,7 +178,8 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-    cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
+    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
+    cfg.PIXEL_MEANS = np.array([[[169.891403198, 85.0149765015, 0.093599461019]]])
     #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 0.85868966579]]])
 
     #cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
@@ -191,4 +191,4 @@ if __name__ == '__main__':
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
 
-    plt.show()
+    #plt.show()

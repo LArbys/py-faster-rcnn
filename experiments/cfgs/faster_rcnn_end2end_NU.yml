@@ -2,16 +2,16 @@ EXP_DIR: faster_rcnn_end2end
 MODELS_DIR   : /share/vgenty/py-faster-rcnn/models/rpn_uboone
 UB_CLASSES   : [neutrino]
 UB_N_CLASSES : 1
-PIXEL_MEANS  : [[[167.205322266, 85.9359436035, 1.85868966579]]]
+PIXEL_MEANS  : [[[169.891403198, 85.0149765015, 0.093599461019]]]
 
-ROOTFILES : ["/stage/vgenty/nucropper_864_train_overlay.root"]
+ROOTFILES : ["/stage/vgenty/nucropper_overlay_today_fake_color.root"]
 
 IMAGE2DPROD : "fake_color"
 ROIPROD : "fake_color"
 WIDTH : 864
 DEVKIT : "Singlesdevkit3"
 IMAGE_LOADER : "MergedLoader"
-RNG_SEED: 5
+RNG_SEED: 6
 DEBUG : False
 
 TRAIN:

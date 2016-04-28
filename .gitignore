@@ -13,3 +13,4 @@ ILSVRC2012*
 data/demo
 data/faster_rcnn_models
 data/rpn_uboone_models
+*.png
