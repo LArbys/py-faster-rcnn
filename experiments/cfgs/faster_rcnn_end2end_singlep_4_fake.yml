@@ -1,0 +1,35 @@
+EXP_DIR: faster_rcnn_end2end
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : ["Eminus","Proton","Muminus","Piminus"]
+UB_N_CLASSES : 4
+PIXEL_MEANS  : [[[ 170, 85,  0.12]]]
+
+ROOTFILES   : ["/stage/vgenty/train_fakecolor_0.root"]
+IMAGE2DPROD  : "fake_color"
+ROIPROD : "fake_color"
+HEIGHT : 576
+WIDTH : 576
+DEVKIT : "Singlesdevkit6"
+IMAGE_LOADER : "LarbysDetectLoader"
+RNG_SEED: 3
+DEBUG : False
+
+TRAIN:
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [576]
+  MAX_SIZE  : 576
+    
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [576]
+  MAX_SIZE  : 576
+

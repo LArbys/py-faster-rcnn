@@ -18,7 +18,7 @@ from fast_rcnn.nms_wrapper import nms
 import cPickle
 from utils.blob import im_list_to_blob
 import os
-
+import utils.root_handler as rh
 
 DEBUG = cfg.DEBUG
 
@@ -46,17 +46,6 @@ def _get_image_blob(im):
     processed_ims = []
     im_scale_factors = []
 
-    # for target_size in cfg.TEST.SCALES:
-    #     im_scale = float(target_size) / float(im_size_min)
-    #     # Prevent the biggest axis from being more than MAX_SIZE
-    #     if np.round(im_scale * im_size_max) > cfg.TEST.MAX_SIZE:
-    #         im_scale = float(cfg.TEST.MAX_SIZE) / float(im_size_max)
-    #     im = cv2.resize(im_orig, None, None, fx=im_scale, fy=im_scale,
-    #                     interpolation=cv2.INTER_LINEAR)
-    #     im_scale_factors.append(im_scale)
-    #     processed_ims.append(im)
-    
-    
     im_scale_factors.append( 1 )
     processed_ims.append(im_orig)
 
@@ -110,12 +99,17 @@ def _project_im_rois(im_rois, scales):
 def _get_blobs(im, rois):
     """Convert an image and RoIs within that image into network inputs."""
     blobs = {'data' : None, 'rois' : None}
-    blobs['data'], im_scale_factors = _get_image_blob(im)
+
+    #blobs['data'], im_scale_factors = _get_image_blob(im)
+
+    blobs['data'], im_scale_factors = rh.get_im_blob([ { 'image' : im , 'flipped' : False}], 1)
+
     if not cfg.TEST.HAS_RPN:
         blobs['rois'] = _get_rois_blob(rois, im_scale_factors)
+
     return blobs, im_scale_factors
 
-def im_detect(net, im, boxes=None):
+def im_detect(net, imm, im=None, boxes=None):
     """Detect object classes in an image given object proposals.
 
     Arguments:
@@ -128,7 +122,7 @@ def im_detect(net, im, boxes=None):
             background as object category 0)
         boxes (ndarray): R x (4*K) array of predicted bounding boxes
     """
-    blobs, im_scales = _get_blobs(im, boxes)
+    blobs, im_scales = _get_blobs(imm, boxes)
 
     # When mapping from image ROIs to feature map ROIs, there's some aliasing
     # (some distinct image ROIs get mapped to the same feature ROI).

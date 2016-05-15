@@ -221,6 +221,7 @@ __C.UB_N_CLASSES = 1
 __C.ROOTFILES = ["/stage/vgenty/detect.root"]
 __C.IMAGE2DPROD = "fake_color"
 __C.ROIPROD = "fake_color"
+__C.HEIGHT = 864
 __C.WIDTH = 864
 __C.DEVKIT = "Singledevkit4"
 __C.IMAGE_LOADER = "LarbysDetectLoader"
