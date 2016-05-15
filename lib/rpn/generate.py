@@ -6,6 +6,9 @@
 # --------------------------------------------------------
 
 from fast_rcnn.config import cfg
+
+from utils import root_handler as rh
+
 from utils.blob import im_list_to_blob
 from utils.timer import Timer
 import numpy as np
@@ -84,7 +87,12 @@ def _get_image_blob(im):
 def im_proposals(net, im):
     """Generate RPN proposals on a single image."""
     blobs = {}
-    blobs['data'], blobs['im_info'] = _get_image_blob(im)
+    im_blob, im_scales = rh.get_im_blob([{'image' : im , 'flipped' : False }],1)    
+
+    blobs['data'] = im_blob
+    blobs['im_info'] =np.array([[im_blob.shape[2], im_blob.shape[3], im_scales[0]]],
+                               dtype=np.float32)
+
     net.blobs['data'].reshape(*(blobs['data'].shape))
     net.blobs['im_info'].reshape(*(blobs['im_info'].shape))
     blobs_out = net.forward(
@@ -101,10 +109,15 @@ def imdb_proposals(net, imdb):
 
     _t = Timer()
     imdb_boxes = [[] for _ in xrange(imdb.num_images)]
+
+    # print "imdb_boxes: {}".format(imdb_boxes)
+    # print "imdb is {}".format(imdb)
+
     for i in xrange(imdb.num_images):
-        im = cv2.imread(imdb.image_path_at(i))
+        # print "imdb.image_path_at(i) : {}".format(imdb.image_path_at(i))
+        #im = cv2.imread(imdb.image_path_at(i))
         _t.tic()
-        imdb_boxes[i], scores = im_proposals(net, im)
+        imdb_boxes[i], scores = im_proposals(net, imdb.image_path_at(i))
         _t.toc()
         print 'im_proposals: {:d}/{:d} {:.3f}s' \
               .format(i + 1, imdb.num_images, _t.average_time)

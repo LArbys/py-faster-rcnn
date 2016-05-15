@@ -14,9 +14,12 @@ Proposal Networks." Shaoqing Ren, Kaiming He, Ross Girshick, Jian Sun.)
 """
 
 import _init_paths
-from fast_rcnn.train import get_training_roidb, train_net
 from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
-from rpn.generate import imdb_proposals
+
+from fast_rcnn.train import get_training_roidb, train_net
+
+
+
 import argparse
 import pprint
 import numpy as np
@@ -213,7 +216,10 @@ if __name__ == '__main__':
         print('Getting CFG from list')
         cfg_from_list(args.set_cfgs)
     cfg.GPU_ID = args.gpu_id
-
+    
+    #rpn.generate uses config file
+    from rpn.generate import imdb_proposals
+    
     #factory uses config file    
     from datasets.factory import get_imdb
     

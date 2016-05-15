@@ -1,0 +1,26 @@
+EXP_DIR: faster_rcnn_alt_opt
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [Eminus,Proton,Muminus,Gamms,Piminus]
+UB_N_CLASSES : 5
+PIXEL_MEANS  : [[[ 0.0 ]]]
+
+ROOTFILES   : ["/stage/drinkingkazu/production/v03/train.root"]
+IMAGE2DPROD  : "tpc_hires_crop"
+ROIPROD : "tpc_hires_crop"
+WIDTH : 576
+DEVKIT : "Singlesdevkit5"
+IMAGE_LOADER : "SinglepLoader"
+RNG_SEED: 5
+DEBUG : False
+
+TRAIN:
+  SCALES    : [576]
+  MAX_SIZE  : 576
+  BG_THRESH_LO: 0.0
+
+TEST:
+
+  HAS_RPN: True
+  SCALES    : [576]
+  MAX_SIZE  : 576

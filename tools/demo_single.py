@@ -30,19 +30,17 @@ larcv.load_pyutil
 import numpy as np
 
 
-cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/stage/vgenty/nucropper_overlay_today_fake_color.root"]
-cfg.IMAGE2DPROD  = "fake_color"
+cfg.IMAGE_LOADER = "SinglepLoader"
+cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train.root"]
+cfg.IMAGE2DPROD  = "tpc_hires_crop"
 
 import lib.utils.root_handler as rh
-
 CLASSES = ('__background__',
-           'neutrino')
-           #'eminus','proton','pizero','muminus')
+           'Eminus','Proton','Muminus','Gamms','Piminus')
 
-NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_13000.caffemodel') }
-                       #'rpn_uboone_alex_4__iter_2000.caffemodel') }
+
+NETS = {'rpn_uboone': ('alex_5_singlep',
+                       'rpn_uboone_alex_5_singlep_iter_311000.caffemodel') }
 
 
 
@@ -54,14 +52,17 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         return
     
-    im = im[:, :, (2, 1, 0)]
-    im = im.astype(np.uint8)
+    imm = np.zeros([im.shape[0], im.shape[1]] + [3])
+    for j in xrange(3):
+        imm[:,:,j] = im[:,:,0]
+
+    imm = imm.astype(np.uint8)
 
     fig, ax = plt.subplots(figsize=(12, 12))
-    ax.imshow(im, aspect='equal')
+    ax.imshow(imm, aspect='equal')
 
     annos = None
-    with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
+    with open( "data/Singlesdevkit5/Annotations/{}.txt".format(image_name) ) as f:
         annos = f.read()
     
     annos = annos.split(" ");
@@ -97,7 +98,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
-    plt.savefig("{}_demo.png".format(image_name),format="png")
+    plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
     
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
@@ -123,6 +124,11 @@ def demo(net, image_name):
         cls_scores = scores[:, cls_ind]
         dets = np.hstack((cls_boxes,
                           cls_scores[:, np.newaxis])).astype(np.float32)
+
+        print "cls_ind: {}".format(cls_ind)
+        print "cls_boxes: {}".format(cls_boxes)
+        print "cls_scores: {}".format(cls_scores)
+        print "dets : {}".format(dets)
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
         print "{}".format(dets)
@@ -150,15 +156,16 @@ if __name__ == '__main__':
     
     cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
 
-    # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
-    #                         'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
-
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
+                            # 'faster_rcnn_alt_opt', 'faster_rcnn_test.pt')
 
-    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/',
-                              NETS[args.demo_net][1])
+        # caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5/',
+        #caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_4/',
+    caffemodel = os.path.join('/data/vgenty/rcnn_singlep/02/',NETS[args.demo_net][1])
     
+    
+    #/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
                        'fetch_faster_rcnn_models.sh?').format(caffemodel))
@@ -173,17 +180,50 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
-    cfg.PIXEL_MEANS = np.array([[[169.891403198, 85.0149765015, 0.093599461019]]])
-    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 0.85868966579]]])
+    cfg.PIXEL_MEANS = np.array([[[ 0 ]]])
 
-    #cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
-    im_names = [241,242,246,247,25]
-    #im_names  = [1,2,3,4,5,6,7]
+    im_names = [34748,
+                34761,
+                34771,
+                34808,
+                3481,
+                34868,
+                34879,
+                97993,
+                98049,
+                9811,
+                98235,
+                98249,
+                98295,
+                983,
+                98303,
+                9832,
+                98343,
+                98345,
+                9836,
+                98364,
+                9837,
+                98405,
+                98453,
+                9846,
+                98520,
+                9854,
+                98546,
+                98779,
+                989,
+                98916,
+                98927,
+                98945,
+                9895,
+                9900,
+                99101,
+                99116,
+                99150,
+                99154,
+                99255,
+    ]
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
-
-    #plt.show()

@@ -75,10 +75,3 @@ def get_im_blob(roidb,scale_inds) :
     blob = im_list_to_blob(processed_ims)
 
     return blob, im_scales
-    
-    
-    
-
-        
-
-
