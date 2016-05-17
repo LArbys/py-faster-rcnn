@@ -20,7 +20,7 @@ with open("/stage/vgenty/Singledevkit5/train_5.txt") as f:
 entries = [im for im in entries.split("\n") if im != "" ] 
 
 cfg.IMAGE_LOADER = "SinglepLoader"
-cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train.root"]
+cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train_v2.root"]
 cfg.IMAGE2DPROD  = "tpc_hires_crop"
 
 import lib.utils.root_handler as rh
@@ -69,5 +69,5 @@ for i,entry in enumerate(entries):
     print "entry: {}".format(entry)
     # print "that's fine: {}".format(a)
 
-    if i == 25:
+    if i == 10:
         break

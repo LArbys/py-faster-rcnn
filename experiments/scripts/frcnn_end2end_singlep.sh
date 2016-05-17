@@ -31,11 +31,11 @@ ITERS=700000
 LOG="experiments/logs/faster_rcnn_end2end_${NET}_${EXTRA_ARGS_SLUG}.txt.`date +'%Y-%m-%d_%H-%M-%S'`"
 exec &> >(tee -a "$LOG")
 echo Logging output to "$LOG"
-#--weights data/rpn_uboone_models/${NET}.caffemodel \
 
 time ./tools/train_net.py --gpu ${GPU_ID} --solver models/${PT_DIR}/${NET}/faster_rcnn_end2end/solver.prototxt \
   --imdb ${TRAIN_IMDB} \
   --iters ${ITERS} \
+  --weights /stage/vgenty/snapshot_sgd_iter_18000.caffemodel \
   --cfg experiments/cfgs/faster_rcnn_end2end_singlep_$4.yml \
   ${EXTRA_ARGS}
 

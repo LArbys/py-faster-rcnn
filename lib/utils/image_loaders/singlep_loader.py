@@ -14,13 +14,13 @@ class SinglepLoader(ImageLoaderBase):
             img[:,:,i] = img[:,:,i].T
         
         # subtract off the minimum
-        img -= 10;
+        img -= 50;
         
         # don't allow negativees
         img[ img < 0  ] = 0
 
         # cut the top off
-        img[ img > 200 ] = 200
+        img[ img > 400 ] = 400
     
         img = img[::-1,:,2:]
         

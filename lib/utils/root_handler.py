@@ -57,9 +57,9 @@ def get_im_blob(roidb,scale_inds) :
     num_images = len(roidb)
     processed_ims = []
     im_scales = []
-
+    print roidb
     for i in xrange(num_images):
-        
+
         imm = get_image( int( roidb[i]['image'] ) )
         
         if roidb[i]['flipped']:

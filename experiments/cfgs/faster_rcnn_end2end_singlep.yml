@@ -5,7 +5,7 @@ UB_CLASSES   : [Eminus,Proton,Muminus,Gamms,Piminus]
 UB_N_CLASSES : 5
 PIXEL_MEANS  : [[[ 0.0 ]]]
 
-ROOTFILES   : ["/stage/drinkingkazu/production/v03/train.root"]
+ROOTFILES   : ["/stage/drinkingkazu/production/v03/train_v2.root"]
 IMAGE2DPROD  : "tpc_hires_crop"
 ROIPROD : "tpc_hires_crop"
 WIDTH : 576

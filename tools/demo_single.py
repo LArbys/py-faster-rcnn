@@ -11,11 +11,20 @@
 Demo script showing detections in sample images.
 
 See README.md for installation instructions before running.
-"""
+1;95;0c"""
 
 import _init_paths
 from fast_rcnn.config import cfg
 cfg.DEBUG = True
+cfg.IMAGE_LOADER = "SinglepLoader"
+cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train_v2.root"]
+cfg.IMAGE2DPROD  = "tpc_hires_crop"
+
+
+CLASSES = ('__background__',
+           'Eminus','Proton','Muminus','Gamms','Piminus')
+
+
 
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
@@ -28,20 +37,10 @@ import argparse
 from ROOT import larcv
 larcv.load_pyutil
 import numpy as np
-
-
-cfg.IMAGE_LOADER = "SinglepLoader"
-cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train.root"]
-cfg.IMAGE2DPROD  = "tpc_hires_crop"
-
 import lib.utils.root_handler as rh
-CLASSES = ('__background__',
-           'Eminus','Proton','Muminus','Gamms','Piminus')
-
 
 NETS = {'rpn_uboone': ('alex_5_singlep',
-                       'rpn_uboone_alex_5_singlep_iter_311000.caffemodel') }
-
+                       'rpn_uboone_alex_5_singlep__iter_125000.caffemodel') }
 
 
 
@@ -92,7 +91,9 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                 fontsize=14, color='white')
 
     ax.set_title(('{} : {} detections with '
-                  'p({} | box) >= {:.1f}').format(image_name,class_name, class_name,
+                  'p({} | box) >= {:.1f}').format(image_name,
+                                                  class_name, 
+                                                  class_name,
                                                   thresh),
                   fontsize=14)
     plt.axis('off')
@@ -107,17 +108,17 @@ def demo(net, image_name):
     #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
 
     im = rh.get_image(int(image_name))
-    
+    print im
     timer = Timer()
     timer.tic()
-    scores, boxes = im_detect(net, im)
+    scores, boxes = im_detect(net, int(image_name), im=im)
     timer.toc()
     print ('Detection took {:.3f}s for '
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.01
-    NMS_THRESH = 0.05
+    CONF_THRESH = 0.5
+    NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
         cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
@@ -162,7 +163,7 @@ if __name__ == '__main__':
 
         # caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5/',
         #caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_4/',
-    caffemodel = os.path.join('/data/vgenty/rcnn_singlep/02/',NETS[args.demo_net][1])
+    caffemodel = os.path.join('/stage/vgenty/faster_rcnn_end2end/rpn_uboone_train_5',NETS[args.demo_net][1])
     
     
     #/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5
@@ -182,47 +183,21 @@ if __name__ == '__main__':
 
     cfg.PIXEL_MEANS = np.array([[[ 0 ]]])
 
-    im_names = [34748,
-                34761,
-                34771,
-                34808,
-                3481,
-                34868,
-                34879,
-                97993,
-                98049,
-                9811,
-                98235,
-                98249,
-                98295,
-                983,
-                98303,
-                9832,
-                98343,
-                98345,
-                9836,
-                98364,
-                9837,
-                98405,
-                98453,
-                9846,
-                98520,
-                9854,
-                98546,
-                98779,
-                989,
-                98916,
-                98927,
-                98945,
-                9895,
-                9900,
-                99101,
-                99116,
-                99150,
-                99154,
-                99255,
+    im_names = [ 105755,
+                 105768,
+                 105819,
+                 99388,
+                 99406,
+                 99577,
+                 99615,
+                 28069,
+                 28072,
+                 35332,
+                 35335,
+                 69738,
+                 69764
     ]
-
+  
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
