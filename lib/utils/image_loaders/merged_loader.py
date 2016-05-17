@@ -12,9 +12,11 @@ class MergedLoader(ImageLoaderBase):
 
         for i in xrange(3):
             img[:,:,i] = img[:,:,i].T
-        
+
+        img -= 10
+
         img[ img < 0 ]   = 0
-        img[ img > 256 ] = 256
+        img[ img > 400 ] = 400
     
         img = img[::-1,:,:]
 

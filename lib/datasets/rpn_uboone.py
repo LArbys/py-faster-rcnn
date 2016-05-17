@@ -186,7 +186,7 @@ class rpn_uboone(imdb):
         tree = open(filename,'r')
         objs = tree.read().split("\n")
         num_objs = len(objs)-1
-        num_objs = 1
+        #num_objs = 1
 
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
@@ -197,7 +197,7 @@ class rpn_uboone(imdb):
 
         # Load object bounding boxes into a data frame -- what dataframe?
         for ix in xrange(num_objs):
-
+            if ix == " ": continue
             data = objs[ix]
             data = data.split(" ")
             cls = self._class_to_ind[data[0]]
