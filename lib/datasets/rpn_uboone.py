@@ -187,6 +187,7 @@ class rpn_uboone(imdb):
         objs = tree.read().split("\n")
         num_objs = len(objs)-1
         #num_objs = 1
+        assert num_objs == 1
 
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)

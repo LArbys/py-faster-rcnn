@@ -185,8 +185,8 @@ def train_net(solver_prototxt, roidb, output_dir,
                        pretrained_model=pretrained_model)
     return _sw
 
-def doit(max_iters):
+def doit(sw,max_iters):
     print 'Solving...'
-    model_paths = _sw.train_model(max_iters)
+    model_paths = sw.train_model(max_iters)
     print 'done solving'
     return model_paths

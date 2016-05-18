@@ -17,7 +17,10 @@ import _init_paths
 from fast_rcnn.config import cfg
 import numpy as np
 
-cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/hires_filter/hires_filter_val.root"]
+cfg.ROOTFILES   = ["/data/drinkingkazu/production/v03/hires_crop/data_extbnb/part01/hiresdiv_extbnb_0000_0009.root"]
+
+# /stage/drinkingkazu/production/v03/hires_crop/mc_bnb/hirescrop_bnb.root"]
+
 cfg.IMAGE2DPROD  = "tpc_hires_crop"
 cfg.ROIPROD = "tpc_hires_crop"
 cfg.HEIGHT= 576
@@ -31,36 +34,41 @@ cfg.IMAX = 400
 cfg.PIXEL_MEANS = np.array([[[ 0 ]]])
 cfg.UB_N_CLASSES = 5
 
+cfg.TEST.SCALES    = [576]
+cfg.TEST.MAX_SIZE  = 576
+
 CLASSES = ('__background__',
            'Eminus','Gamms','Muminus','Piminus','Proton')
-
 
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
 import matplotlib.pyplot as plt
 
-import scipy.io as sio
 import caffe, os, sys, cv2
 import argparse
 from ROOT import larcv
+
 larcv.load_pyutil
+
 import numpy as np
 import lib.utils.root_handler as rh
 
 NETS = {'rpn_uboone': ('alex_5_singlep',
-                       'rpn_uboone_alex_5_singlep__iter_60000.caffemodel') }
+                       'rpn_uboone_alex_5_singlep__iter_100000.caffemodel') }
 
 
-
-def vis_detections(im, class_name, dets, image_name, thresh=0.5):
+#def vis_detections(im, class_name, dets, image_name, thresh=0.5):
+def vis_detections(im, detections, image_name, thresh=0.5):
     """Draw detected bounding boxes."""
     
-    inds = np.where(dets[:, -1] >= thresh)[0]
-    if len(inds) == 0:
-        return
+    thres_dets = {}
+    for class_name,dets in detections.iteritems():
+        inds = np.where(dets[:,-1] >= thresh)[0]
+        thres_dets[class_name] = (dets,inds)
     
     imm = np.zeros([im.shape[0], im.shape[1]] + [3])
+
     for j in xrange(3):
         imm[:,:,j] = im[:,:,0]
 
@@ -69,25 +77,31 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     fig, ax = plt.subplots(figsize=(12, 12))
     ax.imshow(imm, aspect='equal')
 
-    annos = None
-    with open( "data/{}/valid/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
-        annos = f.read()
+    # annos = None
+    # with open( "data/{}/valid/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
+    #     annos = f.read()
     
-    annos = annos.split(" ");
-    truth = str(annos[0])
-    annos = annos[1:]
+    # annos = annos.split(" ");
+    # truth = str(annos[0])
+    # annos = annos[1:]
 
-    a = []
-    for anno in annos:
-        anno = anno.rstrip()
-        a.append(float(anno))
+    # a = []
+    # for anno in annos:
+    #     anno = anno.rstrip()
+    #     a.append(float(anno))
         
-    ax.add_patch(
-        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
-
-    for i in inds:
-        bbox  = dets[i, :4]
-        score = dets[i, -1]
+    # ax.add_patch(
+    #     plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+    k = 0
+    for class_name,dets_inds in thres_dets.iteritems():
+        print type(dets_inds)
+        dets = dets_inds[0]
+        inds = dets_inds[1]
+        if len(inds) == 0: continue
+        k+=1
+        for i in inds:
+            bbox  = dets[i, :4]
+            score = dets[i, -1]
 
         ax.add_patch(
             plt.Rectangle((bbox[0], bbox[1]),
@@ -101,15 +115,17 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                 fontsize=14, color='white')
 
     ax.set_title(('Truth=={}   Detection =={} with '
-                  'p({} | box) >= {:.1f}').format(truth,
+                  'p({} | box) >= {:.1f}').format("cosmic",
                                                   class_name, 
                                                   class_name,
-                                                  thresh),
-                  fontsize=14)
+                                                  thresh),fontsize=14)
+    if k == 0:
+        return
+
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
-    plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
+    plt.savefig("{}_{}_demo_cosmic.png".format(image_name,class_name),format="png")
     
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
@@ -124,8 +140,9 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.5
-    NMS_THRESH = 0.3
+    CONF_THRESH = 0.6
+    NMS_THRESH = 0.4
+    detections = {}
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
         cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
@@ -135,8 +152,9 @@ def demo(net, image_name):
 
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
-        print "{}".format(dets)
-        vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
+        detections[cls] = dets
+
+    vis_detections(im, detections, image_name,thresh=CONF_THRESH)
 
 def parse_args():
     """Parse input arguments."""
@@ -180,14 +198,13 @@ if __name__ == '__main__':
     net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
-
-
     
-    im_names = []
-    for i in xrange(65):
-        rand = np.random.random_integers(0,19000)
-        if rand not in im_names:
-            im_names.append(rand)
+    im_names = [i for i in xrange(250)]
+
+    # for i in xrange(65):
+    #     rand = np.random.random_integers(0,19000)
+    #     if rand not in im_names:
+    #         im_names.append(rand)
   
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

@@ -15,36 +15,47 @@ See README.md for installation instructions before running.
 
 import _init_paths
 from fast_rcnn.config import cfg
-cfg.DEBUG = True
+import numpy as np
+
+cfg.ROOTFILES   = ["/data/drinkingkazu/production/v03/hires_crop/data_extbnb/part01/hiresdiv_extbnb_0000_0009.root"]
+
+# /stage/drinkingkazu/production/v03/hires_crop/mc_bnb/hirescrop_bnb.root"]
+
+cfg.IMAGE2DPROD  = "tpc_hires_crop"
+cfg.ROIPROD = "tpc_hires_crop"
+cfg.HEIGHT= 576
+cfg.WIDTH = 576
+cfg.DEVKIT = "HiresFilterDevkit"
+cfg.IMAGE_LOADER = "SinglepLoader"
+cfg.RNG_SEED= 7
+cfg.NCHANNELS = 1
+cfg.IMIN = 50
+cfg.IMAX = 400
+cfg.PIXEL_MEANS = np.array([[[ 0 ]]])
+cfg.UB_N_CLASSES = 5
+
+cfg.TEST.SCALES    = [576]
+cfg.TEST.MAX_SIZE  = 576
+
+CLASSES = ('__background__',
+           'Eminus','Gamms','Muminus','Piminus','Proton')
 
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
 import matplotlib.pyplot as plt
-import numpy as np
-import scipy.io as sio
+
 import caffe, os, sys, cv2
 import argparse
 from ROOT import larcv
+
 larcv.load_pyutil
+
 import numpy as np
-
-
-cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/data/drinkingkazu/forvic/train.root"]
-cfg.IMAGE2DPROD  = "train"
-
 import lib.utils.root_handler as rh
 
-CLASSES = ('__background__',
-           'neutrino')
-           #'eminus','proton','pizero','muminus')
-
-NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_4221.caffemodel') }
-                       #'rpn_uboone_alex_4__iter_2000.caffemodel') }
-
-#/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/rpn_uboone_alex_nu__iter_3211.caffemodel
+NETS = {'rpn_uboone': ('alex_5_singlep',
+                       'rpn_uboone_alex_5_singlep__iter_100000.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -54,31 +65,31 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         return
     
-    im = im[:, :, (2, 1, 0)]
-    im = im.astype(np.uint8)
+    imm = np.zeros([im.shape[0], im.shape[1]] + [3])
+
+    for j in xrange(3):
+        imm[:,:,j] = im[:,:,0]
+
+    imm = imm.astype(np.uint8)
 
     fig, ax = plt.subplots(figsize=(12, 12))
-    ax.imshow(im, aspect='equal')
+    ax.imshow(imm, aspect='equal')
 
-    annos = None
-    with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
-        annos = f.read()
+    # annos = None
+    # with open( "data/{}/valid/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
+    #     annos = f.read()
     
-    annos = annos.split("\n")
+    # annos = annos.split(" ");
+    # truth = str(annos[0])
+    # annos = annos[1:]
 
-
-    print annos
-    for anno in annos:
-        if anno == '': continue
-        bb = []
-        anno = anno.rstrip()
-        anno = anno.split(" ")
-        anno = anno[1:]
-        for b in anno:
-            bb.append(float(b))
+    # a = []
+    # for anno in annos:
+    #     anno = anno.rstrip()
+    #     a.append(float(anno))
         
-        ax.add_patch(
-            plt.Rectangle( (bb[0],bb[1]),bb[2]-bb[0], bb[3]-bb[1],fill=False,edgecolor='blue',linewidth=3.5) )
+    # ax.add_patch(
+    #     plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
 
     for i in inds:
         bbox  = dets[i, :4]
@@ -95,32 +106,31 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                 bbox=dict(facecolor='blue', alpha=0.5),
                 fontsize=14, color='white')
 
-    ax.set_title(('{} : {} detections with '
-                  'p({} | box) >= {:.1f}').format(image_name,class_name, class_name,
+    ax.set_title(('Truth=={}   Detection =={} with '
+                  'p({} | box) >= {:.1f}').format("nu",
+                                                  class_name, 
+                                                  class_name,
                                                   thresh),
                   fontsize=14)
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
-    plt.savefig("{}_demo.png".format(image_name),format="png")
+    plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
     
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
 
-    # Load the demo image
-    #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
 
     im = rh.get_image(int(image_name))
-    
     timer = Timer()
     timer.tic()
-    scores, boxes = im_detect(net, im)
+    scores, boxes = im_detect(net, int(image_name), im=im)
     timer.toc()
     print ('Detection took {:.3f}s for '
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.8
+    CONF_THRESH = 0.5
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -128,6 +138,7 @@ def demo(net, image_name):
         cls_scores = scores[:, cls_ind]
         dets = np.hstack((cls_boxes,
                           cls_scores[:, np.newaxis])).astype(np.float32)
+
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
         print "{}".format(dets)
@@ -155,15 +166,13 @@ if __name__ == '__main__':
     
     cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
 
-    # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
-    #                         'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
-
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
-    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/',
-                              NETS[args.demo_net][1])
+    caffemodel = os.path.join('/stage/vgenty/faster_rcnn_end2end/rpn_uboone_train_5',NETS[args.demo_net][1])
     
+    
+    #/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
                        'fetch_faster_rcnn_models.sh?').format(caffemodel))
@@ -177,64 +186,15 @@ if __name__ == '__main__':
     net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
+    
+    im_names = [0,1,2,3,4,5,6,7,8,9,10,11,12,13]
 
-    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
-    #cfg.PIXEL_MEANS = np.array([[[169.891403198, 85.0149765015, 0.093599461019]]])
-    #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 0.85868966579]]])
-
-    cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
-    #im_names = [241,242,246,247,25]
-
-
-    im_names = [870,
-                872,
-                873,
-                874,
-                876,
-                888,
-                891,
-                892,
-                893,
-                897,
-                899,
-                9,
-                900,
-                902,
-                903,
-                904]
-
-
-    # im_names = [1931,
-    #             1932,
-    #             1935,
-    #             1936,
-    #             1938,
-    #             1940,
-    #             1941,
-    #             1946,
-    #             1949,
-    #             1951,
-    #             1952,
-    #             1953,
-    #             1956,
-    #             1957,
-    #             1958,
-    #             1960,
-    #             1961,
-    #             1963,
-    #             1964,
-    #             1966,
-    #             1967,
-    #             1972,
-    #             1973,
-    #             1976,
-    #             1980,
-    #             1981]
-    #,im_names  = [1,2,3,4,5,6,7]
-
+    # for i in xrange(65):
+    #     rand = np.random.random_integers(0,19000)
+    #     if rand not in im_names:
+    #         im_names.append(rand)
+  
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
-
-    plt.show()

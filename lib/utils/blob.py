@@ -39,14 +39,22 @@ def prep_im_for_blob(im, pixel_means, target_size, max_size):
     im_shape = im.shape
     im_size_min = np.min(im_shape[0:2])
     im_size_max = np.max(im_shape[0:2])
+    
     im_scale = float(target_size) / float(im_size_min)
+    
     # Prevent the biggest axis from being more than MAX_SIZE
     if np.round(im_scale * im_size_max) > max_size:
         im_scale = float(max_size) / float(im_size_max)
     
     # no need to resize...
+    print "resizing im_shape : {} im_size_min {} im_size_max {} im_scale : {}".format(im_shape,
+                                                                                      im_size_min,
+                                                                                      im_size_max,
+                                                                                      im_scale)
+    # #INTER_LINEAR - a bilinear interpolation (used by default)
+    # im = cv2.resize(im, None, None, fx=im_scale, fy=im_scale,
+    #                 interpolation=cv2.INTER_LINEAR)
 
-    #im = cv2.resize(im, None, None, fx=im_scale, fy=im_scale,
-    #                interpolation=cv2.INTER_LINEAR)
+    print "after resize im.shape {} and im_scale {}".format(im.shape,im_scale)
 
     return im, im_scale

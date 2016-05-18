@@ -43,6 +43,8 @@ def get_image(ttree_index):
     s   = im.shape
     imm = np.zeros([ s[0], s[1], img_v.size() ])
 
+    print "just got image shape: {}".format(imm.shape)
+
     assert img_v.size() == 3
 
     for j in xrange(img_v.size()):
@@ -57,18 +59,23 @@ def get_im_blob(roidb,scale_inds) :
     num_images = len(roidb)
     processed_ims = []
     im_scales = []
-    print roidb
+
     for i in xrange(num_images):
 
         imm = get_image( int( roidb[i]['image'] ) )
         
         if roidb[i]['flipped']:
             imm = imm[:, ::-1, :]
-        
-        imm, im_scale = prep_im_for_blob(imm, cfg.PIXEL_MEANS, imm.shape[0],
+            
+        target_size = cfg.TRAIN.SCALES[0]
+
+        imm, im_scale = prep_im_for_blob(imm, 
+                                         cfg.PIXEL_MEANS, 
+                                         target_size,
                                          cfg.TRAIN.MAX_SIZE)
 
-        im_scales.append(1) #1 to 1 scaling!
+        im_scale = 1
+        im_scales.append(im_scale) #1 to 1 scaling!
         processed_ims.append(imm)
 
     # Create a blob to hold the input images

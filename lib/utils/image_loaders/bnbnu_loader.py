@@ -1,10 +1,10 @@
 from imageloaderbase import ImageLoaderBase
 
-class SinglepLoader(ImageLoaderBase):
+class BNBNuLoader(ImageLoaderBase):
 
     def __init__(self,imin,imax):
-        super(SinglepLoader,self).__init__()
-        self.name = "SinglepLoader"
+        super(BNBNuLoader,self).__init__()
+        self.name = "BNBNuLoader"
         self.imin = imin
         self.imax = imax
 
@@ -12,9 +12,6 @@ class SinglepLoader(ImageLoaderBase):
         
         assert img.shape[-1] == 3 #better be three channels
 
-        for i in xrange(3):
-            img[:,:,i] = img[:,:,i].T
-        
         # subtract off the minimum
         img -= self.imin;
         

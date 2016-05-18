@@ -14,13 +14,13 @@ from fast_rcnn.config import cfg
 
 entries = None
 
-with open("/stage/vgenty/Singledevkit5/train_5.txt") as f:
+with open("/stage/vgenty/HiresFilterDevkit/train_5.txt") as f:
     entries = f.read()
 
 entries = [im for im in entries.split("\n") if im != "" ] 
 
 cfg.IMAGE_LOADER = "SinglepLoader"
-cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v03/train_v2.root"]
+cfg.ROOTFILES    = ["/stage/drinkingkazu/production/v03/hires_filter/hires_filter_train_copy1.root"]
 cfg.IMAGE2DPROD  = "tpc_hires_crop"
 
 import lib.utils.root_handler as rh
@@ -31,7 +31,7 @@ for i,entry in enumerate(entries):
     imm = rh.get_image(entry)
     
     annoz = None
-    with open( "/stage/vgenty/Singledevkit5/Annotations/{}.txt".format(entry)) as f:
+    with open("/stage/vgenty/HiresFilterDevkit/Annotations/{}.txt".format(entry)) as f:
         annoz = f.read()
 
     annos_v = annoz.split("\n")
@@ -52,6 +52,7 @@ for i,entry in enumerate(entries):
     imm = imm.astype(np.uint8)
     im = np.zeros( [imm.shape[0],imm.shape[1]] + [3] )
     print im.shape
+
     for u in xrange(3):
         im[:,:,u] = imm[:,:,0]
     
