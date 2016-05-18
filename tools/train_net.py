@@ -115,5 +115,10 @@ if __name__ == '__main__':
                     pretrained_model=args.pretrained_model,
                     max_iters=args.max_iters)
 
-    doit()
+    doit(args.max_iters)
     
+
+
+
+
+

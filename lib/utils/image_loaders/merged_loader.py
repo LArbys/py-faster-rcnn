@@ -2,9 +2,11 @@ from imageloaderbase import ImageLoaderBase
 
 class MergedLoader(ImageLoaderBase):
 
-    def __init__(self):
+    def __init__(self,imin,imax):
         super(MergedLoader,self).__init__()
         self.name = "MergedLoader"
+        self.imin = imin
+        self.imax = imax
 
     def __load_image__(self,img):
         
@@ -13,10 +15,10 @@ class MergedLoader(ImageLoaderBase):
         for i in xrange(3):
             img[:,:,i] = img[:,:,i].T
 
-        img -= 10
+        img -= self.imin
 
         img[ img < 0 ]   = 0
-        img[ img > 400 ] = 400
+        img[ img > self.imax ] = self.imax
     
         img = img[::-1,:,:]
 
