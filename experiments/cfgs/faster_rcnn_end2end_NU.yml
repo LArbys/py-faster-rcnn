@@ -14,6 +14,9 @@ DEVKIT : "Singlesdevkit3"
 IMAGE_LOADER : "MergedLoader"
 RNG_SEED: 6
 DEBUG : False
+NCHANNELS: 3
+IMIN : 0
+IMAX : 1000
 
 TRAIN:
 

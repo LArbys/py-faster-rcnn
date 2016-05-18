@@ -13,6 +13,9 @@ DEVKIT : "Singlesdevkit5"
 IMAGE_LOADER : "SinglepLoader"
 RNG_SEED: 5
 DEBUG : False
+NCHANNELS : 1
+IMIN : 50
+IMAX : 400
 
 TRAIN:
   HAS_RPN: True
