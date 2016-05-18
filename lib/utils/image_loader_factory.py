@@ -1,3 +1,5 @@
+from fast_rcnn.config import cfg
+
 from image_loaders.merged_loader        import MergedLoader
 from image_loaders.larbys_detect_loader import LarbysDetectLoader
 from image_loaders.singlep_loader       import SinglepLoader
@@ -12,7 +14,7 @@ class ImageLoaderFactory(object):
             return SinglepLoader()
         
         if loader_name == "MergedLoader":
-            return MergedLoader()
+            return MergedLoader(cfg.IMIN,cfg.IMAX)
         
         if loader_name == "LarbysDetectLoader":
             return LarbysDetectLoader()

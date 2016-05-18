@@ -225,6 +225,9 @@ __C.HEIGHT = 864
 __C.WIDTH = 864
 __C.DEVKIT = "Singledevkit4"
 __C.IMAGE_LOADER = "LarbysDetectLoader"
+__C.NCHANNELS = 3
+__C.IMIN = 0
+__C.IMAX = 1000
 
 def get_output_dir(imdb, net=None):
     """Return the directory where experimental artifacts are placed.

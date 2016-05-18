@@ -31,8 +31,8 @@ import numpy as np
 
 
 cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/stage/vgenty/nucropper_overlay_today_fake_color.root"]
-cfg.IMAGE2DPROD  = "fake_color"
+cfg.ROOTFILES   = ["/data/drinkingkazu/forvic/train.root"]
+cfg.IMAGE2DPROD  = "train"
 
 import lib.utils.root_handler as rh
 
@@ -41,10 +41,10 @@ CLASSES = ('__background__',
            #'eminus','proton','pizero','muminus')
 
 NETS = {'rpn_uboone': ('alex_nu',
-                       'rpn_uboone_alex_nu__iter_13000.caffemodel') }
+                       'rpn_uboone_alex_nu__iter_4221.caffemodel') }
                        #'rpn_uboone_alex_4__iter_2000.caffemodel') }
 
-
+#/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/rpn_uboone_alex_nu__iter_3211.caffemodel
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -64,16 +64,21 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     with open( "data/Singlesdevkit3/Annotations/{}.txt".format(image_name) ) as f:
         annos = f.read()
     
-    annos = annos.split(" ");
-    annos = annos[1:]
+    annos = annos.split("\n")
 
-    a = []
+
+    print annos
     for anno in annos:
+        if anno == '': continue
+        bb = []
         anno = anno.rstrip()
-        a.append(float(anno))
+        anno = anno.split(" ")
+        anno = anno[1:]
+        for b in anno:
+            bb.append(float(b))
         
-    ax.add_patch(
-        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+        ax.add_patch(
+            plt.Rectangle( (bb[0],bb[1]),bb[2]-bb[0], bb[3]-bb[1],fill=False,edgecolor='blue',linewidth=3.5) )
 
     for i in inds:
         bbox  = dets[i, :4]
@@ -115,8 +120,8 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.01
-    NMS_THRESH = 0.05
+    CONF_THRESH = 0.8
+    NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
         cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
@@ -174,16 +179,62 @@ if __name__ == '__main__':
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
     #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 1.85868966579]]])
-    cfg.PIXEL_MEANS = np.array([[[169.891403198, 85.0149765015, 0.093599461019]]])
+    #cfg.PIXEL_MEANS = np.array([[[169.891403198, 85.0149765015, 0.093599461019]]])
     #cfg.PIXEL_MEANS = np.array([[[167.205322266, 85.9359436035, 0.85868966579]]])
 
-    #cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
-    im_names = [241,242,246,247,25]
-    #im_names  = [1,2,3,4,5,6,7]
+    cfg.PIXEL_MEANS = np.array([[[0.0,0.0,0.0]]])
+    #im_names = [241,242,246,247,25]
+
+
+    im_names = [870,
+                872,
+                873,
+                874,
+                876,
+                888,
+                891,
+                892,
+                893,
+                897,
+                899,
+                9,
+                900,
+                902,
+                903,
+                904]
+
+
+    # im_names = [1931,
+    #             1932,
+    #             1935,
+    #             1936,
+    #             1938,
+    #             1940,
+    #             1941,
+    #             1946,
+    #             1949,
+    #             1951,
+    #             1952,
+    #             1953,
+    #             1956,
+    #             1957,
+    #             1958,
+    #             1960,
+    #             1961,
+    #             1963,
+    #             1964,
+    #             1966,
+    #             1967,
+    #             1972,
+    #             1973,
+    #             1976,
+    #             1980,
+    #             1981]
+    #,im_names  = [1,2,3,4,5,6,7]
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
 
-    #plt.show()
+    plt.show()

@@ -19,6 +19,9 @@ import google.protobuf as pb2
 
 DEBUG = cfg.DEBUG
 
+_sw = None
+_roidb = None
+
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
     This wrapper gives us control over he snapshotting process, which we
@@ -177,11 +180,13 @@ def train_net(solver_prototxt, roidb, output_dir,
 
     if DEBUG: print "Training a Fast R-CNN network"
 
-    roidb = filter_roidb(roidb)
-    sw = SolverWrapper(solver_prototxt, roidb, output_dir,
+    _roidb = filter_roidb(roidb)
+    _sw = SolverWrapper(solver_prototxt, _roidb, output_dir,
                        pretrained_model=pretrained_model)
+    return _sw
 
+def doit(max_iters):
     print 'Solving...'
-    model_paths = sw.train_model(max_iters)
+    model_paths = _sw.train_model(max_iters)
     print 'done solving'
     return model_paths

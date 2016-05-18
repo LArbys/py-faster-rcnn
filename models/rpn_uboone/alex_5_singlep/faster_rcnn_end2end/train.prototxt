@@ -1,4 +1,4 @@
-name: "alex_NU_train"
+name: "alex_5_singlep_Train"
 
 layer {
   name: 'input-data'
@@ -9,12 +9,12 @@ layer {
   python_param {
     module: 'roi_data_layer.layer'
     layer: 'RoIDataLayer'
-    param_str: "'num_classes': 2"
+    param_str: "'num_classes': 6"
   }
 }
 
 ######################
-#########NUALEXNEX####
+###########ALEXNEX####
 ######################
 
 layer {
@@ -251,7 +251,7 @@ layer {
     num_output: 256
     kernel_size: 3 pad: 1 stride: 1
     weight_filler { type: "gaussian" std: 0.01 }
-    bias_filler { type: "constant" value: 0 }
+    bias_filler   { type: "constant" value: 0 }
   }
 }
 layer {
@@ -401,7 +401,7 @@ layer {
   python_param {
     module: 'rpn.proposal_target_layer'
     layer: 'ProposalTargetLayer'
-    param_str: "'num_classes': 2"
+    param_str: "'num_classes': 6"
   }
 }
 
@@ -420,10 +420,10 @@ layer {
   }
 }
 layer {
-  name: "fc6"
+  name: "fc6-rl"
   type: "InnerProduct"
   bottom: "pool5"
-  top: "fc6"
+  top: "fc6-rl"
   param {
     lr_mult: 1
   }
@@ -434,7 +434,7 @@ layer {
     num_output: 4096
     weight_filler {
       type: "gaussian"
-      std: 0.001
+      std: 0.01
     }
     bias_filler {
       type: "constant"
@@ -445,23 +445,23 @@ layer {
 layer {
   name: "relu6"
   type: "ReLU"
-  bottom: "fc6"
-  top: "fc6"
+  bottom: "fc6-rl"
+  top: "fc6-rl"
 }
 layer {
   name: "drop6"
   type: "Dropout"
-  bottom: "fc6"
-  top: "fc6"
+  bottom: "fc6-rl"
+  top: "fc6-rl"
   dropout_param {
     dropout_ratio: 0.5
   }
 }
 layer {
-  name: "fc7"
+  name: "fc7-rl"
   type: "InnerProduct"
-  bottom: "fc6"
-  top: "fc7"
+  bottom: "fc6-rl"
+  top: "fc7-rl"
   param {
     lr_mult: 1
   }
@@ -472,7 +472,7 @@ layer {
     num_output: 4096
     weight_filler {
       type: "gaussian"
-      std: 0.001
+      std: 0.01
     }
     bias_filler {
       type: "constant"
@@ -483,23 +483,22 @@ layer {
 layer {
   name: "relu7"
   type: "ReLU"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7-rl"
+  top: "fc7-rl"
 }
 layer {
   name: "drop7"
   type: "Dropout"
-  bottom: "fc7"
-  top: "fc7"
+  bottom: "fc7-rl"
+  top: "fc7-rl"
   dropout_param {
     dropout_ratio: 0.5
-
   }
 }
 layer {
   name: "cls_score"
   type: "InnerProduct"
-  bottom: "fc7"
+  bottom: "fc7-rl"
   top: "cls_score"
   param {
     lr_mult: 1
@@ -508,7 +507,7 @@ layer {
     lr_mult: 2
   }
   inner_product_param {
-    num_output: 2
+    num_output: 6
     weight_filler {
       type: "gaussian"
       std: 0.01
@@ -522,7 +521,7 @@ layer {
 layer {
   name: "bbox_pred"
   type: "InnerProduct"
-  bottom: "fc7"
+  bottom: "fc7-rl"
   top: "bbox_pred"
   param {
     lr_mult: 1
@@ -531,7 +530,7 @@ layer {
     lr_mult: 2
   }
   inner_product_param {
-    num_output: 8
+    num_output: 24
     weight_filler {
       type: "gaussian"
       std: 0.001
@@ -562,3 +561,4 @@ layer {
   top: "loss_bbox"
   loss_weight: 1
 }
+
