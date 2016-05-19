@@ -1,0 +1,38 @@
+EXP_DIR: faster_rcnn_end2end
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [ neutrino ]
+UB_N_CLASSES : 1
+PIXEL_MEANS  : [[[ 0.0 ]]]
+
+ROOTFILES   : ["/stage/vgenty/train_nu.root"]
+IMAGE2DPROD : "train"
+ROIPROD : "train"
+HEIGHT: 864
+WIDTH : 864
+DEVKIT : "NuDevkit"
+IMAGE_LOADER : "SinglepLoader"
+RNG_SEED: 8
+DEBUG : False
+NCHANNELS : 1
+IMIN : 5
+IMAX : 400
+
+TRAIN:
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [864]
+  MAX_SIZE  : 864
+    
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [864]
+  MAX_SIZE  : 864
+

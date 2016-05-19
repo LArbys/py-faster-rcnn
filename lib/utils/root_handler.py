@@ -43,7 +43,7 @@ def get_image(ttree_index):
     s   = im.shape
     imm = np.zeros([ s[0], s[1], img_v.size() ])
 
-    print "just got image shape: {}".format(imm.shape)
+    # print "just got image shape: {}".format(imm.shape)
 
     assert img_v.size() == 3
 

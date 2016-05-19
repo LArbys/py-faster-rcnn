@@ -14,15 +14,15 @@ from fast_rcnn.config import cfg
 
 entries = None
 
-with open("/stage/vgenty/Singledevkit3/train_1.txt") as f:
+with open("/stage/vgenty/NuDevKit/train_1.txt") as f:
     entries = f.read()
 
 entries = [im for im in entries.split("\n") if im != "" ] 
 
-cfg.IMAGE_LOADER = "MergedLoader"
-cfg.ROOTFILES   = ["/stage/vgenty/nucropper_overlay_today_fake_color.root"
-]
-cfg.IMAGE2DPROD  = "fake_color"
+cfg.IMAGE_LOADER = "SinglepLoader"
+cfg.ROOTFILES   = ["/stage/vgenty/train_nu.root"]
+
+cfg.IMAGE2DPROD  = "train"
 
 import lib.utils.root_handler as rh
 
@@ -32,7 +32,7 @@ for i,entry in enumerate(entries):
     imm = rh.get_image(entry)
     
     annoz = None
-    with open( "/stage/vgenty/Singledevkit3/Annotations/{}.txt".format(entry)) as f:
+    with open( "/stage/vgenty/NuDevKit/Annotations/{}.txt".format(entry)) as f:
         annoz = f.read()
 
     annos_v = annoz.split("\n")
@@ -52,7 +52,11 @@ for i,entry in enumerate(entries):
 
     fig,ax = plt.subplots(figsize = (12,12))
     imm = imm.astype(np.uint8)
-    plt.imshow(imm[:,:,(2,1,0)])
+    im = np.zeros([imm.shape[0],imm.shape[1]] + [3])
+    for i in xrange(3):
+        im[:,:,i] = imm[:,:,0]
+
+    plt.imshow(im[:,:,(2,1,0)])
 
     plt.axis('off')
     for b in a_v:
