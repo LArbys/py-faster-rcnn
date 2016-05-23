@@ -1,0 +1,1 @@
+python tools/uboone_diag.py --gpu 2 --def models/rpn_uboone/alex_5_singlep/faster_rcnn_end2end/test.prototxt --net /stage/vgenty/faster_rcnn_end2end/rpn_uboone_train_5/rpn_uboone_alex_5_singlep__iter_170000.caffemodel --cfg experiments/cfgs/hires_filter_singlep_5_test.yml --imdb rpn_uboone_train_5 

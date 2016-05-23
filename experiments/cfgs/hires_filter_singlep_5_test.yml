@@ -1,0 +1,38 @@
+EXP_DIR: faster_rcnn_end2end
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [Eminus,Gamms,Muminus,Piminus,Proton]
+UB_N_CLASSES : 5
+PIXEL_MEANS  : [[[ 0.0 ]]]
+
+ROOTFILES   : ["/stage/drinkingkazu/production/v03/hires_filter/hires_filter_val.root"]
+IMAGE2DPROD  : "tpc_hires_crop"
+ROIPROD : "tpc_hires_crop"
+HEIGHT: 576
+WIDTH : 576
+DEVKIT : "HiresFilterDevkit"
+IMAGE_LOADER : "SinglepLoader"
+RNG_SEED: 7
+DEBUG : False
+NCHANNELS : 1
+IMIN : 50
+IMAX : 400
+
+TRAIN:
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [576]
+  MAX_SIZE  : 576
+    
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [576]
+  MAX_SIZE  : 576
+

@@ -10,12 +10,14 @@
 """Test a Fast R-CNN network on an image database."""
 
 import _init_paths
-from fast_rcnn.ub_test import test_net
-from fast_rcnn.config  import cfg, cfg_from_file, cfg_from_list
+
+from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list
+
 import caffe
 import argparse
 import pprint
 import time, os, sys
+
 
 def parse_args():
     """
@@ -68,7 +70,9 @@ if __name__ == '__main__':
         cfg_from_list(args.set_cfgs)
 
     cfg.GPU_ID = args.gpu_id
-
+    
+    from fast_rcnn.test  import test_net
+    
     print('Using config:')
     pprint.pprint(cfg)
 
@@ -76,26 +80,29 @@ if __name__ == '__main__':
         print('Waiting for {} to exist...'.format(args.caffemodel))
         time.sleep(10)
     
-    print("\t==> Set GPU mode " + '\033[94m' + "ON" + '\033[0m')
+    print("\t==> Set GPU mode \033[94m ON \033[0m")
     caffe.set_mode_gpu()
     caffe.set_device(args.gpu_id)
 
-    # caffe.set_mode_cpu()
-    
-    for i in xrange(10):
-        print("\t==> Loading " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')
+    for i in xrange(20):
+        print("\t==> Loading \033[92m N \033[91m E \033[93m T \033[0m")
 
     net = caffe.Net(args.prototxt, args.caffemodel, caffe.TEST)
     net.name = os.path.splitext(os.path.basename(args.caffemodel))[0]
     
     from datasets.factory import get_imdb
+    print "Getting imdb_name: {}".format(args.imdb_name)
 
     imdb = get_imdb(args.imdb_name)
+
     imdb.competition_mode(args.comp_mode)
+    
+    print "Do I have RPN? {}".format(cfg.TEST.HAS_RPN)
+    
     if not cfg.TEST.HAS_RPN:
         imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)
 
-    for i in xrange(10):
-        print("\t==> TESTING " + '\033[92m' + "N" + '\033[91m' + "E" + '\033[93m' + "T" + '\033[0m')
-
+    for i in xrange(20):
+        print("\t==> Testing \033[92m N \033[91m E \033[93m T \033[0m")
+    
     test_net(net, imdb, max_per_image=args.max_per_image, vis=False)
