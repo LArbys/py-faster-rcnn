@@ -5,18 +5,20 @@ UB_CLASSES   : [ neutrino ]
 UB_N_CLASSES : 1
 PIXEL_MEANS  : [[[ 0.0 ]]]
 
-ROOTFILES   : ["/stage/vgenty/train_nu.root"]
-IMAGE2DPROD : "train"
-ROIPROD : "train"
+ROOTFILES   : ["/stage/drinkingkazu/production/v04/nu_sample/train.root"]
+IMAGE2DPROD : "tpc"
+ROIPROD : "tpc"
+#HEIGHT: 756
+#WIDTH : 864
 HEIGHT: 864
-WIDTH : 864
-DEVKIT : "NuDevkit"
-IMAGE_LOADER : "SinglepLoader"
-RNG_SEED: 8
+WIDTH : 756
+DEVKIT : "NuDevKitv04"
+IMAGE_LOADER : "BNBNuv04Loader"
+RNG_SEED: 9
 DEBUG : False
 NCHANNELS : 1
-IMIN : 5.0
-IMAX : 400.0
+IMIN : 0.5
+IMAX : 10.0
 
 TRAIN:
   HAS_RPN: True
@@ -27,12 +29,12 @@ TRAIN:
   PROPOSAL_METHOD: gt
   BG_THRESH_LO: 0.0
 
-  SCALES    : [864]
+  SCALES    : [756]
   MAX_SIZE  : 864
     
    
 TEST:
   HAS_RPN: True
-  SCALES    : [864]
+  SCALES    : [756]
   MAX_SIZE  : 864
 

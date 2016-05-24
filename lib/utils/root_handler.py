@@ -13,7 +13,7 @@ IMAGE2DPROD = cfg.IMAGE2DPROD
 ROIPROD     = cfg.ROIPROD
 
 #Load 
-print "'\033[92m'\t>> IOManager Loading in root_handler.py\n'\033[0m'"
+print "\033[92m\t>> IOManager Loading in root_handler.py\n'\033[0m'"
 IOM = larcv.IOManager(larcv.IOManager.kREAD)
 
 for F in FILES:
@@ -27,7 +27,6 @@ IOM.initialize()
 print "\033[94m\t>> Getting image loader %s\n\033[0m"%cfg.IMAGE_LOADER
 ILF = ImageLoaderFactory()
 IMAGELOADER = ILF.get(cfg.IMAGE_LOADER)
-
 
 def get_n_images() :
     return IOM.get_n_entries()
@@ -64,8 +63,10 @@ def get_im_blob(roidb,scale_inds) :
 
         imm = get_image( int( roidb[i]['image'] ) )
         
-        if roidb[i]['flipped']:
-            imm = imm[:, ::-1, :]
+        assert roidb[i]['flipped'] == False
+        
+        #if roidb[i]['flipped']:
+        #    imm = imm[:, ::-1, :]
             
         target_size = cfg.TRAIN.SCALES[0]
 
