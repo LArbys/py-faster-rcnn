@@ -1,0 +1,5 @@
+layer {
+  name: "silence_fc7"
+  type: "Silence"
+  bottom: "pool5/7x7_s1"
+}

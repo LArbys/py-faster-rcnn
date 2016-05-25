@@ -101,7 +101,6 @@ def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
 
     
-    
     datum = cpb.Datum()
     print image_name
     im = lmdb_cursor.get(image_name)

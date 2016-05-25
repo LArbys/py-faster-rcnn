@@ -32,12 +32,11 @@ lmdb_env = lmdb.open( "/stage/vgenty/Singledevkit2/ccqe_supported_images_train.d
 lmdb_txn = lmdb_env.begin()
 lmdb_cursor = lmdb_txn.cursor()
 
-
 CLASSES = ('__background__',
            'neutrino')
 
-NETS = {'rpn_uboone': ('trimese_4',
-                       'rpn_uboone_trimese_4__iter_3000.caffemodel') }
+NETS = {'rpn_uboone': ('trimese_2',
+                       'rpn_uboone_trimese_2__iter_5150.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -46,36 +45,29 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         return
     
+    print "after shape: {}".format(im.shape)
 
+    fig, ax = plt.subplots(figsize=(12, 12))
 
-    print "before (2,1,0) : {}".format(im.shape)
-    a = im[:, :, 0:3].copy()
-
+    a = im[:,:,0:3].copy()
     a[:,:,0] = im[:,:,2]
     a[:,:,1] = im[:,:,6]
     a[:,:,2] = im[:,:,10]
     
-    im = a
+    ax.imshow(a,aspect='equal')
 
-    print "after shape: {}".format(im.shape)
-
-    fig, ax = plt.subplots(figsize=(12, 12))
-    ax.imshow(im, aspect='equal')
-
-    annos = None
-    with open( "data/Singlesdevkit2/Annotations/{}.txt".format(image_name) ) as f:
+    with open( "/stage/vgenty/Singledevkit2/Annotations/{}.txt".format(image_name)) as f:
         annos = f.read()
     
-    annos = annos.split(" ");
-    annos = annos[1:]
-
-    a = []
+    annos = annos.split("\n");
+    annos = [a for a in annos if a != '']
+    
     for anno in annos:
-        anno = anno.rstrip()
-        a.append(int(anno))
-        
-    ax.add_patch(
-        plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+        anno = anno.split(" ")
+        a = anno[1:]
+        a = [int(b) for b in a]
+        ax.add_patch(
+            plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
 
     for i in inds:
         bbox = dets[i, :4]
@@ -95,7 +87,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     ax.set_title(('{} : {} detections with '
                   'p({} | box) >= {:.1f}').format(image_name,class_name, class_name,
                                                   thresh),
-                  fontsize=14)
+                 fontsize=14)
     plt.axis('off')
 
 
@@ -107,17 +99,23 @@ def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
 
     # Load the demo image
-    #im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
-    #im = cv2.imread(im_file)
+
+    # im_file = os.path.join(cfg.DATA_DIR, 'demo', image_name)
+    # im = cv2.imread(im_file)
     
     datum = cpb.Datum()
-    print image_name
     im = lmdb_cursor.get(image_name)
     datum.ParseFromString(im)
     im = caffe.io.datum_to_array(datum)
     im = np.transpose(im, (1,2,0))
+    
+    # a = im[:, :, 0:3].copy()
+    # a[:,:,0] = im[:,:,2]
+    # a[:,:,1] = im[:,:,6]
+    # a[:,:,2] = im[:,:,10]
+    # im = a.copy()
+    # detect all object classes and regress object bounds
 
-    # Detect all object classes and regress object bounds
     timer = Timer()
     timer.tic()
     scores, boxes = im_detect(net, im)
@@ -127,16 +125,18 @@ def demo(net, image_name):
     
 
     # Visualize detections for each class
-    CONF_THRESH = 0.1
+    CONF_THRESH = 0.01
     NMS_THRESH = 0.05
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
         cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
         cls_scores = scores[:, cls_ind]
+       
         dets = np.hstack((cls_boxes,
                           cls_scores[:, np.newaxis])).astype(np.float32)
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
+        
         print "dets {}".format(dets)
         vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
 
@@ -156,11 +156,12 @@ def parse_args():
     return args
 
 if __name__ == '__main__':
+
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
 
     args = parse_args()
     
-    cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
+    cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn-lmdb/models/rpn_uboone'
 
     # prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
     #                         'faster_rcnn_alt_opt', 'fast_rcnn_test.pt')
@@ -168,7 +169,7 @@ if __name__ == '__main__':
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
-    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn/output/faster_rcnn_end2end/rpn_uboone_train_1/',
+    caffemodel = os.path.join(cfg.DATA_DIR, '/home/vgenty/py-faster-rcnn-lmdb/output/faster_rcnn_end2end/rpn_uboone_train_1/',
                             NETS[args.demo_net][1])
 
     if not os.path.isfile(caffemodel):
@@ -181,16 +182,18 @@ if __name__ == '__main__':
         caffe.set_mode_gpu()
         caffe.set_device(args.gpu_id)
         cfg.GPU_ID = args.gpu_id
+
     net = caffe.Net(prototxt, caffemodel, caffe.TEST)
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
     im_names = None
+
     with open("/stage/vgenty/Singledevkit2/train_1.txt") as f:
         im_names = f.read()
+
     im_names = [im for im in im_names.split("\n") if im != ""]
-    print im_names
-    
+    #print im_names
 
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

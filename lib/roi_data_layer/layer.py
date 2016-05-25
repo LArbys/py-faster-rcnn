@@ -92,6 +92,7 @@ class RoIDataLayer(caffe.Layer):
 
         # data blob: holds a batch of N images, each with 3 channels
         idx = 0
+
         #top[idx].reshape(cfg.TRAIN.IMS_PER_BATCH, 3,
         #    max(cfg.TRAIN.SCALES), cfg.TRAIN.MAX_SIZE)
 

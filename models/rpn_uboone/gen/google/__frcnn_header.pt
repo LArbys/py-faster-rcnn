@@ -1,0 +1,16 @@
+name: "NAME_frcnn_STAGE"
+layer {
+  name: 'data'
+  type: 'Python'
+  top: 'data'
+  top: 'rois'
+  top: 'labels'
+  top: 'bbox_targets'
+  top: 'bbox_inside_weights'
+  top: 'bbox_outside_weights'
+  python_param {
+    module: 'roi_data_layer.layer'
+    layer: 'RoIDataLayer'
+    param_str: "'num_classes': NUMCLASSES"
+  }
+}

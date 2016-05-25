@@ -18,6 +18,8 @@ def im_list_to_blob(ims):
     """
     max_shape = np.array([im.shape for im in ims]).max(axis=0)
     num_images = len(ims)
+    # blob = np.zeros((num_images, max_shape[0], max_shape[1], 3),
+    #                 dtype=np.float32)
     blob = np.zeros((num_images, max_shape[0], max_shape[1], 12),
                     dtype=np.float32)
     for i in xrange(num_images):
@@ -34,16 +36,17 @@ def prep_im_for_blob(im, pixel_means, target_size, max_size):
     tic = time.time()
     im = im.astype(np.float32, copy=False)
     toc = time.time()
-    print "Converted im.astype: {}".format(toc-tic)
+    #print "Converted im.astype: {}".format(toc-tic)
     tic = time.time()
     im -= pixel_means
     toc = time.time()
-    print "subtrack pixel_means {}".format(toc-tic)
+    #print "subtrack pixel_means {}".format(toc-tic)
 
     im_shape = im.shape
     im_size_min = np.min(im_shape[0:2])
     im_size_max = np.max(im_shape[0:2])
     im_scale = float(target_size) / float(im_size_min)
+
     # Prevent the biggest axis from being more than MAX_SIZE
     #print im_scale
     # if np.round(im_scale * im_size_max) > max_size:

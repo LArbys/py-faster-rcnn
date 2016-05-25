@@ -9,20 +9,13 @@ import matplotlib.pyplot as plt
 
 import matplotlib.gridspec as gridspec
 
-lmdb_env = lmdb.open( "/stage/vgenty/Singledevkit2/ccqe_supported_images_test.db" )
+lmdb_env = lmdb.open( "/stage/vgenty/Singledevkit2/ccqe_supported_images_train.db" )
 lmdb_txn = lmdb_env.begin()
 lmdb_cursor = lmdb_txn.cursor()
 
-images_names = None
-with open("/home/vgenty/files.idx") as f:
-    image_names = f.read()
-
-image_names = [im for im in image_names.split("\n") if im != "" ] 
-
-for image_name in image_names:
-
+args = sys.argv[1:]
+for image_name in args:
     datum = cpb.Datum()
-    print image_name
     im = lmdb_cursor.get(image_name)
     datum.ParseFromString(im)
     im = caffe.io.datum_to_array(datum)
@@ -34,25 +27,25 @@ for image_name in image_names:
     a[:,:,0] = im[:,:,2]
     a[:,:,1] = im[:,:,6]
     a[:,:,2] = im[:,:,10]
+    
     plt.imshow(a)
     plt.axis('off')
+
     annos = None
-    try:
-        with open( "/stage/vgenty/Singledevkit2/valid/{}.txt".format(image_name)) as f:
-            annos = f.read()
-    except IOError:
-        continue
+    with open( "/stage/vgenty/Singledevkit2/Annotations/{}.txt".format(image_name)) as f:
+        annos = f.read()
     
-    annos = annos.split(" ");
-    annos = annos[1:]
+    annos = annos.split("\n");
+    annos = [a for a in annos if a != '']
     
-    a = []
     for anno in annos:
-        anno = anno.rstrip()
-        a.append(int(anno))
+        anno = anno.split(" ")
+        a = anno[1:]
+        a = [int(b) for b in a]
+        ax.add_patch(
+            plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
         
-    ax.add_patch(
-    plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
+
     ax.set_title("Union box: {}".format(image_name))
-    plt.savefig("union_{}.png".format(image_name))
+    plt.show()
 

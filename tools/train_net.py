@@ -10,14 +10,17 @@
 """Train a Fast R-CNN network on a region of interest database."""
 
 import _init_paths
-from fast_rcnn.train import get_training_roidb, train_net
-from fast_rcnn.config import cfg, cfg_from_file, cfg_from_list, get_output_dir
+from fast_rcnn.config import cfg
+from fast_rcnn.train import get_training_roidb, train_net, doit
+from fast_rcnn.config import cfg_from_file, cfg_from_list, get_output_dir
 import datasets.imdb
 import caffe
 import argparse
 import pprint
 import numpy as np
 import sys
+
+_sw = None
 
 def parse_args():
     """
@@ -92,7 +95,7 @@ if __name__ == '__main__':
     
     #factory uses config file
     from datasets.factory import get_imdb
-
+    
     if not args.randomize:
         # fix the random seeds (numpy and caffe) for reproducibility
         np.random.seed(cfg.RNG_SEED)
@@ -108,6 +111,14 @@ if __name__ == '__main__':
     output_dir = get_output_dir(imdb)
     print 'Output will be saved to `{:s}`'.format(output_dir)
 
-    train_net(args.solver, roidb, output_dir,
-              pretrained_model=args.pretrained_model,
-              max_iters=args.max_iters)
+    _sw = train_net(args.solver, roidb, output_dir,
+                    pretrained_model=args.pretrained_model,
+                    max_iters=args.max_iters)
+
+    doit(_sw,args.max_iters)
+    
+
+
+
+
+

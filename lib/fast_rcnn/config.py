@@ -180,6 +180,20 @@ __C.DEDUP_BOXES = 1./16.
 # they were trained with
 #__C.PIXEL_MEANS = np.array([[[102.9801, 115.9465, 122.7717]]])
 #__C.PIXEL_MEANS = np.array([[[167.9375, 85.0346, 0.0600]]]) # we may have been subtracting TOO much red
+# __C.PIXEL_MEANS = np.array([[[#0.165523931984,
+#                               0.0442534260628,
+#                               #1.10163932881,
+#                               #0.129544005176,
+#                               #0.201202195489,
+#                               0.0479807271123,
+#                               #1.32870532449,
+#                               #0.154122984982,
+#                               #0.199985451512,
+#                               0.0261259395601]]])
+#                               #0.978238622233,
+#                               #0.303586053088]]])
+
+
 __C.PIXEL_MEANS = np.array([[[0.165523931984,
                               0.0442534260628,
                               1.10163932881,
@@ -192,6 +206,10 @@ __C.PIXEL_MEANS = np.array([[[0.165523931984,
                               0.0261259395601,
                               0.978238622233,
                               0.303586053088]]])
+
+
+
+
                           
 # For reproducibility
 __C.RNG_SEED = 3
@@ -225,6 +243,9 @@ __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
 
 __C.RMSPROP = False
+
+
+__C.DEBUG = False
 
 def get_output_dir(imdb, net=None):
     """Return the directory where experimental artifacts are placed.

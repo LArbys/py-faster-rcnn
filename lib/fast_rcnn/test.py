@@ -30,7 +30,7 @@ def _get_image_blob(im):
         im_scale_factors (list): list of image scales (relative to im) used
             in the image pyramid
     """
-    im_orig = im.astype(np.float32, copy=True)
+    im_orig  = im.astype(np.float32, copy=True)
     im_orig -= cfg.PIXEL_MEANS
 
     im_shape = im_orig.shape

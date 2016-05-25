@@ -1,0 +1,12 @@
+layer {
+  name: "roi_pool5"
+  type: "ROIPooling"
+  bottom: "INPUT"
+  bottom: "rois"
+  top: "pool5"
+  roi_pooling_param {
+    pooled_w: POOLEDW
+    pooled_h: POOLEDH
+    spatial_scale: 0.0625 # 1/16
+  }
+}

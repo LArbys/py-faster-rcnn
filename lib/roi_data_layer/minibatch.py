@@ -147,21 +147,30 @@ def _get_image_blob(roidb, scale_inds):
         tic = time.time()
         datum = cpb.Datum()
         tock = time.time()
-        print "Made datum: {}".format(tock-tic)
+        #print "Made datum: {}".format(tock-tic)
         tic = time.time()
         im = lmdb_cursor.get(roidb[i]['image'])
         tock = time.time()
-        print "get im: {}".format(tock-tic)
+        #print "get im: {}".format(tock-tic)
         tic = time.time()
         datum.ParseFromString(im)
         tock = time.time()
-        print "parse from string: {}".format(tock-tic)
+        #print "parse from string: {}".format(tock-tic)
         tic = time.time()
         im = caffe.io.datum_to_array(datum)
         tock = time.time()
-        print "datum_to_array : {}".format(tock-tic)
+        #print "datum_to_array : {}".format(tock-tic)
         
         im = np.transpose(im, (1,2,0))
+
+        # a = im[:,:,0:3].copy()
+        # a[:,:,0] = im[:,:,1]
+        # a[:,:,1] = im[:,:,5]
+        # a[:,:,2] = im[:,:,9]
+        
+        #im = a
+        #print "minibatch shape of im {}".format(im.shape)
+        assert roidb[i]['flipped'] == False
         
         if roidb[i]['flipped']:
             im = im[:, ::-1, :]
@@ -171,7 +180,7 @@ def _get_image_blob(roidb, scale_inds):
         im, im_scale = prep_im_for_blob(im, cfg.PIXEL_MEANS, target_size,
                                         cfg.TRAIN.MAX_SIZE)
         tock = time.time()
-        print "prep_im_for_blob : {}".format(tock-tic)
+        #print "prep_im_for_blob : {}".format(tock-tic)
 
         im_scales.append(im_scale)
         processed_ims.append(im)

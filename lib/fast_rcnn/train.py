@@ -13,9 +13,14 @@ import roi_data_layer.roidb as rdl_roidb
 from utils.timer import Timer
 import numpy as np
 import os
-
+import time
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
+
+DEBUG = cfg.DEBUG
+
+_sw = None
+_roidb = None
 
 class SolverWrapper(object):
     """A simple wrapper around Caffe's solver.
@@ -26,6 +31,7 @@ class SolverWrapper(object):
     def __init__(self, solver_prototxt, roidb, output_dir,
                  pretrained_model=None):
         """Initialize the SolverWrapper."""
+
         self.output_dir = output_dir
 
         if (cfg.TRAIN.HAS_RPN and cfg.TRAIN.BBOX_REG and
@@ -35,19 +41,15 @@ class SolverWrapper(object):
             assert cfg.TRAIN.BBOX_NORMALIZE_TARGETS_PRECOMPUTED
 
         if cfg.TRAIN.BBOX_REG:
-            print 'Computing bounding-box regression targets...'
+            print 'Computing bounding-box regression targets... in SolverWrapper'
             self.bbox_means, self.bbox_stds = \
                     rdl_roidb.add_bbox_regression_targets(roidb)
             print 'done'
-        
-        self.solver = None
-        
-        if cfg.RMSPROP == True:
-            self.solver = caffe.RMSPropSolver(solver_prototxt)
-        else:
-            self.solver = caffe.SGDSolver(solver_prototxt)
-        
-        print "Solver is...{}".format(self.solver)
+
+        print "Making SGDSolver"
+        self.solver = caffe.SGDSolver(solver_prototxt)
+
+        #self.solver = caffe.RMSPropSolver(solver_prototxt)
 
         if pretrained_model is not None:
             print ('Loading pretrained model '
@@ -55,9 +57,14 @@ class SolverWrapper(object):
             self.solver.net.copy_from(pretrained_model)
 
         self.solver_param = caffe_pb2.SolverParameter()
+
+        if DEBUG: 
+            print self.solver_param
+            print roidb
+
         with open(solver_prototxt, 'rt') as f:
             pb2.text_format.Merge(f.read(), self.solver_param)
-
+        
         self.solver.net.layers[0].set_roidb(roidb)
 
     def snapshot(self):
@@ -107,10 +114,19 @@ class SolverWrapper(object):
             # Make one SGD update
             timer.tic()
             self.solver.step(1)
+            
+            #if DEBUG:
+            # print "Made one SGD update"
+            # print self.solver.net
+            # net = self.solver.net
+            # print "Available keys: {}".format(net.blobs.keys())
+            # for k in net.blobs.keys():
+            #     print "{} shape {} : {}".format(k,net.blobs[k].data.shape,net.blobs[k].data)
+            # time.sleep(10)
             timer.toc()
             if self.solver.iter % (10 * self.solver_param.display) == 0:
                 print 'speed: {:.3f}s / iter'.format(timer.average_time)
-
+            
             if self.solver.iter % cfg.TRAIN.SNAPSHOT_ITERS == 0:
                 last_snapshot_iter = self.solver.iter
                 model_paths.append(self.snapshot())
@@ -140,8 +156,10 @@ def filter_roidb(roidb):
         #   (1) At least one foreground RoI OR
         #   (2) At least one background RoI
         overlaps = entry['max_overlaps']
+        
         # find boxes with sufficient overlap
         fg_inds = np.where(overlaps >= cfg.TRAIN.FG_THRESH)[0]
+
         # Select background RoIs as those within [BG_THRESH_LO, BG_THRESH_HI)
         bg_inds = np.where((overlaps < cfg.TRAIN.BG_THRESH_HI) &
                            (overlaps >= cfg.TRAIN.BG_THRESH_LO))[0]
@@ -160,10 +178,14 @@ def train_net(solver_prototxt, roidb, output_dir,
               pretrained_model=None, max_iters=40000):
     """Train a Fast R-CNN network."""
 
-    roidb = filter_roidb(roidb)
-    sw = SolverWrapper(solver_prototxt, roidb, output_dir,
-                       pretrained_model=pretrained_model)
+    if DEBUG: print "Training a Fast R-CNN network"
 
+    _roidb = filter_roidb(roidb)
+    _sw = SolverWrapper(solver_prototxt, _roidb, output_dir,
+                       pretrained_model=pretrained_model)
+    return _sw
+
+def doit(sw,max_iters):
     print 'Solving...'
     model_paths = sw.train_model(max_iters)
     print 'done solving'

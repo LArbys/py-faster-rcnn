@@ -2411,10 +2411,10 @@ layer {
 }
 
 layer {
-  name: "InnerProduct1-rn"
+  name: "InnerProduct1-rl"
     type: "InnerProduct"
     bottom: "pool5"
-    top: "InnerProduct1-rn"
+    top: "InnerProduct1-rl"
     inner_product_param {
     num_output: 256
       weight_filler {
@@ -2424,10 +2424,10 @@ layer {
 }
 
 layer {
-  name: "InnerProduct2"
+  name: "InnerProduct2-rl"
     type: "InnerProduct"
-    bottom: "InnerProduct1-rn"
-    top: "InnerProduct2"
+    bottom: "InnerProduct1-rl"
+    top: "InnerProduct2-rl"
     inner_product_param {
     num_output: 4096
       weight_filler {
@@ -2440,7 +2440,7 @@ layer {
 layer {
   name: "cls_score"
     type: "InnerProduct"
-    bottom: "InnerProduct2"
+    bottom: "InnerProduct2-rl"
     top: "cls_score"
     param {
     lr_mult: 1
@@ -2463,7 +2463,7 @@ layer {
 layer {
   name: "bbox_pred"
     type: "InnerProduct"
-    bottom: "InnerProduct2"
+    bottom: "InnerProduct2-rl"
     top: "bbox_pred"
     param {
     lr_mult: 1

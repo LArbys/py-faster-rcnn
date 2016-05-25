@@ -192,11 +192,12 @@ class rpn_uboone(imdb):
         
         # just load text file instead
         tree = open(filename,'r')
-        objs = tree.read().split(" ");
 
-        
-        num_objs = 1
+        objs = tree.read().split("\n");
+        objs = [o for o in objs if o != '']
 
+        assert len(objs) == 3;
+        num_objs = len(objs)
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
         overlaps   = np.zeros((num_objs, self.num_classes), dtype=np.float32)
@@ -205,10 +206,10 @@ class rpn_uboone(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         # Load object bounding boxes into a data frame -- what dataframe?
-        data = objs
-        for ix in xrange(1):
-            
-            data = objs
+
+        for ix in xrange(len(objs)):
+            data = objs[ix]
+            data = data.split(" ")
 
             cls = self._class_to_ind[data[0]]
 

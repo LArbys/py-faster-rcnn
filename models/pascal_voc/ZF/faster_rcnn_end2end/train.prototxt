@@ -182,7 +182,8 @@ layer {
   }
 }
 layer {
-  name: "rpn_relu/3x3"
+  name: "rpn_r
+elu/3x3"
   type: "ReLU"
   bottom: "rpn/output"
   top: "rpn/output"
