@@ -56,7 +56,7 @@ import lib.utils.root_handler as rh
 #rpn_uboone_alex_nu_v04__iter_12582.caffemodel
 
 NETS = {'rpn_uboone': ('alex_nu_v04',
-                       'rpn_uboone_alex_nu_v04__iter_13600.caffemodel') }
+                       'rpn_uboone_alex_nu_v04__iter_38000.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):

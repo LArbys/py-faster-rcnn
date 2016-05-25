@@ -70,7 +70,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     ax.imshow(imm, aspect='equal')
 
     annos = None
-    with open( "data/{}/valid/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
+    with open( "data/{}/Annotations/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
         annos = f.read()
     
     annos = annos.split(" ");

@@ -1,0 +1,38 @@
+EXP_DIR: faster_rcnn_end2end
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [ neutrino ]
+UB_N_CLASSES : 1
+PIXEL_MEANS  : [[[ 0.0 ]]]
+
+ROOTFILES   : ["/stage/drinkingkazu/production/v02/ccqe_supported_images_train.root"]
+IMAGE2DPROD : "tpc_12ch"
+ROIPROD : "tpc_12ch"
+HEIGHT: 768
+WIDTH : 768
+DEVKIT : "NuDevKitTarinet"
+IMAGE_LOADER : "BNBNuTarinetLoader"
+RNG_SEED: 9
+DEBUG : False
+NCHANNELS : 12
+IMIN : 0.5
+IMAX : 10.0
+
+TRAIN:
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [768]
+  MAX_SIZE  : 768
+    
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [768]
+  MAX_SIZE  : 768
+
