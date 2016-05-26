@@ -56,7 +56,7 @@ import lib.utils.root_handler as rh
 #rpn_uboone_alex_nu_v04__iter_12582.caffemodel
 
 NETS = {'rpn_uboone': ('alex_nu_v04',
-                       'rpn_uboone_alex_nu_v04__iter_38000.caffemodel') }
+                       'earlier/rpn_uboone_alex_nu_v04__iter_44000.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -102,10 +102,10 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                           bbox[3] - bbox[1], fill=False,
                           edgecolor='red', linewidth=3.5)
             )
-        ax.text(bbox[0], bbox[1] - 2,
-                '{:s} {:.3f}'.format(class_name, score),
-                bbox=dict(facecolor='blue', alpha=0.5),
-                fontsize=14, color='white')
+        # ax.text(bbox[0], bbox[1] - 2,
+        #         '{:s} {:.3f}'.format(class_name, score),
+        #         bbox=dict(facecolor='blue', alpha=0.5),
+        #         fontsize=14, color='white')
 
     ax.set_title(('Truth=={}   Detection =={} with '
                   'p({} | box) >= {:.1f}').format("nu",
@@ -131,7 +131,7 @@ def demo(net, image_name):
            '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.5
+    CONF_THRESH = 0.8
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -194,6 +194,7 @@ if __name__ == '__main__':
         valids = f.read()
 
     im_names = [ int(v) for v in valids.split("\n") if v != '']
+    im_names = [14312, 14318, 14344, 14360,14377,14733,14389,14407]
     
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'

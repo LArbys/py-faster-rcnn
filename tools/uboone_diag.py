@@ -97,7 +97,7 @@ if __name__ == '__main__':
 
     imdb.competition_mode(args.comp_mode)
     
-    print "Do I have RPN? {}".format(cfg.TEST.HAS_RPN)
+    print "Do I have RPN? Answer: {}".format(cfg.TEST.HAS_RPN)
     
     if not cfg.TEST.HAS_RPN:
         imdb.set_proposal_method(cfg.TEST.PROPOSAL_METHOD)
