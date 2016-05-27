@@ -196,7 +196,7 @@ class rpn_uboone(imdb):
         objs = tree.read().split("\n");
         objs = [o for o in objs if o != '']
 
-        assert len(objs) == 3;
+        #assert len(objs) == 3;
         num_objs = len(objs)
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)

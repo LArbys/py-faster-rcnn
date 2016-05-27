@@ -36,7 +36,7 @@ CLASSES = ('__background__',
            'neutrino')
 
 NETS = {'rpn_uboone': ('trimese_2',
-                       'rpn_uboone_trimese_2__iter_5150.caffemodel') }
+                       'rpn_uboone_trimese_2__iter_11850.caffemodel') }
 
 
 def vis_detections(im, class_name, dets, image_name, thresh=0.5):
@@ -125,8 +125,8 @@ def demo(net, image_name):
     
 
     # Visualize detections for each class
-    CONF_THRESH = 0.01
-    NMS_THRESH = 0.05
+    CONF_THRESH = 0.2
+    NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
         cls_boxes = boxes[:, 4*cls_ind:4*(cls_ind + 1)]
@@ -144,7 +144,7 @@ def parse_args():
     """Parse input arguments."""
     parser = argparse.ArgumentParser(description='Faster R-CNN demo')
     parser.add_argument('--gpu', dest='gpu_id', help='GPU device id to use [0]',
-                        default=0, type=int)
+                        default=2, type=int)
     parser.add_argument('--cpu', dest='cpu_mode',
                         help='Use CPU mode (overrides --gpu)',
                         action='store_true')
