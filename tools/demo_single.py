@@ -88,6 +88,14 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     for i in inds:
         bbox  = dets[i, :4]
         score = dets[i, -1]
+        out = open("dets.txt","a")
+        out.write("{} {} {} {} {} {} {}\n".format(image_name,
+                                                  class_name,
+                                                  score,
+                                                  bbox[0],
+                                                  bbox[1],
+                                                  bbox[2],
+                                                  bbox[3]))
 
         ax.add_patch(
             plt.Rectangle((bbox[0], bbox[1]),
@@ -99,7 +107,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                 '{:s} {:.3f}'.format(class_name, score),
                 bbox=dict(facecolor='blue', alpha=0.5),
                 fontsize=14, color='white')
-
+    out.close()
     ax.set_title(('Truth=={}   Detection =={} with '
                   'p({} | box) >= {:.1f}').format(truth,
                                                   class_name, 
@@ -188,7 +196,7 @@ if __name__ == '__main__':
         rand = np.random.random_integers(0,19000)
         if rand not in im_names:
             im_names.append(rand)
-  
+    im_names = [1531,5376,18888,8377,12887]
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)

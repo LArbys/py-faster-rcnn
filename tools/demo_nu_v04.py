@@ -77,7 +77,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     ax.imshow(imm, aspect='equal')
 
     annos = None
-    with open( "data/{}/Valid/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
+    with open( "data/{}/Valid2/{}.txt".format(cfg.DEVKIT,image_name) ) as f:
         annos = f.read()
     
     annos = annos.split(" ");
@@ -91,10 +91,18 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
         
     ax.add_patch(
         plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
-
+              
     for i in inds:
         bbox  = dets[i, :4]
         score = dets[i, -1]
+        out = open("dets.txt","a")
+        out.write("{} {} {} {} {} {}\n".format(image_name,
+                                               score,
+                                               bbox[0],
+                                               bbox[1],
+                                               bbox[2],
+                                               bbox[3]))
+
 
         ax.add_patch(
             plt.Rectangle((bbox[0], bbox[1]),
@@ -106,7 +114,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
         #         '{:s} {:.3f}'.format(class_name, score),
         #         bbox=dict(facecolor='blue', alpha=0.5),
         #         fontsize=14, color='white')
-
+    out.close()
     ax.set_title(('Truth=={}   Detection =={} with '
                   'p({} | box) >= {:.1f}').format("nu",
                                                   class_name, 
@@ -116,7 +124,7 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     plt.axis('off')
     plt.tight_layout()
     plt.draw()
-    plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
+    #plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
     
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
@@ -127,11 +135,11 @@ def demo(net, image_name):
     timer.tic()
     scores, boxes = im_detect(net, int(image_name), im=im)
     timer.toc()
-    print ('Detection took {:.3f}s for '
-           '{:d} object proposals').format(timer.total_time, boxes.shape[0])
+    # print ('Detection took {:.3f}s for '
+    #        '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.8
+    CONF_THRESH = 0.01
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -142,7 +150,7 @@ def demo(net, image_name):
 
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
-        print dets
+        #print dets
         vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
 
 def parse_args():
@@ -194,9 +202,13 @@ if __name__ == '__main__':
         valids = f.read()
 
     im_names = [ int(v) for v in valids.split("\n") if v != '']
-    im_names = [14312, 14318, 14344, 14360,14377,14733,14389,14407]
+    #im_names = [14312, 14318, 14344, 14360,14377,14733,14389,14407]
+    
+    
+    im_names = [ int(i) for i in xrange(1000) ]
     
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
         demo(net, im_name)
+    #plt.show()
