@@ -17,8 +17,8 @@ import caffe
 from fast_rcnn.nms_wrapper import nms
 import cPickle
 from utils.blob import im_list_to_blob
+from utils.root_handler import rh
 import os
-import utils.root_handler as rh
 
 DEBUG = cfg.DEBUG
 

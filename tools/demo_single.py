@@ -35,7 +35,7 @@ CLASSES = ('__background__',
            'Eminus','Gamms','Muminus','Piminus','Proton')
 
 
-from fast_rcnn.test import im_detect
+from fast_rcnn.test import im_detect, rh
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
 import matplotlib.pyplot as plt
@@ -46,7 +46,6 @@ import argparse
 from ROOT import larcv
 larcv.load_pyutil
 import numpy as np
-import lib.utils.root_handler as rh
 
 NETS = {'rpn_uboone': ('alex_5_singlep',
                        'rpn_uboone_alex_5_singlep__iter_60000.caffemodel') }

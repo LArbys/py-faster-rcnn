@@ -20,7 +20,7 @@ def prepare_roidb(imdb):
     each ground-truth box. The class with maximum overlap is also
     recorded.
     """
-    print "\t>> Preparing roidb in roidb.py"
+    print "\t>> Preparing roidb in roidb.py <<"
     sizes = [(cfg.WIDTH,cfg.HEIGHT) for i in xrange(imdb.num_images)]
     roidb = imdb.roidb
     for i in xrange(len(imdb.image_index)):

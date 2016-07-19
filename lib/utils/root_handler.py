@@ -7,79 +7,84 @@ from utils.blob import im_list_to_blob, prep_im_for_blob
 
 from utils.image_loader_factory import ImageLoaderFactory
 
-FILES = cfg.ROOTFILES
+from easydict import EasyDict as edict
 
-IMAGE2DPROD = cfg.IMAGE2DPROD
-ROIPROD     = cfg.ROIPROD
 
-#Load 
-print "\033[92m\t>> IOManager Loading in root_handler.py\n'\033[0m'"
-IOM = larcv.IOManager(larcv.IOManager.kREAD)
+class ROOTHandler(object):
 
-for F in FILES:
-    IOM.add_in_file(F)
-    
-if cfg.DEBUG : IOM.set_verbosity(0)
-
-print "\033[94m\t>> Initializing IOManager \n\033[0m"
-IOM.initialize()
-
-print "\033[94m\t>> Getting image loader %s\n\033[0m"%cfg.IMAGE_LOADER
-ILF = ImageLoaderFactory()
-IMAGELOADER = ILF.get(cfg.IMAGE_LOADER)
-
-def get_n_images() :
-    return IOM.get_n_entries()
-
-def get_image(ttree_index):
-    
-    IOM.read_entry( ttree_index )
-    ev_img = IOM.get_data(larcv.kProductImage2D,IMAGE2DPROD)
-
-    img_v = ev_img.Image2DArray()
-    
-    im  = larcv.as_ndarray( img_v[0] )
-    s   = im.shape
-    imm = np.zeros([ s[0], s[1], img_v.size() ])
-
-    # print "just got image shape: {}".format(imm.shape)
-
-    assert img_v.size() == 3
-
-    for j in xrange(img_v.size()):
-        imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
+    def __init__(self):
+        self.FILES = cfg.ROOTFILES
+        self.IMAGE2DPROD = cfg.IMAGE2DPROD
+        self.ROIPROD     = cfg.ROIPROD
         
-    return IMAGELOADER.load_image(imm)
-
-def get_im_blob(roidb,scale_inds) :
-    """Builds an input blob from the images in the roidb at the specified
-    scales.
-    """
-    num_images = len(roidb)
-    processed_ims = []
-    im_scales = []
-
-    for i in xrange(num_images):
-
-        imm = get_image( int( roidb[i]['image'] ) )
+        #Load 
+        print "\033[92m\t>> IOManager Loading in root_handler.py\033[0m"
         
-        assert roidb[i]['flipped'] == False
-        
-        #if roidb[i]['flipped']:
-        #    imm = imm[:, ::-1, :]
+        self.IOM = larcv.IOManager(larcv.IOManager.kREAD)
+
+        for F in self.FILES:
+            self.IOM.add_in_file(F)
+    
+        if cfg.DEBUG : self.IOM.set_verbosity(0)
+    
+        print "\033[93m\t>> Initializing IOManager\033[0m"
+        self.IOM.initialize()
+
+        print "\033[94m\t>> Getting image loader %s\033[0m"%cfg.IMAGE_LOADER
+        self.ILF = ImageLoaderFactory()
+        self.IMAGELOADER = self.ILF.get(cfg.IMAGE_LOADER)
+
+    def get_n_images(self) :
+        return self.IOM.get_n_entries()
+
+    def get_image(self,ttree_index) :
             
-        target_size = cfg.TRAIN.SCALES[0]
+        self.IOM.read_entry( ttree_index )
+        ev_img = self.IOM.get_data(larcv.kProductImage2D,self.IMAGE2DPROD)
+        
+        img_v = ev_img.Image2DArray()
+        
+        im  = larcv.as_ndarray( img_v[0] )
+        s   = im.shape
+        imm = np.zeros([ s[0], s[1], img_v.size() ])
 
-        imm, im_scale = prep_im_for_blob(imm, 
-                                         cfg.PIXEL_MEANS, 
-                                         target_size,
-                                         cfg.TRAIN.MAX_SIZE)
+        # print "just got image shape: {}".format(imm.shape)
+            
+        assert img_v.size() == 3
+    
+        for j in xrange(img_v.size()):
+            imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
+        
+        return self.IMAGELOADER.load_image(imm)
 
-        im_scale = 1
-        im_scales.append(im_scale) #1 to 1 scaling!
-        processed_ims.append(imm)
+    def get_im_blob(self,roidb,scale_inds) :
+        """Builds an input blob from the images in the roidb at the specified
+        scales.
+        """
+        num_images = len(roidb)
+        processed_ims = []
+        im_scales = []
+            
+        for i in xrange(num_images):
 
-    # Create a blob to hold the input images
-    blob = im_list_to_blob(processed_ims)
+            imm = self.get_image( int( roidb[i]['image'] ) )
+            
+            assert roidb[i]['flipped'] == False
+                
+            target_size = cfg.TRAIN.SCALES[0]
 
-    return blob, im_scales
+            imm, im_scale = prep_im_for_blob(imm, 
+                                             cfg.PIXEL_MEANS,
+                                             target_size,
+                                             cfg.TRAIN.MAX_SIZE)
+
+            im_scale = 1
+            im_scales.append(im_scale) #1 to 1 scaling always.
+            processed_ims.append(imm)
+
+            # Create a blob to hold the input images
+        blob = im_list_to_blob(processed_ims)
+
+        return blob, im_scales
+
+rh = ROOTHandler()
