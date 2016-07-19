@@ -11,7 +11,7 @@ import numpy as np
 import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
-from utils import root_handler as rh
+from utils.root_handler import rh
 
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
