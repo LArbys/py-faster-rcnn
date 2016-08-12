@@ -1,1 +1,0 @@
-/tools/train_net.py --gpu 0 --solver models/rpn_uboone/alex_nu_v04/faster_rcnn_end2end/solver.prototxt --imdb rpn_uboone_train_1 --iters 700000 --weights /data/drinkingkazu/v04/nu_alex/lowres_event/snapshot_rmsprop_iter_6000.caffemodel.h5 --cfg experiments/cfgs/nu_cosmic_train_v04.yml

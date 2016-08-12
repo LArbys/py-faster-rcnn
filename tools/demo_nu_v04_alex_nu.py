@@ -65,32 +65,6 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
     if len(inds) == 0:
         print "No detections on {}".format(image_name)
         return
-    # 
-    #imm = np.zeros([im.shape[0], im.shape[1]] + [3])
-    #
-    #for j in xrange(3):
-    #    imm[:,:,j] = im[:,:,0]
-    #
-    #imm = imm.astype(np.float32)
-    #
-    #fig, ax = plt.subplots(figsize=(12, 12))
-    #ax.imshow(imm, aspect='equal')
-
-    # annos = None
-    # with open( "/stage/vgenty/NuDevKitv04_brett/Valids/{}.txt".format(image_name) ) as f:
-    #     annos = f.read()
-    
-    # annos = annos.split(" ");
-    # truth = str(annos[0])
-    # annos = annos[1:]
-
-    # a = []
-    # for anno in annos:
-    #     anno = anno.rstrip()
-    #     a.append(float(anno))
-        
-    # ax.add_patch(
-    #    plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
               
     for i in inds:
         bbox  = dets[i, :4]
@@ -104,41 +78,16 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                                                bbox[3]))
 
 
-        # ax.add_patch(
-        #    plt.Rectangle((bbox[0], bbox[1]),
-        #                  bbox[2] - bbox[0],
-        #                  bbox[3] - bbox[1], fill=False,
-        #                  edgecolor='red', linewidth=3.5)
-        #    )
-
-        # ax.text(bbox[0], bbox[1] - 2,
-        #         '{:s} {:.3f}'.format(class_name, score),
-        #         bbox=dict(facecolor='blue', alpha=0.5),
-        #         fontsize=14, color='white')
-
     out.close()
-    # ax.set_title(('Truth=={}   Detection =={} with '
-    #              'p({} | box) >= {:.1f}').format("nu",
-    #                                              class_name, 
-    #                                              class_name,
-    #                                              thresh),
-    #              fontsize=14)
-    # plt.axis('off')
-    # plt.tight_layout()
-    # plt.draw()
-    # plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
+
     
 def demo(net, image_name):
     """Detect object classes in an image using pre-computed object proposals."""
 
 
     im = rh.get_image(int(image_name))
-    #timer = Timer()
-    #timer.tic()
+
     scores, boxes = im_detect(net, int(image_name), im=im)
-    #timer.toc()
-    # print ('Detection took {:.3f}s for '
-    #        '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
     CONF_THRESH = 0.0 # 0.5

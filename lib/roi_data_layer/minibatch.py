@@ -18,7 +18,7 @@ from utils.blob import prep_im_for_blob, im_list_to_blob
 DEBUG = cfg.DEBUG
 
 def get_minibatch(roidb, num_classes):
-    #print roidb
+
     """Given a roidb, construct a minibatch sampled from it."""
     num_images = len(roidb)
 
@@ -32,7 +32,7 @@ def get_minibatch(roidb, num_classes):
     fg_rois_per_image = np.round(cfg.TRAIN.FG_FRACTION * rois_per_image)
 
     # Get the input image blob, formatted for caffe
-    #im_blob, im_scales = _get_image_blob(roidb, random_scale_inds)
+    # ask ROOT handler for this data
     im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)    
 
     blobs = { 'data': im_blob }
@@ -111,6 +111,7 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
 
     # Select foreground RoIs as those with >= FG_THRESH overlap
     fg_inds = np.where(overlaps >= cfg.TRAIN.FG_THRESH)[0]
+    
     # Guard against the case when an image has fewer than fg_rois_per_image
     # foreground RoIs
     fg_rois_per_this_image = np.minimum(fg_rois_per_image, fg_inds.size)
@@ -147,6 +148,8 @@ def _sample_rois(roidb, fg_rois_per_image, rois_per_image, num_classes):
     return labels, overlaps, rois, bbox_targets, bbox_inside_weights
 
 def _get_image_blob(roidb, scale_inds):
+    raise Exception("This function should not be called w/ IOManager implemented")
+
     """Builds an input blob from the images in the roidb at the specified
     scales.
     """
@@ -169,6 +172,7 @@ def _get_image_blob(roidb, scale_inds):
     return blob, im_scales
 
 def _project_im_rois(im_rois, im_scale_factor):
+    raise Exception("This function should not be called w/ IOManager implemented")
     """Project image RoIs into the rescaled training image."""
     rois = im_rois * im_scale_factor
     return rois
@@ -198,6 +202,7 @@ def _get_bbox_regression_labels(bbox_target_data, num_classes):
     return bbox_targets, bbox_inside_weights
 
 def _vis_minibatch(im_blob, rois_blob, labels_blob, overlaps):
+    raise Exception("This function should not be called w/ IOManager implemented")
     """Visualize a mini-batch for debugging."""
     import matplotlib.pyplot as plt
     for i in xrange(rois_blob.shape[0]):
