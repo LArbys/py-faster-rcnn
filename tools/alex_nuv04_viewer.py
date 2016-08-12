@@ -14,17 +14,31 @@ from fast_rcnn.config import cfg
 
 entries = None
 
-with open("/stage/vgenty/NuDevKitv04/train_1.txt") as f:
+with open("/stage/vgenty/NuDevKitv04_brett/valid_1.txt") as f:
     entries = f.read()
 
 entries = [im for im in entries.split("\n") if im != "" ] 
 
+cfg.PIXEL_MEANS =  [[[ 0.0 ]]]
+cfg.IMAGE2DPROD = "tpc"
+cfg.ROIPROD = "tpc"
+#cfg.HEIGHT= 756
+#cfg.WIDTH = 864
+cfg.WIDTH = 756
+cfg.HEIGH = 864
+cfg.DEVKIT = "NuDevKitv04_brett"
 cfg.IMAGE_LOADER = "BNBNuv04Loader"
-cfg.ROOTFILES   = ["/stage/drinkingkazu/production/v04/nu_sample/train.root"]
+cfg.RNG_SEED= 9
+cfg.DEBUG = False
+cfg.NCHANNELS = 1
+cfg.IMIN = 0.5
+cfg.IMAX = 10.0
+cfg.HAS_RPN = True
+cfg.SCALES = [756]
+cfg.MAX_SIZE = 864
+cfg.IOCFG = 'io_nu_valid.cfg'
+from fast_rcnn.test import im_detect, rh
 
-cfg.IMAGE2DPROD  = "tpc"
-
-import lib.utils.root_handler as rh
 
 for i,entry in enumerate(entries):
     entry = int(entry)    
@@ -32,7 +46,7 @@ for i,entry in enumerate(entries):
     imm = rh.get_image(entry)
     
     annoz = None
-    with open( "/stage/vgenty/NuDevKitv04/Annotations/{}.txt".format(entry)) as f:
+    with open( "/stage/vgenty/NuDevKitv04_brett/Valids/{}.txt".format(entry)) as f:
         annoz = f.read()
 
     annos_v = annoz.split("\n")

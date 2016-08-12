@@ -13,7 +13,7 @@ from easydict import EasyDict as edict
 class ROOTHandler(object):
 
     def __init__(self):
-        self.FILES = cfg.ROOTFILES
+        self.IOCFG = cfg.IOCFG
         self.IMAGE2DPROD = cfg.IMAGE2DPROD
         self.ROIPROD     = cfg.ROIPROD
         
@@ -22,8 +22,9 @@ class ROOTHandler(object):
         
         self.IOM = larcv.IOManager(larcv.IOManager.kREAD)
 
-        for F in self.FILES:
-            self.IOM.add_in_file(F)
+        self.IOM.configure(larcv.CreatePSetFromFile(self.IOCFG))
+        #for F in self.FILES:
+        #    self.IOM.add_in_file(F)
     
         if cfg.DEBUG : self.IOM.set_verbosity(0)
     
@@ -54,6 +55,7 @@ class ROOTHandler(object):
     
         for j in xrange(img_v.size()):
             imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
+            #img_v[j] *= 30.
         
         return self.IMAGELOADER.load_image(imm)
 

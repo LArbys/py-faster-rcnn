@@ -17,3 +17,4 @@ data/rpn_uboone_models
 models/
 data/
 *.pdf
+*.txt

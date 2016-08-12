@@ -12,7 +12,7 @@ ROIPROD : "tpc"
 #WIDTH : 864
 HEIGHT: 864
 WIDTH : 756
-DEVKIT : "NuDevKitv04"
+DEVKIT : "NuDevKitv04_brett"
 IMAGE_LOADER : "BNBNuv04Loader"
 RNG_SEED: 9
 DEBUG : False

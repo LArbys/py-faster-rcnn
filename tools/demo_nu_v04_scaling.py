@@ -16,20 +16,36 @@ See README.md for installation instructions before running.
 import _init_paths
 from fast_rcnn.config import cfg
 import numpy as np
+import sys,os
+scale = str(sys.argv[-1])
 
-cfg.ROOTFILES   = ["/stage2/drinkingkazu/brett/nu_val.root"]
+PATH='/data/vgenty/overlays/'
+FILE='overlay_0000_0037_'
 
-CLASSES = ('__background__',
-           'neutrino')
+#SCALES=['0.000',
+#        '0.0005',
+#        '-0.0005',
+#        '0.001',
+#        '-0.001',
+#        '0.00025',
+#        '-0.00025',
+#        '0.0015',
+#        '-0.0015']
+
+cfg.ROOTFILES   = [os.path.join(PATH,FILE+scale+'.root')]
+
+CLASSES = ('__background__','neutrino')
 
 cfg.PIXEL_MEANS =  [[[ 0.0 ]]]
 cfg.IMAGE2DPROD = "tpc"
 cfg.ROIPROD = "tpc"
+
 #cfg.HEIGHT= 756
 #cfg.WIDTH = 864
+
 cfg.WIDTH = 756
 cfg.HEIGH = 864
-cfg.DEVKIT = "NuDevKitv04_brett"
+cfg.DEVKIT = "NuDevKitv04"
 cfg.IMAGE_LOADER = "BNBNuv04Loader"
 cfg.RNG_SEED= 9
 cfg.DEBUG = False
@@ -39,7 +55,6 @@ cfg.IMAX = 10.0
 cfg.HAS_RPN = True
 cfg.SCALES = [756]
 cfg.MAX_SIZE = 864
-cfg.IOCFG = "io_valid.cfgg" 
 
 from fast_rcnn.test import im_detect, rh
 from fast_rcnn.nms_wrapper import nms
@@ -54,48 +69,22 @@ larcv.load_pyutil
 
 import numpy as np
 
-NETS = { 'rpn_uboone': ('alex_nu_v04',
-                        '/data/vgenty/brett/rpn_uboone_alex_nu_v04_iter_32000.caffemodel') }
+NETS = {'rpn_uboone': ('alex_nu_v04',
+                       'earlier/rpn_uboone_alex_nu_v04__iter_44000.caffemodel') }
 
 
-def vis_detections(im, class_name, dets, image_name, thresh=0.5):
+def vis_detections(im, class_name, dets, image_name, thresh=0.5,scale=None):
     """Draw detected bounding boxes."""
     
     inds = np.where(dets[:, -1] >= thresh)[0]
     if len(inds) == 0:
         print "No detections on {}".format(image_name)
         return
-    
-    imm = np.zeros([im.shape[0], im.shape[1]] + [3])
-
-    for j in xrange(3):
-        imm[:,:,j] = im[:,:,0]
-
-    imm = imm.astype(np.float32)
-
-    fig, ax = plt.subplots(figsize=(12, 12))
-    ax.imshow(imm, aspect='equal')
-
-    annos = None
-    with open( "/stage/vgenty/NuDevKitv04_brett/Valids/{}.txt".format(image_name) ) as f:
-        annos = f.read()
-    
-    annos = annos.split(" ");
-    truth = str(annos[0])
-    annos = annos[1:]
-
-    a = []
-    for anno in annos:
-        anno = anno.rstrip()
-        a.append(float(anno))
-        
-    ax.add_patch(
-       plt.Rectangle( (a[0],a[1]),a[2]-a[0], a[3]-a[1],fill=False,edgecolor='blue',linewidth=3.5) )
               
     for i in inds:
         bbox  = dets[i, :4]
         score = dets[i, -1]
-        out = open("all_dets_valids.txt","a")
+        out = open("/stage/vgenty/scaling_study/scaling_dets_{}.txt".format(scale),"a")
         out.write("{} {} {} {} {} {}\n".format(image_name,
                                                score,
                                                bbox[0],
@@ -103,32 +92,9 @@ def vis_detections(im, class_name, dets, image_name, thresh=0.5):
                                                bbox[2],
                                                bbox[3]))
 
-
-        ax.add_patch(
-           plt.Rectangle((bbox[0], bbox[1]),
-                         bbox[2] - bbox[0],
-                         bbox[3] - bbox[1], fill=False,
-                         edgecolor='red', linewidth=3.5)
-           )
-
-        ax.text(bbox[0], bbox[1] - 2,
-                '{:s} {:.3f}'.format(class_name, score),
-                bbox=dict(facecolor='blue', alpha=0.5),
-                fontsize=14, color='white')
-
     out.close()
-    ax.set_title(('Truth=={}   Detection =={} with '
-                 'p({} | box) >= {:.1f}').format("nu",
-                                                 class_name, 
-                                                 class_name,
-                                                 thresh),
-                 fontsize=14)
-    plt.axis('off')
-    plt.tight_layout()
-    plt.draw()
-    plt.savefig("{}_{}_demo.png".format(image_name,class_name),format="png")
     
-def demo(net, image_name):
+def demo(net, image_name,scale=scale):
     """Detect object classes in an image using pre-computed object proposals."""
 
 
@@ -137,11 +103,9 @@ def demo(net, image_name):
     timer.tic()
     scores, boxes = im_detect(net, int(image_name), im=im)
     timer.toc()
-    # print ('Detection took {:.3f}s for '
-    #        '{:d} object proposals').format(timer.total_time, boxes.shape[0])
 
     # Visualize detections for each class
-    CONF_THRESH = 0.9 # 0.5
+    CONF_THRESH = 0.0 # 0.5
     NMS_THRESH = 0.3
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -153,7 +117,7 @@ def demo(net, image_name):
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
         #print dets
-        vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH)
+        vis_detections(im, cls, dets, image_name,thresh=CONF_THRESH,scale=scale)
 
 def parse_args():
     """Parse input arguments."""
@@ -166,25 +130,27 @@ def parse_args():
     parser.add_argument('--net', dest='demo_net', help='Network to use [vgg16]',
                         choices=NETS.keys(), default='vgg16')
 
+    parser.add_argument('--scale', dest='adc_scale', help='ADC shift value',
+                        default='0.000',type=str)
+
     args = parser.parse_args()
 
     return args
 
 if __name__ == '__main__':
+
     cfg.TEST.HAS_RPN = True  # Use RPN for proposals
 
     args = parse_args()
-    
-    cfg.MODELS_DIR = '/home/vgenty/segment/py-faster-rcnn/models/rpn_uboone'
+
+    cfg.MODELS_DIR = '/home/vgenty/py-faster-rcnn/models/rpn_uboone'
 
     prototxt = os.path.join(cfg.MODELS_DIR, NETS[args.demo_net][0],
                             'faster_rcnn_end2end', 'test.prototxt')
 
-    #caffemodel = os.path.join('/stage/vgenty/faster_rcnn_end2end/rpn_uboone_train_1',NETS[args.demo_net][1])
-    caffemodel = os.path.join(NETS[args.demo_net][1])
+    caffemodel = os.path.join('/stage/vgenty/faster_rcnn_end2end/rpn_uboone_train_1',NETS[args.demo_net][1])
     
-    
-    #/home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5
+    # /home/vgenty/py-faster-rcnn/output/faster_rcnn_alt_opt/rpn_uboone_train_5
     if not os.path.isfile(caffemodel):
         raise IOError(('{:s} not found.\nDid you run ./data/script/'
                        'fetch_faster_rcnn_models.sh?').format(caffemodel))
@@ -199,14 +165,19 @@ if __name__ == '__main__':
 
     print '\n\nLoaded network {:s}'.format(caffemodel)
 
-
     valids = None
-    with open("/stage/vgenty/NuDevKitv04_brett/valid_1.txt","r") as f:
-        valids = f.read()
 
-    im_names = [ int(v) for v in valids.split("\n") if v != '']
+    import ROOT
+    from ROOT import larcv
+    iom = larcv.IOManager()   
+
+    iom.add_in_file(cfg.ROOTFILES[0])
+    iom.initialize()
+    entries = int(iom.get_n_entries())
+
+    im_names = [ int(v) for v in xrange(entries) ]
     
     for im_name in im_names:
         print '~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~'
         print 'Demo for data/demo/{}'.format(im_name)
-        demo(net, im_name)
+        demo(net, im_name,scale=args.adc_scale)

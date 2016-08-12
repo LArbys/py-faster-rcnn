@@ -218,7 +218,7 @@ __C.DEBUG = False
 # uboone specific
 __C.UB_CLASSES   = ('eminus',)
 __C.UB_N_CLASSES = 1
-__C.ROOTFILES = ["/stage/vgenty/detect.root"]
+#__C.ROOTFILES = ["/stage/vgenty/detect.root"]
 __C.IMAGE2DPROD = "fake_color"
 __C.ROIPROD = "fake_color"
 __C.HEIGHT = 864
@@ -228,6 +228,7 @@ __C.IMAGE_LOADER = "LarbysDetectLoader"
 __C.NCHANNELS = 3
 __C.IMIN = 0.0
 __C.IMAX = 1000.0
+__C.IOCFG = "io.cfg"
 
 def get_output_dir(imdb, net=None):
     """Return the directory where experimental artifacts are placed.
