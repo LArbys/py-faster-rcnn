@@ -68,7 +68,7 @@ def combined_roidb(imdb_names):
         roidb = get_training_roidb(imdb)
         return roidb
 
-    roidbs = [get_roidb(s) for s in imdb_names.split('+')]
+    roidbs = [ get_roidb(s) for s in imdb_names.split('+') ]
     roidb = roidbs[0]
     if len(roidbs) > 1:
         for r in roidbs[1:]:
@@ -93,7 +93,7 @@ if __name__ == '__main__':
     print('Using config:')
     pprint.pprint(cfg)
     
-    #factory uses config file
+    # factory uses config file
     from datasets.factory import get_imdb
     
     if not args.randomize:

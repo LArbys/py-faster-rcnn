@@ -74,7 +74,7 @@ class ROOTHandler(object):
                                              cfg.TRAIN.MAX_SIZE)
 
             im_scale = 1
-            im_scales.append(im_scale) #1 to 1 scaling always.
+            im_scales.append(im_scale) # 1 to 1 scaling always.
             processed_ims.append(imm)
 
             # Create a blob to hold the input images
@@ -82,4 +82,5 @@ class ROOTHandler(object):
 
         return blob, im_scales
 
-rh = ROOTHandler()
+if cfg.RH is None:
+    cfg.RH = ROOTHandler()

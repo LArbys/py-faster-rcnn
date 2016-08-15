@@ -1,0 +1,38 @@
+EXP_DIR: faster_rcnn_end2end
+
+MODELS_DIR   : /home/vgenty/py-faster-rcnn/models/rpn_uboone
+UB_CLASSES   : [ 2 ]
+UB_N_CLASSES : 1
+PIXEL_MEANS  : [[[ 0.0 ]]]
+
+IOCFG: "io.cfg"
+IMAGE2DPROD : "tpc"
+ROIPROD : "tpc"
+HEIGHT: 864
+WIDTH : 756
+IMAGE_LOADER : "BNBNuv04Loader"
+RNG_SEED: 9
+DEBUG : False
+CHANNELS : [2]
+NCHANNELS:  1
+IMIN : 0.5
+IMAX : 10.0
+
+TRAIN:
+  HAS_RPN: True
+  IMS_PER_BATCH: 1
+  BBOX_NORMALIZE_TARGETS_PRECOMPUTED: True
+  RPN_POSITIVE_OVERLAP: 0.7
+  RPN_BATCHSIZE: 256
+  PROPOSAL_METHOD: gt
+  BG_THRESH_LO: 0.0
+
+  SCALES    : [756]
+  MAX_SIZE  : 864
+    
+   
+TEST:
+  HAS_RPN: True
+  SCALES    : [756]
+  MAX_SIZE  : 864
+

@@ -11,7 +11,7 @@ import numpy as np
 import numpy.random as npr
 import cv2
 from fast_rcnn.config import cfg
-from utils.root_handler import rh
+import utils.root_handler
 
 from utils.blob import prep_im_for_blob, im_list_to_blob
 
@@ -33,7 +33,7 @@ def get_minibatch(roidb, num_classes):
 
     # Get the input image blob, formatted for caffe
     # ask ROOT handler for this data
-    im_blob, im_scales = rh.get_im_blob(roidb, random_scale_inds)    
+    im_blob, im_scales = cfg.RH.get_im_blob(roidb, random_scale_inds)    
 
     blobs = { 'data': im_blob }
 

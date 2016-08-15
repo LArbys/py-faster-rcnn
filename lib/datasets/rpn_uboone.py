@@ -1,6 +1,6 @@
 # faster rcnn for uboone
 
-import os
+import os,sys
 from datasets.imdb import imdb
 import datasets.ds_utils as ds_utils
 import numpy as np
@@ -10,22 +10,22 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 import uuid
-#from rpn_uboone_eval import rpn_uboone_eval
 
 from fast_rcnn.config import cfg
+
+import utils.root_handler
+
+from larcv import larcv
+larcv.load_pyutil
 
 class rpn_uboone(imdb):
     def __init__(self, image_set, devkit_path=None):
         imdb.__init__(self, 'rpn_uboone_' + image_set)
     
         self._image_set = image_set
-        self._devkit_path = self._get_default_path() if devkit_path is None \
-                            else devkit_path
-        
-        self._data_path = self._devkit_path
+
         
         self._classes = tuple( ['__background__'] + cfg.UB_CLASSES )
-        print self._classes
 
         self._class_to_ind = dict(zip(self.classes, xrange(self.num_classes)))
 
@@ -41,10 +41,10 @@ class rpn_uboone(imdb):
                         'rpn_file'    : None,
                         'min_size'    : 2 } # minimum box size
         
-        assert os.path.exists(self._devkit_path), \
-                'rpn_uboone path does not exist: {}'.format(self._devkit_path)
-        assert os.path.exists(self._data_path), \
-                'Path does not exist: {}'.format(self._data_path)
+        # assert os.path.exists(self._devkit_path), \
+        #         'rpn_uboone path does not exist: {}'.format(self._devkit_path)
+        # assert os.path.exists(self._data_path), \
+        #         'Path does not exist: {}'.format(self._data_path)
 
     def image_path_at(self, i):
         """
@@ -62,12 +62,16 @@ class rpn_uboone(imdb):
         """
         Load the indexes listed in this dataset's image set file.
         """
-        image_set_file = os.path.join(self._data_path,self._image_set + '.txt')
-        assert os.path.exists(image_set_file), \
-            'Path does not exist: {}'.format(image_set_file)
-        with open(image_set_file) as f:
-            image_index = [x.strip() for x in f.readlines()]
-            return image_index
+        # image_set_file = os.path.join(self._data_path,self._image_set + '.txt')
+        # assert os.path.exists(image_set_file), \
+        #     'Path does not exist: {}'.format(image_set_file)
+        # with open(image_set_file) as f:
+        #     image_index = [x.strip() for x in f.readlines()]
+        #     return image_index
+
+        print "Returning just 1k ints for now"
+        return np.arange(0,1000)
+
 
     def _get_default_path(self):
         """
@@ -180,73 +184,78 @@ class rpn_uboone(imdb):
         Load image and bounding boxes info from ROOT file into mem
         format.
         """
+        sys.stdout.write('{} imported\r'.format(index))
+        sys.stdout.flush()
+
+
+        num_objs=0
+        if cfg.RH is None:
+            raise Exception("cfg.rh is None")
+
+        cfg.RH.IOM.read_entry(index)
         
+        xy = {}
         
-        self.iom.read_entry(i)
-        
-        #vic stopped here
-        ev_image = iom.get_data(larcv.kProductImage2D,"tpc")
-        ev_roi   = iom.get_data(larcv.kProductROI,"tpc")
+        ev_image = cfg.RH.IOM.get_data(larcv.kProductImage2D,"tpc")
+        ev_roi   = cfg.RH.IOM.get_data(larcv.kProductROI,"tpc")
     
-        if ( ev_roi.ROIArray().size() == 0 ) : 
-            print "No ROI's found for index ",index
-            continue
-            
         image_v = ev_image.Image2DArray()
         images = [ image_v[k] for k in cfg.CHANNELS ]
-        im_array = [ larcv.as_ndarray(img) for img in images ]
             
         roi_v = ev_roi.ROIArray()
         
-        if roi_v.size() == 1 :
-            continue
+        # for each ROI
+        for roi in roi_v:
 
-        bbox = roi_v[0].BB(2)
+            roitype = roi.Type()
+            #is it one of the UB classes?
 
-        xs = []
-        ys = []
+            if roitype not in self._classes:
+                if cfg.DEBUG:
+                    print roitype, "Not in self._classes: ",self._classes
+                continue
+                
+            if roitype not in xy.keys():
+                xy[roitype]=[]
+            
+            
+            for ix,channel in enumerate(cfg.CHANNELS):
+                
+                #empty ROI?
+                if roi.BB().size() == 0:
+                    continue
+
+                bbox = roi.BB(channel)
+
+                imm = images[ix].meta()
+
+                x = bbox.bl().x - imm.bl().x
+                y = bbox.bl().y - imm.bl().y
     
-        ix = 2
-        imm = images[ix].meta()
+                dw_i = imm.cols() / ( imm.tr().x - imm.bl().x )
+                dh_i = imm.rows() / ( imm.tr().y - imm.bl().y )
 
-        x = bbox.bl().x - imm.bl().x
-        y = bbox.bl().y - imm.bl().y
-    
-        dw_i = imm.cols() / ( imm.tr().x - imm.bl().x )
-        dh_i = imm.rows() / ( imm.tr().y - imm.bl().y )
+                w_b = bbox.tr().x - bbox.bl().x
+                h_b = bbox.tr().y - bbox.bl().y
+        
+                x1 = x*dw_i
+                x2 = (x + w_b)*dw_i
+        
+                y1 = y*dh_i
+                y2 = (y + h_b)*dh_i
+        
+                assert x2>x1
+                assert y2>y1
+                
+                imrows=imm.rows()
+                imcols=imm.cols()
+                
+                xy[roitype].append((imrows-y2,x1,imrows-y1,x2))
+                num_objs+=1
+            
 
-        w_b = bbox.tr().x - bbox.bl().x
-        h_b = bbox.tr().y - bbox.bl().y
-        
-        x1 = x*dw_i
-        x2 = (x + w_b)*dw_i
-        
-        y1 = y*dh_i
-        y2 = (y + h_b)*dh_i
-        
-        assert x2>x1
-        assert y2>y1
-        
-        if x1 > 863: x1 = 863
-        if y1 > 863: y1 = 863
-        
-        if x2 > 863: x2 = 863
-        if y2 > 863: y2 = 863
-        
-        if x1 == x2: continue
-        if y1 == y2: continue
-        
-        anno.write("{} {} {} {} {}\n".format("neutrino",756-y2,x1,756-y1,x2))`
-
-        filename = os.path.join(self._data_path, 'Annotations', index + '.txt') # will be text file instead of xml
-        
-        # just load text file instead
-        tree = open(filename,'r')
-        objs = tree.read().split("\n")
-        num_objs = len(objs)-1
-        #num_objs = 1
-        assert num_objs == 1
-
+        if cfg.DEBUG:
+            print xy
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
         overlaps   = np.zeros((num_objs, self.num_classes), dtype=np.float32)
@@ -255,26 +264,26 @@ class rpn_uboone(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         # Load object bounding boxes into a data frame -- what dataframe?
-        for ix in xrange(num_objs):
-            if ix == " ": continue
-            data = objs[ix]
-            data = data.split(" ")
-            cls = self._class_to_ind[data[0]]
-
-            x1 = float(data[1])
-            y1 = float(data[2])
-            x2 = float(data[3])
-            y2 = float(data[4])
-        
-            boxes[ix, :]    = [x1, y1, x2, y2]
-
-            gt_classes[ix]  = cls
+        for roitype in xy:
+            for roi in xy[roitype]:
             
-            overlaps[ix, cls] = 1.0
+                cls = self._class_to_ind[roitype]
+            
+                x1 = float(roi[0])
+                y1 = float(roi[1])
+                x2 = float(roi[2])
+                y2 = float(roi[3])
+        
+                boxes[ix, :]    = [x1, y1, x2, y2]
 
-            seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+                gt_classes[ix]  = cls
+            
+                overlaps[ix, cls] = 1.0
 
+                seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+                
         overlaps = scipy.sparse.csr_matrix(overlaps)
+
 
         return {'boxes'       : boxes,
                 'gt_classes'  : gt_classes,
