@@ -10,7 +10,7 @@ import utils.cython_bbox
 import cPickle
 import subprocess
 import uuid
-from rpn_uboone_eval import rpn_uboone_eval
+#from rpn_uboone_eval import rpn_uboone_eval
 
 from fast_rcnn.config import cfg
 
@@ -34,12 +34,12 @@ class rpn_uboone(imdb):
         # Default to roidb handler
         self._roidb_handler = self.selective_search_roidb
         self._salt = str(uuid.uuid4())
-        self._comp_id = 'comp4'
+        # self._comp_id = 'comp4'
         
         # UBOONE specific config options
-        self.config = {'use_salt'    : True,
-                       'rpn_file'    : None,
-                       'min_size'    : 2} # minimum box size
+        self.config = { 'use_salt'    : True,
+                        'rpn_file'    : None,
+                        'min_size'    : 2 } # minimum box size
         
         assert os.path.exists(self._devkit_path), \
                 'rpn_uboone path does not exist: {}'.format(self._devkit_path)
@@ -75,7 +75,7 @@ class rpn_uboone(imdb):
         """
         return os.path.join(cfg.DATA_DIR, cfg.DEVKIT)
 
-    def gt_roidb(self): # can this become ROOT ?
+    def gt_roidb(self):
         """
         Return the database of ground-truth regions of interest.
 
@@ -177,9 +177,67 @@ class rpn_uboone(imdb):
 
     def _load_uboone_annotation(self, index):
         """
-        Load image and bounding boxes info from TXT file in the UBOONE
+        Load image and bounding boxes info from ROOT file into mem
         format.
         """
+        
+        
+        self.iom.read_entry(i)
+        
+        #vic stopped here
+        ev_image = iom.get_data(larcv.kProductImage2D,"tpc")
+        ev_roi   = iom.get_data(larcv.kProductROI,"tpc")
+    
+        if ( ev_roi.ROIArray().size() == 0 ) : 
+            print "No ROI's found for index ",index
+            continue
+            
+        image_v = ev_image.Image2DArray()
+        images = [ image_v[k] for k in cfg.CHANNELS ]
+        im_array = [ larcv.as_ndarray(img) for img in images ]
+            
+        roi_v = ev_roi.ROIArray()
+        
+        if roi_v.size() == 1 :
+            continue
+
+        bbox = roi_v[0].BB(2)
+
+        xs = []
+        ys = []
+    
+        ix = 2
+        imm = images[ix].meta()
+
+        x = bbox.bl().x - imm.bl().x
+        y = bbox.bl().y - imm.bl().y
+    
+        dw_i = imm.cols() / ( imm.tr().x - imm.bl().x )
+        dh_i = imm.rows() / ( imm.tr().y - imm.bl().y )
+
+        w_b = bbox.tr().x - bbox.bl().x
+        h_b = bbox.tr().y - bbox.bl().y
+        
+        x1 = x*dw_i
+        x2 = (x + w_b)*dw_i
+        
+        y1 = y*dh_i
+        y2 = (y + h_b)*dh_i
+        
+        assert x2>x1
+        assert y2>y1
+        
+        if x1 > 863: x1 = 863
+        if y1 > 863: y1 = 863
+        
+        if x2 > 863: x2 = 863
+        if y2 > 863: y2 = 863
+        
+        if x1 == x2: continue
+        if y1 == y2: continue
+        
+        anno.write("{} {} {} {} {}\n".format("neutrino",756-y2,x1,756-y1,x2))`
+
         filename = os.path.join(self._data_path, 'Annotations', index + '.txt') # will be text file instead of xml
         
         # just load text file instead
@@ -225,79 +283,84 @@ class rpn_uboone(imdb):
                 'seg_areas'   : seg_areas}
 
     def _get_comp_id(self):
-        comp_id = (self._comp_id + '_' + self._salt if self.config['use_salt']
-            else self._comp_id)
+        raise Exception("Unsupported function call")
+        # comp_id = (self._comp_id + '_' + self._salt if self.config['use_salt']
+        #     else self._comp_id)
 
-        return comp_id
+        # return comp_id
 
 
     def _get_ub_results_file_template(self):
-        filename = self._get_comp_id() + '_' + self._name  + '_det_' + self._image_set + '_{:s}.txt'
-        path = os.path.join(
-            self._devkit_path,
-            'results',
-            'Main',
-            filename)
-        return path
+        raise Exception("Unsupported function call")
+        # filename = self._get_comp_id() + '_' + self._name  + '_det_' + self._image_set + '_{:s}.txt'
+        # path = os.path.join(
+        #     self._devkit_path,
+        #     'results',
+        #     'Main',
+        #     filename)
+        # return path
 
     def _write_ub_results_file(self, all_boxes):
-        for cls_ind, cls in enumerate(self.classes):
-            if cls == '__background__':
-                continue
-            print 'Writing {} ub results file'.format(cls)
-            filename = self._get_ub_results_file_template().format(cls)
-            with open(filename, 'wt') as f:
-                for im_ind, index in enumerate(self.image_index):
-                    dets = all_boxes[cls_ind][im_ind]
-                    if dets == []:
-                        continue
-                    # the ub expects 0-based indices
-                    for k in xrange(dets.shape[0]):
-                        f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.
-                                format(index, dets[k, -1],
-                                       dets[k, 0], dets[k, 1],
-                                       dets[k, 2], dets[k, 3],
-                                       cls_ind))
+        raise Exception("Unsupported function call")
+        # for cls_ind, cls in enumerate(self.classes):
+        #     if cls == '__background__':
+        #         continue
+        #     print 'Writing {} ub results file'.format(cls)
+        #     filename = self._get_ub_results_file_template().format(cls)
+        #     with open(filename, 'wt') as f:
+        #         for im_ind, index in enumerate(self.image_index):
+        #             dets = all_boxes[cls_ind][im_ind]
+        #             if dets == []:
+        #                 continue
+        #             # the ub expects 0-based indices
+        #             for k in xrange(dets.shape[0]):
+        #                 f.write('{:s} {:.3f} {:.1f} {:.1f} {:.1f} {:.1f} {}\n'.
+        #                         format(index, dets[k, -1],
+        #                                dets[k, 0], dets[k, 1],
+        #                                dets[k, 2], dets[k, 3],
+        #                                cls_ind))
 
 
     def _do_python_eval(self, output_dir = 'output'):
-        annopath = os.path.join(
-            self._devkit_path,
-            'Annotations',
-            '{:s}.txt')
-        imagesetfile = os.path.join(
-            self._devkit_path,
-            'ImageSets',
-            'Main',
-            self._image_set + '.txt')
-        cachedir = os.path.join(self._devkit_path, 'annotations_cache')
-        aps = []
+        raise Exception("Unsupported function call")
+        # annopath = os.path.join(
+        #     self._devkit_path,
+        #     'Annotations',
+        #     '{:s}.txt')
+        # imagesetfile = os.path.join(
+        #     self._devkit_path,
+        #     'ImageSets',
+        #     'Main',
+        #     self._image_set + '.txt')
+        # cachedir = os.path.join(self._devkit_path, 'annotations_cache')
+        # aps = []
 
-        if not os.path.isdir(output_dir):
-            os.mkdir(output_dir)
-        for i, cls in enumerate(self._classes):
-            if cls == '__background__':
-                continue
-            filename = self._get_ub_results_file_template().format(cls)
-            rec, prec, ap = rpn_uboone_eval(
-                filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.25)
-            aps += [ap]
-            print('AP   for {} = {:.4f}'.format(cls, ap))
-            with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
-                cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
-        print('Mean AP = {:.4f}'.format(np.mean(aps)))
-        print('~~~~~~~~')
-        print('Results:')
-        for ap in aps:
-            print('{:.3f}'.format(ap))
-        print('{:.3f}'.format(np.mean(aps)))
-        print('~~~~~~~~')
-        print('')
-        print('\tComplete')
+        # if not os.path.isdir(output_dir):
+        #     os.mkdir(output_dir)
+        # for i, cls in enumerate(self._classes):
+        #     if cls == '__background__':
+        #         continue
+        #     filename = self._get_ub_results_file_template().format(cls)
+        #     rec, prec, ap = rpn_uboone_eval(
+        #         filename, annopath, imagesetfile, cls, cachedir, ovthresh=0.25)
+        #     aps += [ap]
+        #     print('AP   for {} = {:.4f}'.format(cls, ap))
+        #     with open(os.path.join(output_dir, cls + '_pr.pkl'), 'w') as f:
+        #         cPickle.dump({'rec': rec, 'prec': prec, 'ap': ap}, f)
+        # print('Mean AP = {:.4f}'.format(np.mean(aps)))
+        # print('~~~~~~~~')
+        # print('Results:')
+        # for ap in aps:
+        #     print('{:.3f}'.format(ap))
+        # print('{:.3f}'.format(np.mean(aps)))
+        # print('~~~~~~~~')
+        # print('')
+        # print('\tComplete')
 
     def evaluate_detections(self, all_boxes, output_dir):
-        self._write_ub_results_file(all_boxes)
-        self._do_python_eval(output_dir)
+        raise Exception("Unsupported function call")
+        # self._write_ub_results_file(all_boxes)
+        # self._do_python_eval(output_dir)
         
     def _get_widths(self):
         return [ int(cfg.WIDTH) for i in xrange(self.num_images) ]
