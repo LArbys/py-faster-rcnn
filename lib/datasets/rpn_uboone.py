@@ -70,7 +70,7 @@ class rpn_uboone(imdb):
         #     return image_index
 
         print "Returning just 1k ints for now"
-        return np.arange(0,1000)
+        return np.range(0,cfg.NEXAMPLES)
 
 
     def _get_default_path(self):

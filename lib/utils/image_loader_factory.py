@@ -12,21 +12,21 @@ class ImageLoaderFactory(object):
         self.name = "ImageLoaderFactory"
         
     def get(self, loader_name):
-        
+    
         if loader_name == "BNBNuTarinetLoader":
-            return BNBNuTarinetLoader(cfg.IMIN,cfg.IMAX)
+            return BNBNuTarinetLoader(cfg)
         
         if loader_name == "BNBNuv04Loader":
-            return BNBNuv04Loader(cfg.IMIN,cfg.IMAX)
+            return BNBNuv04Loader(cfg)
 
         if loader_name == "BNBNuLoader":
-            return BNBNuLoader(cfg.IMIN,cfg.IMAX)
+            return BNBNuLoader(cfg)
 
         if loader_name == "SinglepLoader":
-            return SinglepLoader(cfg.IMIN,cfg.IMAX)
+            return SinglepLoader(cfg)
         
         if loader_name == "MergedLoader":
-            return MergedLoader(cfg.IMIN,cfg.IMAX)
+            return MergedLoader(cfg)
         
         if loader_name == "LarbysDetectLoader":
             return LarbysDetectLoader()

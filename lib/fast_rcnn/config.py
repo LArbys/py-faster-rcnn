@@ -225,11 +225,13 @@ __C.WIDTH = 864
 __C.IMAGE_LOADER = "LarbysDetectLoader"
 __C.CHANNELS  = [2]
 __C.NCHANNELS =  1
+__C.NEXAMPLES = 1
+__C.SCALE = 100.0
 __C.IMIN = 0.0
 __C.IMAX = 1000.0
 __C.IOCFG = "io_example.cfg"
 
-#to be inserted by root_handler
+#to be inserted by root_handler, this is a global pointer to IOManager wrapper
 __C.RH = None
 
 def get_output_dir(imdb, net=None):
