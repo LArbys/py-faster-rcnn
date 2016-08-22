@@ -17,7 +17,7 @@ class ROOTHandler(object):
         self.ROIPROD     = cfg.ROIPROD
         
         #Load 
-        print "\033[92m\t>> IOManager Loading in root_handler.py\033[0m"
+        print "\033[92m\t>> IOManager Loading in root_handler.py <<\033[0m"
         
         self.IOM = larcv.IOManager(larcv.IOManager.kREAD)
 
@@ -25,10 +25,10 @@ class ROOTHandler(object):
     
         if cfg.DEBUG : self.IOM.set_verbosity(0)
     
-        print "\033[93m\t>> Initializing IOManager\033[0m"
+        print "\033[93m\t>> Initializing IOManager <<\033[0m"
         self.IOM.initialize()
 
-        print "\033[94m\t>> Getting image loader %s\033[0m"%cfg.IMAGE_LOADER
+        print "\033[94m\t>> Getting image loader %s <<\033[0m"%cfg.IMAGE_LOADER
         self.ILF = ImageLoaderFactory()
         self.IMAGELOADER = self.ILF.get(cfg.IMAGE_LOADER)
 
@@ -41,15 +41,16 @@ class ROOTHandler(object):
         ev_img = self.IOM.get_data(larcv.kProductImage2D,self.IMAGE2DPROD)
         
         img_v = ev_img.Image2DArray()
-        
-        im  = larcv.as_ndarray( img_v[0] )
-        s   = im.shape
-        imm = np.zeros([ s[0], s[1], img_v.size() ])
+        meta = img_v[0].meta()
+
+        imm = np.zeros([ meta.cols(), meta.rows(), cfg.NCHANNELS ])
 
         assert img_v.size() == 3
-    
-        for j in xrange(img_v.size()):
-            imm[:,:,j]  = larcv.as_ndarray( img_v[j] )
+        assert cfg.NCHANNELS == len(cfg.CHANNELS)
+        
+        for ix,ch in enumerate(cfg.CHANNELS):
+            imm[:,:,ix]  = larcv.as_ndarray( img_v[ch] )
+
         return self.IMAGELOADER.load_image(imm)
 
     def get_im_blob(self,roidb,scale_inds) :

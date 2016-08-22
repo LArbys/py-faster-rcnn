@@ -12,10 +12,10 @@ class DetOutLarcv(DetOutBase):
         self.name="DetOutLarcv"
         self.outfname=init_data['outfname']
         
-        self.iniom  = init_data['iniom']
-        self.outiom = larcv.IOManager(larcv.IOManager.kWRITE)
-        self.outiom.set_out_file(self.outfname)
-        self.outiom.initialize()
+        self.in_iom  = init_data['iniom']
+        self.out_iom = larcv.IOManager(larcv.IOManager.kWRITE)
+        self.out_iom.set_out_file(self.outfname)
+        self.out_iom.initialize()
         
         self.copy_input=init_data['copy_input']
         
@@ -55,15 +55,16 @@ class DetOutLarcv(DetOutBase):
 
     def __write_event__(self,event_data):
 
-        out_evroi = out_iom.get_data(larcv.kProductROI,"valid")
-        out_roi = larcv.ROI()
+        out_evroi = self.out_iom.get_data(larcv.kProductROI,"valid")
     
-        in_image = in_iom.get_data(larcv.kProductImage2D,"tpc")
-        in_roi   = in_iom.get_data(larcv.kProductROI,"tpc")
+        in_image = self.in_iom.get_data(larcv.kProductImage2D,"tpc")
+        in_roi   = self.in_iom.get_data(larcv.kProductROI,"tpc")
     
         in_image_meta=in_image.Image2DArray()[2].meta()
         
         for bbox in event_data['bboxes']:
+        
+            out_roi = larcv.ROI()
             
             xx1=bbox['box'][0]
             yy1=bbox['box'][1]
@@ -71,15 +72,17 @@ class DetOutLarcv(DetOutBase):
             yy2=bbox['box'][3]
             
             #awkward way to convert caffe to larcv
-            y2= imm.rows()-xx1
+            y2= in_image_meta.rows()-xx1
             x1= yy1
-            y1= imm.rows()-xx2
+            y1= in_image_meta.rows()-xx2
             x2= yy2
         
             pos = [x1,y1,x2,y2]
             
-            width,height,row_count,col_count,origin_x,origin_y = roi2imgcord(in_image_meta,pos)
+            width,height,row_count,col_count,origin_x,origin_y = self.roi2imgcord(in_image_meta,pos)
         
+
+
             bbox_meta = larcv.ImageMeta(width,height,
                                         row_count,col_count,
                                         origin_x,origin_y,2)
@@ -97,16 +100,16 @@ class DetOutLarcv(DetOutBase):
         
         if self.copy_input == True:
             
-            copy_img = out_iom.get_data(larcv.kProductImage2D,"tpc")
-            copy_roi = out_iom.get_data(larcv.kProductROI,"tpc")
+            copy_img = self.out_iom.get_data(larcv.kProductImage2D,"tpc")
+            copy_roi = self.out_iom.get_data(larcv.kProductROI,"tpc")
 
             for img in in_image.Image2DArray(): copy_img.Append(img)   
         
             copy_roi.Set(in_roi.ROIArray())
 
-        out_iom.set_id(in_image.run(),in_image.subrun(),in_image.event())       
-        out_iom.save_entry()
+        self.out_iom.set_id(in_image.run(),in_image.subrun(),in_image.event())       
+        self.out_iom.save_entry()
         
     def __close__(self):
-        self.outiom.finalize()
+        self.out_iom.finalize()
         

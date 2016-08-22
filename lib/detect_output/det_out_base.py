@@ -7,16 +7,16 @@ class DetOutBase(object):
         self.name= "DetOutBase"
         
     def write_event(self,event_data):
-        self.__write_event__(self,event_data)
+        self.__write_event__(event_data)
     
+    def close(self):
+        self.__close__()
+
     @abc.abstractmethod
     def __write_event__(self,event_data):
         """
         I guess event_data will be dictionary of arbitrary info you can send to child class
         """
-        
-                    
-        
         
     @abc.abstractmethod
     def __close__(self):

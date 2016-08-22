@@ -40,13 +40,13 @@ cfg.IMAX = 10.0
 cfg.HAS_RPN = True
 cfg.SCALES = [756]
 cfg.MAX_SIZE = 864
-cfg.IOCFG = "io_{}_valid.cfg".format(sys.argv[1])
+cfg.IOCFG = "cfg/io_{}_valid.cfg".format(sys.argv[1])
 
 import utils.root_handler
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
 from utils.timer import Timer
-
+from detect_output.det_out_factory import DetOutFactory
 
 NETS = { 'rpn_uboone': ('resnet6x6_nu_weights_nu',
                         '/data/vgenty/brett/updated_resnet/nu_weights/resnet6x6_nu_weights_nu_iter_10000.caffemodel') }
@@ -62,7 +62,7 @@ def detect(net, image_name, det_output):
     CONF_THRESH = 0.0 #using 0.0 means write out all detections
     NMS_THRESH = 0.3
     
-    event_data = { 'image_name' : image_name, 'bboxes' = [] }
+    event_data = { 'image_name' : image_name, 'bboxes' : [] }
     
     for cls_ind, cls in enumerate(CLASSES[1:]):
         cls_ind += 1 # because we skipped background
@@ -73,8 +73,9 @@ def detect(net, image_name, det_output):
 
         keep = nms(dets, NMS_THRESH)
         dets = dets[keep, :]
-
-        inds = np.where(dets[:, -1] >= thresh)[0]
+        
+        
+        inds = np.where(dets[:, -1] >= CONF_THRESH)[0]
 
         if len(inds) == 0:
             print "No detections on {}".format(image_name)
@@ -87,7 +88,7 @@ def detect(net, image_name, det_output):
             event_data['bboxes'].append( { 'cls' : cls, 'box' : bbox, 'prob' : score } )
             
     print "event_data is ",event_data
-    det_output.write_detections(event_data)
+    det_output.write_event(event_data)
 
 if __name__ == '__main__':
 
@@ -109,14 +110,14 @@ if __name__ == '__main__':
 
     print '\n\n\t>>> Loaded network {:s} <<< '.format(caffemodel)
 
-    im_names=range(10000)
-    
+    im_names=range(2)
     
     det_factory = DetOutFactory()
 
-    det_output = det_factory.get("DetOutLarcv",{'outfname'= 'aho.root',
-                                                'iniom'   = cfg.RH.IOM,
-                                                'copy_input'=True})
+
+    det_output = det_factory.get("DetOutLarcv",{'outfname': 'aho.root',
+                                                'iniom'   : cfg.RH.IOM,
+                                                'copy_input':True})
     
 
         

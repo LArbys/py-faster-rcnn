@@ -11,7 +11,7 @@ class DetOutAscii(DetOutBase):
         self.outfile = fopen()
 
     def __write_event__(self,event_data):
+        raise Exception()
         
-
     def __close__(self):
         self.outfile.close()

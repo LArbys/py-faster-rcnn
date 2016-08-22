@@ -1,5 +1,5 @@
 from det_out_larcv import DetOutLarcv
-from det_out_ascii import DetOutASCII
+from det_out_ascii import DetOutAscii
 
 class DetOutFactory(object):
 
@@ -9,9 +9,9 @@ class DetOutFactory(object):
     def get(self,loader_name,init_data):
         
         if loader_name == "DetOutLarcv":
-            return DetOutLarcv(self.init_data)
+            return DetOutLarcv(init_data)
 
         if loader_name == "DetOutAscii":
-            return DetOutAscii(self.init_data)
+            return DetOutAscii(init_data)
             
         raise Exception("\n\n\t{} does not exist, please instantiate in det_out_factory.py!\n\n".format(loader_name))
