@@ -8,10 +8,22 @@ class DetOutAscii(DetOutBase):
         
         self.name="DetOutAscii"
         self.outfname=init_data['outfname']
-        self.outfile = fopen()
+        self.outfile = open(self.outfname,'w+')
 
     def __write_event__(self,event_data):
-        raise Exception()
         
+        for bbox in event_data['bboxes']:
+            
+            xx1=bbox['box'][0]
+            yy1=bbox['box'][1]
+            xx2=bbox['box'][2]
+            yy2=bbox['box'][3]
+            
+            self.outfile.write("{} {} {} {} {} {} {}\n".format(event_data['image_name'],
+                                                               bbox['cls'],
+                                                               bbox['prob'],
+                                                               xx1,yy1,
+                                                               xx2,yy2))
+
     def __close__(self):
         self.outfile.close()

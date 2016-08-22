@@ -87,7 +87,6 @@ def detect(net, image_name, det_output):
             
             event_data['bboxes'].append( { 'cls' : cls, 'box' : bbox, 'prob' : score } )
             
-    print "event_data is ",event_data
     det_output.write_event(event_data)
 
 if __name__ == '__main__':
@@ -115,9 +114,11 @@ if __name__ == '__main__':
     det_factory = DetOutFactory()
 
 
-    det_output = det_factory.get("DetOutLarcv",{'outfname': 'aho.root',
-                                                'iniom'   : cfg.RH.IOM,
-                                                'copy_input':True})
+    det_output = det_factory.get("DetOutAscii",{'outfname': 'god.txt'})
+
+    # det_output = det_factory.get("DetOutLarcv",{'outfname': 'aho.root',
+    #                                             'iniom'   : cfg.RH.IOM,
+    #                                             'copy_input':True})
     
 
         

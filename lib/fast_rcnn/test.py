@@ -17,7 +17,7 @@ import caffe
 from fast_rcnn.nms_wrapper import nms
 import cPickle
 from utils.blob import im_list_to_blob
-from utils.root_handler import rh
+import utils.root_handler
 import os
 
 DEBUG = cfg.DEBUG
@@ -104,7 +104,7 @@ def _get_blobs(im, rois):
 
     #blobs['data'], im_scale_factors = _get_image_blob(im)
 
-    blobs['data'], im_scale_factors = rh.get_im_blob([ { 'image' : im , 'flipped' : False}], 1)
+    blobs['data'], im_scale_factors = cfg.RH.get_im_blob([ { 'image' : im , 'flipped' : False}], 1)
 
     if not cfg.TEST.HAS_RPN:
         blobs['rois'] = _get_rois_blob(rois, im_scale_factors)
@@ -130,6 +130,7 @@ def im_detect(net, imm, im=None, boxes=None):
     # (some distinct image ROIs get mapped to the same feature ROI).
     # Here, we identify duplicate feature ROIs, so we only compute features
     # on the unique subset.
+
     if cfg.DEDUP_BOXES > 0 and not cfg.TEST.HAS_RPN:
         v = np.array([1, 1e3, 1e6, 1e9, 1e12])
         hashes = np.round(blobs['rois'] * cfg.DEDUP_BOXES).dot(v)
@@ -146,6 +147,7 @@ def im_detect(net, imm, im=None, boxes=None):
 
     # reshape network inputs
     net.blobs['data'].reshape(*(blobs['data'].shape))
+
     if cfg.TEST.HAS_RPN:
         net.blobs['im_info'].reshape(*(blobs['im_info'].shape))
     else:
@@ -247,7 +249,6 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
 
     if not cfg.TEST.HAS_RPN:
         roidb = imdb.roidb
-    
 
     # print "\t num_images is {}".format(num_images)
 
@@ -266,7 +267,7 @@ def test_net(net, imdb, max_per_image=100, thresh=0.05, vis=False):
             
         #im = cv2.imread(imdb.image_path_at(i))
         # print "imdb.image_path_at ( i ) = {}".format(imdb.image_path_at(i))
-        im = rh.get_image(int(imdb.image_path_at(i)))
+        im = cfg.RH.get_image(int(imdb.image_path_at(i)))
 
         _t['im_detect'].tic()
         # print "net {} im {} box_proposals {}".format(net,im,box_proposals)

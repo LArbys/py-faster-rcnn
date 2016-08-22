@@ -80,8 +80,6 @@ class DetOutLarcv(DetOutBase):
             pos = [x1,y1,x2,y2]
             
             width,height,row_count,col_count,origin_x,origin_y = self.roi2imgcord(in_image_meta,pos)
-        
-
 
             bbox_meta = larcv.ImageMeta(width,height,
                                         row_count,col_count,
