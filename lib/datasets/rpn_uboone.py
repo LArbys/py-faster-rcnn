@@ -68,9 +68,9 @@ class rpn_uboone(imdb):
         # with open(image_set_file) as f:
         #     image_index = [x.strip() for x in f.readlines()]
         #     return image_index
-
-        print "Returning just 1k ints for now"
-        return np.range(0,cfg.NEXAMPLES)
+        
+        print "Returning just %d ints for now" %cfg.NEXAMPLES
+        return np.arange(0,cfg.NEXAMPLES)
 
 
     def _get_default_path(self):
@@ -187,7 +187,6 @@ class rpn_uboone(imdb):
         sys.stdout.write('{} imported\r'.format(index))
         sys.stdout.flush()
 
-
         num_objs=0
         if cfg.RH is None:
             raise Exception("cfg.rh is None")
@@ -205,22 +204,20 @@ class rpn_uboone(imdb):
         roi_v = ev_roi.ROIArray()
         
         # for each ROI
-        for roi in roi_v:
+        for ix,roi in enumerate(roi_v):
 
-            roitype = roi.Type()
+            roitype = larcv.PDG2ROIType(roi.PdgCode())
             #is it one of the UB classes?
-
+            
             if roitype not in self._classes:
                 if cfg.DEBUG:
                     print roitype, "Not in self._classes: ",self._classes
                 continue
                 
             if roitype not in xy.keys():
-                xy[roitype]=[]
-            
-            
+                xy[roitype]=[]            
+
             for ix,channel in enumerate(cfg.CHANNELS):
-                
                 #empty ROI?
                 if roi.BB().size() == 0:
                     continue
@@ -249,13 +246,17 @@ class rpn_uboone(imdb):
                 
                 imrows=imm.rows()
                 imcols=imm.cols()
+                xy_conv= (imrows-y2,x1,imrows-y1,x2)
+                if xy_conv in xy[roitype] : continue
+                xy[roitype].append(xy_conv)
+                num_objs+=1;
+        
                 
-                xy[roitype].append((imrows-y2,x1,imrows-y1,x2))
-                num_objs+=1
-            
+        # at this point we could have duplicates, why? b/c larbys jesus says so
 
         if cfg.DEBUG:
             print xy
+        
         boxes      = np.zeros((num_objs, 4), dtype=np.uint16)
         gt_classes = np.zeros((num_objs), dtype=np.int32)
         overlaps   = np.zeros((num_objs, self.num_classes), dtype=np.float32)
@@ -264,9 +265,10 @@ class rpn_uboone(imdb):
         seg_areas = np.zeros((num_objs), dtype=np.float32)
 
         # Load object bounding boxes into a data frame -- what dataframe?
+        iy=-1
         for roitype in xy:
             for roi in xy[roitype]:
-            
+                iy+=1
                 cls = self._class_to_ind[roitype]
             
                 x1 = float(roi[0])
@@ -274,13 +276,13 @@ class rpn_uboone(imdb):
                 x2 = float(roi[2])
                 y2 = float(roi[3])
         
-                boxes[ix, :]    = [x1, y1, x2, y2]
+                boxes[iy, :] = [x1, y1, x2, y2]
 
-                gt_classes[ix]  = cls
+                gt_classes[iy]  = cls
             
-                overlaps[ix, cls] = 1.0
+                overlaps[iy, cls] = 1.0
 
-                seg_areas[ix] = (x2 - x1 + 1) * (y2 - y1 + 1)
+                seg_areas[iy] = (x2 - x1 + 1) * (y2 - y1 + 1)
                 
         overlaps = scipy.sparse.csr_matrix(overlaps)
 
