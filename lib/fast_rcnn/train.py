@@ -12,7 +12,7 @@ from fast_rcnn.config import cfg
 import roi_data_layer.roidb as rdl_roidb
 from utils.timer import Timer
 import numpy as np
-import os
+import os,sys
 import time
 from caffe.proto import caffe_pb2
 import google.protobuf as pb2
@@ -114,7 +114,9 @@ class SolverWrapper(object):
             # Make one SGD update
             timer.tic()
             self.solver.step(1)
-            
+            scores = self.solver.net.blobs['cls_score'].data[0]
+            print sys.stderr.write("cls_score : [" + ",".join([str(k) for k in scores]) +"]\n")
+
             #if DEBUG:
             # print "Made one SGD update"
             # print self.solver.net
@@ -123,6 +125,7 @@ class SolverWrapper(object):
             # for k in net.blobs.keys():
             #     print "{} shape {} : {}".format(k,net.blobs[k].data.shape,net.blobs[k].data)
             # time.sleep(10)
+
             timer.toc()
             if self.solver.iter % (10 * self.solver_param.display) == 0:
                 print 'speed: {:.3f}s / iter'.format(timer.average_time)

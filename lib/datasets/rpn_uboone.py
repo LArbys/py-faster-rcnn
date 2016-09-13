@@ -195,8 +195,8 @@ class rpn_uboone(imdb):
         
         xy = {}
         
-        ev_image = cfg.RH.IOM.get_data(larcv.kProductImage2D,"tpc")
-        ev_roi   = cfg.RH.IOM.get_data(larcv.kProductROI,"tpc")
+        ev_image = cfg.RH.IOM.get_data(larcv.kProductImage2D,cfg.IMAGE2DPROD)
+        ev_roi   = cfg.RH.IOM.get_data(larcv.kProductROI,cfg.ROIPROD)
     
         image_v = ev_image.Image2DArray()
         images = [ image_v[k] for k in cfg.CHANNELS ]
