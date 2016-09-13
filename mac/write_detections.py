@@ -19,7 +19,6 @@ if len(sys.argv) < 6:
     sys.exit(1)
 
 CLASSES = ('__background__', 5)
-
 cfg.NEXAMPLES = sys.argv[5]
 cfg.PIXEL_MEANS =  [[[ 0.0 ]]]
 cfg.IMAGE2DPROD = "comb_tpc"
@@ -43,7 +42,6 @@ cfg.IOCFG = sys.argv[1]
 import utils.root_handler
 from fast_rcnn.test import im_detect
 from fast_rcnn.nms_wrapper import nms
-from utils.timer import Timer
 from detect_output.det_out_factory import DetOutFactory
 
 def detect(net, image_name, det_output):
@@ -107,7 +105,6 @@ if __name__ == '__main__':
     im_names=range(int(cfg.NEXAMPLES))
     
     det_factory = DetOutFactory()
-
 
     det_output = det_factory.get("DetOutAscii",{'outfname': sys.argv[4] + ".txt"})
 
